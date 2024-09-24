@@ -1,0 +1,48 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  username      String         @unique
+  email         String         @unique
+  password      String
+  avatar_url    String?
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  collaborators Collaborator[]
+}
+
+model Note {
+  id            Int            @id @default(autoincrement())
+  title         String
+  content       String
+  categoryId    Int
+  category      Category       @relation(fields: [categoryId], references: [id])
+  collaborators Collaborator[]
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  notes      Note[] // Add this relation
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Collaborator {
+  note   Note @relation(fields: [noteId], references: [id])
+  noteId Int
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@unique([noteId, userId]) // This ensures that each combination of noteId and userId is unique
+}
