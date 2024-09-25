@@ -1,5 +1,5 @@
 #******************************************************************************************
-The code below comes from this guide on how to connect Prisma to Supabase:
+* The code below comes from this guide on how to connect Prisma to Supabase:
 https://supabase.com/partners/integrations/prisma
 
 datasource db {
@@ -27,7 +27,7 @@ model User {
   name  String?
   posts Post[]
 }
-I modified the above code to model our database to what it is in schema.prisma.
+* I modified the above code to model our database to what it is in schema.prisma.
 #******************************************************************************************
 
 
