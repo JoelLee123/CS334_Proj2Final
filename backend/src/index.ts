@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from "express";
 import authRoutes from "./routes/auth";
 
 const app: Application = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use("/auth", authRoutes);
