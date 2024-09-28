@@ -50,4 +50,10 @@ Collaborator model:
 *************************************************************************************************
 HOW TO USE THE APPLICATION (BACKEND):
 *************************************************************************************************
-* Ensure that environment variables are configured in a .env file in the backend directory for database connection. This is never pushed to git.
+* Ensure that environment variables are configured in a .env file in the backend directory for database connection.This is never pushed to git.
+
+Run the server:
+* npm run start
+
+Test endpoints:
+
