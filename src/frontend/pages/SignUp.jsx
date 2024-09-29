@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-
 const SignUpPage = () => {
   const[username, setName] = useState("");
   const[password, setPassword] = useState("");
@@ -20,7 +19,6 @@ const SignUpPage = () => {
    }
 
   }
-
 
   return (
     <div className="font-sans bg-LighterBlue min-h-screen p-5 text-center"> 

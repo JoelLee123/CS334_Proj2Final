@@ -1,11 +1,13 @@
 import React from 'react';
 import '../styles/index.css';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import HomePage from './Home';
+import HomePage from './HomePage';
 import SignUpPage from './SignUp';
 import SignInPage from './SignIn';
 import FrontPage from './StartPg';
-import ProfilePage from './Profile';
+import ProfilePage from './ProfilePage';
+import NotesPage from './NotesPage';
+import SharedPage from './SharedPage';
 import Navbar from "../components/NavBar";
 
 function App() {
@@ -19,16 +21,14 @@ function App() {
           <Route path="/Sign-in" element={<SignInPage />} />
           <Route path="/Sign-up" element={<SignUpPage />} />
           <Route path="/Profile" element={<ProfilePage />} />
+          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/shared" element={<SharedPage />} />
         </Routes>
       </div>
     </Router>
   );
 }
 
-/**
- * Prevents the navigation bar from being shown on the sign in and sign up pages
- * @returns the navigation bar or not
- */
 function ConditionalNavbar() {
   const location = useLocation();
   const shouldHideNavbar = location.pathname === '/' || location.pathname === '/Sign-up';
