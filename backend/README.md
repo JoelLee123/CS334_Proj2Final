@@ -165,7 +165,7 @@ curl -X DELETE http://localhost:<PORT>/collaborators/remove/1/2 \
 
 * Get Collaborators:
 
-curl -X GET http://localhost:<PORT/>/collaborators/<note_id> \
+curl -X GET http://localhost:<PORT_>/collaborators/<note_id> \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
 //***************************************************************
