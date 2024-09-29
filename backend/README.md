@@ -119,10 +119,22 @@ curl -X POST http://localhost:<PORT_>/notes/add \
   "categoryId": 1
 }' | jq '.'
 
-* Get All Notes for the Authenticated User
+* Get All Notes for the Authenticated User(no filters)
 
 curl -X GET http://localhost:<PORT_>/notes/all \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+
+* Get All Notes for the Authenticated User(filter by category)
+
+curl -X GET http://localhost:<PORT_>/notes/all?categoryID=<category_id> -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+
+* Get all notes sorted by most recently worked on
+
+curl -X GET "http://localhost:<PORT_>/notes/all?sortBy=recent" -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+
+* Get all notes in a specific category, sorted by most recently worked on:
+
+curl -X GET "http://localhost:<PORT_>/notes/all?categoryID=<category_id>&sortBy=recent" -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
 
 * Fetch a Specific Note by ID
 

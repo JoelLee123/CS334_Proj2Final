@@ -31,17 +31,34 @@ router.post('/add', authenticateToken, async (req, res) => {
 // Get all notes for the authenticated user
 router.get('/all', authenticateToken, async (req, res) => {
     const user = (req as any).user;
+    const categoryId = parseInt(req.query.categoryID as string, 10);
+    const sortBy = req.query.sortBy as string;
 
     try {
-        // Fetch all notes where the user is a collaborator
-        const notes = await prisma.note.findMany({
-            where: {
-                collaborators: {
-                    some: {
-                        userId: user.id,
-                    },
+       // Build the "where" clause conditionally based on whether categoryID is provided
+        const whereClause: any = {
+            collaborators: {
+                some: {
+                    userId: user.id,
                 },
             },
+        };
+
+        if (!isNaN(categoryId)) {
+            whereClause.categoryId = categoryId;  // Add the categoryId filter if provided
+        }
+
+        // Build the "orderBy" clause based on the sortBy parameter
+        const orderByClause: any = {};
+
+        if (sortBy === 'recent') {
+            orderByClause.updated_at = 'desc'; // Sort by most recently worked on
+        }
+
+        // Fetch all notes where the user is a collaborator, optionally filtered by category, and sorted
+        const notes = await prisma.note.findMany({
+            where: whereClause,
+            orderBy: orderByClause,
             include: {
                 collaborators: true,
                 category: true,
