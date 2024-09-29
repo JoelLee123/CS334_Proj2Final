@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import HomePage from './HomePage';
 import SignUpPage from './SignUp';
 import SignInPage from './SignIn';
+import FrontPage from './StartPg';
 import ProfilePage from './ProfilePage';
 import NotesPage from './NotesPage';
 import SharedPage from './SharedPage';
@@ -15,8 +16,9 @@ function App() {
       <div>
         <ConditionalNavbar />
         <Routes>
-          <Route path="/" element={<SignInPage />} />
+          <Route path="/" element={<FrontPage />} />
           <Route path="/homepage" element={<HomePage />} />
+          <Route path="/Sign-in" element={<SignInPage />} />
           <Route path="/Sign-up" element={<SignUpPage />} />
           <Route path="/Profile" element={<ProfilePage />} />
           <Route path="/notes" element={<NotesPage />} />

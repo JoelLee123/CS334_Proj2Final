@@ -9,7 +9,7 @@ const NotesPage = () => {
   ];
 
   return (
-    <div className="bg-TeaGreen min-h-screen p-5">
+    <div className="bg-LighterBlue min-h-screen p-5">
       <h1 className="text-3xl font-bold text-DarkestBlue text-center mb-8">Your notes</h1>
       <div className="flex flex-col items-center">
         {sampleNotes.map((note, index) => (

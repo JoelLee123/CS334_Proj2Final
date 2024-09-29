@@ -4,7 +4,7 @@ import ProfileCard from '../components/ProfileCard';
 
 const ProfilePage = () => {
   return (
-    <div className="bg-TeaGreen min-h-screen p-5">
+    <div className="bg-LighterBlue min-h-screen p-5">
       <header className="mb-6">
         <h1 className="text-3xl font-bold text-DarkestBlue text-center mb-8">Your Profile</h1>
       </header>

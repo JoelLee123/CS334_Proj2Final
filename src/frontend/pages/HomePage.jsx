@@ -30,7 +30,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="bg-TeaGreen min-h-screen p-3 flex flex-col justify-center items-center">
+    <div className="bg-LighterBlue min-h-screen p-3 flex flex-col justify-center items-center">
       <div className="w-full max-w-4xl flex flex-col items-center space-y-6 mt-4">
         <h1 className="text-4xl font-bold text-center text-DarkestBlue mb-16">Markdown Notes</h1>
         
@@ -42,7 +42,7 @@ const HomePage = () => {
           placeholder="Enter Markdown content"
         />
 
-        <h2 className="text-2xl font-semibold text-DarkBlue">Markdown Preview</h2>
+        <h2 className="text-2xl font-semibold text-DarkestBlue">Markdown Preview</h2>
         <div
           className="w-full border border-LighterBlue bg-Ivory rounded-lg p-3 markdown-preview min-h-[150px] overflow-auto"
         >
@@ -55,13 +55,13 @@ const HomePage = () => {
         <div className="flex space-x-4">
           <button
             onClick={handleDownload}
-            className="bg-DarkBlue hover:bg-DarkestBlue text-Ivory font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+            className="bg-black hover:bg-DarkestBlue text-Ivory font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
           >
             Download
           </button>
           <button
             onClick={handleSave}
-            className="bg-LighterBlue hover:bg-DarkBlue text-Ivory font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+            className="bg-black hover:bg-DarkBlue text-Ivory font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
           >
             Save
           </button>
