@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 const secret = process.env.JWT_SECRET || 'your-secret-key';
 
-// Middleware to protect routes
+/* Middleware to protect routes */
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers['authorization'];
 
