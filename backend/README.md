@@ -50,4 +50,122 @@ Collaborator model:
 *************************************************************************************************
 HOW TO USE THE APPLICATION (BACKEND):
 *************************************************************************************************
-* Ensure that environment variables are configured in a .env file in the backend directory for database connection. This is never pushed to git.
+* Ensure that environment variables are configured in a .env file in the backend directory.This is never pushed to git.
+* Variables in .env:
+-   DATABASE_URL
+-   DIRECT_URL
+-   SUPABASE_URL
+-   SUPABASE_KEY
+-   PORT
+
+*****************************************************************************************
+TESTING WITH CURL
+*****************************************************************************************
+Run the server:
+* npm run start
+
+YOUR_JWT_TOKEN: Login to get a token
+
+***************************************************************
+                    Auth:
+***************************************************************
+* Registration:
+
+curl -X POST http://localhost:<PORT>/auth/register \
+-H "Content-Type: application/json" \
+-d '{
+    "username": "your_username",
+    "email": "your_email@example.com",
+    "password": "your_password"
+}' | jq '.'
+
+* Login:
+
+curl -X POST http://localhost:<PORT>/auth/login \
+-H "Content-Type: application/json" \
+-d '{
+    "email": "your_email@example.com",
+    "password": "your_password"
+}' | jq '.'
+
+***************************************************************
+                    Category:
+***************************************************************
+* Add category:
+
+curl -X POST http://localhost:<PORT>/categories/add \
+-H "Authorization: Bearer YOUR_JWT_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "New Category"
+}' | jq '.'
+
+* Get all categories:
+
+curl -X GET http://localhost:<PORT>/categories/all \
+-H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+
+***************************************************************
+                    Notes:
+***************************************************************
+* Add a New Note
+
+curl -X POST http://localhost:<PORT>/notes/add \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "My First Note",
+  "content": "This is the content of my first note.",
+  "categoryId": 1
+}' | jq '.'
+
+* Get All Notes for the Authenticated User
+
+curl -X GET http://localhost:<PORT>/notes/all \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+
+* Fetch a Specific Note by ID
+
+curl -X GET http://localhost:<PORT>/notes/NOTE_ID \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+
+* Update a Note
+
+curl -X PUT http://localhost:<PORT>/notes/update/NOTE_ID \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "Updated Note Title",
+  "content": "This is the updated content of my note.",
+  "categoryId": 1
+}' | jq '.'
+
+* Delete a Note
+
+curl -X DELETE http://localhost:<PORT>/notes/delete/NOTE_ID \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+
+***************************************************************
+                       Collaborators:
+***************************************************************
+* Add a Collaborator:
+
+curl -X POST http://localhost:<PORT>/collaborators/add \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "noteId": <note_id>,
+  "userId": <user_id>
+}' | jq '.'
+
+* Remove a Collaborator:
+
+curl -X DELETE http://localhost:<PORT>/collaborators/remove/1/2 \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+
+* Get Collaborators:
+
+curl -X GET http://localhost:<PORT>/collaborators/<note_id> \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+
+//***************************************************************
