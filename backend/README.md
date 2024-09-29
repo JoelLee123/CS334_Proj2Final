@@ -124,7 +124,7 @@ curl -X POST http://localhost:<PORT>/notes/add \
 curl -X GET http://localhost:<PORT>/notes/all \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
-            Fetch a Specific Note by ID
+* Fetch a Specific Note by ID
 
 curl -X GET http://localhost:<PORT>/notes/NOTE_ID \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
@@ -163,7 +163,7 @@ curl -X POST http://localhost:<PORT>/collaborators/add \
 curl -X DELETE http://localhost:<PORT>/collaborators/remove/1/2 \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
-                Get Collaborators:
+* Get Collaborators:
 
 curl -X GET http://localhost:<PORT>/collaborators/<note_id> \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
