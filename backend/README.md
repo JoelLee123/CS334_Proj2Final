@@ -51,27 +51,25 @@ Collaborator model:
 HOW TO USE THE APPLICATION (BACKEND):
 *************************************************************************************************
 * Ensure that environment variables are configured in a .env file in the backend directory.This is never pushed to git.
-Variables in .env:
-DATABASE_URL
-DIRECT_URL
-SUPABASE_URL
-SUPABASE_KEY
-PORT
+* Variables in .env:
+-   DATABASE_URL
+-   DIRECT_URL
+-   SUPABASE_URL
+-   SUPABASE_KEY
+-   PORT
 
-
-
-###############################################################
+*****************************************************************************************
 TESTING WITH CURL
-###############################################################
+*****************************************************************************************
 Run the server:
 * npm run start
 
 YOUR_JWT_TOKEN: Login to get a token
 
-//***************************************************************
+***************************************************************
                     Auth:
-//***************************************************************
-                Registration:
+***************************************************************
+* Registration:
 
 curl -X POST http://localhost:3000/auth/register \
 -H "Content-Type: application/json" \
@@ -81,7 +79,7 @@ curl -X POST http://localhost:3000/auth/register \
     "password": "your_password"
 }' | jq '.'
 
-                    Login:
+* Login:
 
 curl -X POST http://localhost:3000/auth/login \
 -H "Content-Type: application/json" \
@@ -90,10 +88,10 @@ curl -X POST http://localhost:3000/auth/login \
     "password": "your_password"
 }' | jq '.'
 
-//***************************************************************
+***************************************************************
                     Category:
-//***************************************************************
-                   Add category:
+***************************************************************
+* Add category:
 
 curl -X POST http://localhost:3000/categories/add \
 -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -102,15 +100,15 @@ curl -X POST http://localhost:3000/categories/add \
   "name": "New Category"
 }' | jq '.'
 
-                   Get all categories:
+* Get all categories:
 
 curl -X GET http://localhost:3000/categories/all \
 -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
 
-//***************************************************************
+***************************************************************
                     Notes:
-//***************************************************************
-                 Add a New Note
+***************************************************************
+* Add a New Note
 
 curl -X POST http://localhost:3000/notes/add \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
@@ -121,7 +119,7 @@ curl -X POST http://localhost:3000/notes/add \
   "categoryId": 1
 }' | jq '.'
 
-            Get All Notes for the Authenticated User
+* Get All Notes for the Authenticated User
 
 curl -X GET http://localhost:3000/notes/all \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
@@ -131,7 +129,7 @@ curl -X GET http://localhost:3000/notes/all \
 curl -X GET http://localhost:3000/notes/NOTE_ID \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
-                Update a Note
+* Update a Note
 
 curl -X PUT http://localhost:3000/notes/update/NOTE_ID \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
@@ -142,15 +140,15 @@ curl -X PUT http://localhost:3000/notes/update/NOTE_ID \
   "categoryId": 1
 }' | jq '.'
 
-                    Delete a Note
+* Delete a Note
 
 curl -X DELETE http://localhost:3000/notes/delete/NOTE_ID \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
-//***************************************************************
+***************************************************************
                        Collaborators:
-//***************************************************************
-                Add a Collaborator:
+***************************************************************
+* Add a Collaborator:
 
 curl -X POST http://localhost:3000/collaborators/add \
 -H "Authorization: Bearer <token>" \
@@ -160,7 +158,7 @@ curl -X POST http://localhost:3000/collaborators/add \
   "userId": <user_id>
 }' | jq '.'
 
-                Remove a Collaborator:
+* Remove a Collaborator:
 
 curl -X DELETE http://localhost:3000/collaborators/remove/1/2 \
 -H "Authorization: Bearer <token>" | jq '.'
