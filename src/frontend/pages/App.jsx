@@ -31,7 +31,7 @@ function App() {
 
 function ConditionalNavbar() {
   const location = useLocation();
-  const shouldHideNavbar = location.pathname === '/' || location.pathname === '/Sign-up';
+  const shouldHideNavbar = location.pathname === '/' || location.pathname === '/Sign-up'|| location.pathname === '/Sign-in';
 
   return !shouldHideNavbar ? <Navbar /> : null;
 }

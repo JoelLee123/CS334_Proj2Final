@@ -29,7 +29,7 @@ const FrontPage = () => {
 
     return (
         <div className="serif bg-LighterBlue min-h-screen">
-            <header className=" bg-Ivory flex justify-between items-center mb-4 p-5">
+            <header className=" bg-DarkestBlue flex justify-between items-center mb-4 p-5">
                 <h1 className="serif text-3xl font-bold text-black">Welcome to ScribeMark</h1>
                 <button onClick={toggleMenu} className="text-black focus:outline-none">
                     <div className="flex flex-col space-y-1">
