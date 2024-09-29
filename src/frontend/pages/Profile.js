@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const ProfilePage = () => {
   return (
-    <div className="bg-blue-100 min-h-screen p-5">
+    <div className="bg-LighterBlue min-h-screen p-5">
       <header className="mb-6">
         <h1 className="text-3xl font-bold text-blue-800">My Simple React Profile Page</h1>
       </header>

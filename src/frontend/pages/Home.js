@@ -29,7 +29,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="bg-blue-100 min-h-screen p-5">
+    <div className="bg-LighterBlue min-h-screen p-5">
       <h1 className="text-4xl font-bold text-center text-blue-600 mb-8">Markdown Notes</h1>
 
       <nav className="flex justify-center space-x-4 mb-4">
@@ -67,6 +67,16 @@ const HomePage = () => {
           Save markdown note
         </button>
       </div>
+      <button className="bg-DarkestBlue text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
+      </button>
+      <button className="bg-DarkBlue text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
+      </button>
+      <button className="bg-LighterBlue text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
+      </button>
+      <button className="bg-TeaGreen text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
+      </button>
+      <button className="bg-Ivory text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
+      </button>
     </div>
   );
 };
