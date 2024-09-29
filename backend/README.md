@@ -71,7 +71,7 @@ YOUR_JWT_TOKEN: Login to get a token
 ***************************************************************
 * Registration:
 
-curl -X POST http://localhost:3000/auth/register \
+curl -X POST http://localhost:<PORT>/auth/register \
 -H "Content-Type: application/json" \
 -d '{
     "username": "your_username",
@@ -81,7 +81,7 @@ curl -X POST http://localhost:3000/auth/register \
 
 * Login:
 
-curl -X POST http://localhost:3000/auth/login \
+curl -X POST http://localhost:<PORT>/auth/login \
 -H "Content-Type: application/json" \
 -d '{
     "email": "your_email@example.com",
@@ -93,7 +93,7 @@ curl -X POST http://localhost:3000/auth/login \
 ***************************************************************
 * Add category:
 
-curl -X POST http://localhost:3000/categories/add \
+curl -X POST http://localhost:<PORT>/categories/add \
 -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
@@ -102,7 +102,7 @@ curl -X POST http://localhost:3000/categories/add \
 
 * Get all categories:
 
-curl -X GET http://localhost:3000/categories/all \
+curl -X GET http://localhost:<PORT>/categories/all \
 -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
 
 ***************************************************************
@@ -110,7 +110,7 @@ curl -X GET http://localhost:3000/categories/all \
 ***************************************************************
 * Add a New Note
 
-curl -X POST http://localhost:3000/notes/add \
+curl -X POST http://localhost:<PORT>/notes/add \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
@@ -121,17 +121,17 @@ curl -X POST http://localhost:3000/notes/add \
 
 * Get All Notes for the Authenticated User
 
-curl -X GET http://localhost:3000/notes/all \
+curl -X GET http://localhost:<PORT>/notes/all \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
             Fetch a Specific Note by ID
 
-curl -X GET http://localhost:3000/notes/NOTE_ID \
+curl -X GET http://localhost:<PORT>/notes/NOTE_ID \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
 * Update a Note
 
-curl -X PUT http://localhost:3000/notes/update/NOTE_ID \
+curl -X PUT http://localhost:<PORT>/notes/update/NOTE_ID \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
@@ -142,7 +142,7 @@ curl -X PUT http://localhost:3000/notes/update/NOTE_ID \
 
 * Delete a Note
 
-curl -X DELETE http://localhost:3000/notes/delete/NOTE_ID \
+curl -X DELETE http://localhost:<PORT>/notes/delete/NOTE_ID \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
 ***************************************************************
@@ -150,8 +150,8 @@ curl -X DELETE http://localhost:3000/notes/delete/NOTE_ID \
 ***************************************************************
 * Add a Collaborator:
 
-curl -X POST http://localhost:3000/collaborators/add \
--H "Authorization: Bearer <token>" \
+curl -X POST http://localhost:<PORT>/collaborators/add \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
   "noteId": <note_id>,
@@ -160,12 +160,12 @@ curl -X POST http://localhost:3000/collaborators/add \
 
 * Remove a Collaborator:
 
-curl -X DELETE http://localhost:3000/collaborators/remove/1/2 \
--H "Authorization: Bearer <token>" | jq '.'
+curl -X DELETE http://localhost:<PORT>/collaborators/remove/1/2 \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
                 Get Collaborators:
 
-curl -X GET http://localhost:3000/collaborators/<note_id> \
--H "Authorization: Bearer <token>" | jq '.'
+curl -X GET http://localhost:<PORT>/collaborators/<note_id> \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
 //***************************************************************
