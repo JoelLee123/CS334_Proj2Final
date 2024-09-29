@@ -3,6 +3,7 @@ import authRoutes from "./routes/auth";
 import notesRoutes from "./routes/notes";
 import categoryRoutes from "./routes/categories";
 import collaboratorRoutes from "./routes/collaborators"; 
+import { authenticateToken } from './middleware/auth';
 
 const app: Application = express();
 const PORT = process.env.PORT;
@@ -11,6 +12,7 @@ app.use(express.json());
 
 // Authentication routes
 app.use("/auth", authRoutes);
+app.use(authenticateToken);
 
 // Notes routes
 app.use("/notes", notesRoutes);  // Mount the notes routes under /notes
