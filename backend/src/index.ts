@@ -4,12 +4,12 @@ import { authenticateToken } from './middleware/auth';
 import notesRoutes from "./routes/notes";
 import categoryRoutes from "./routes/categories";
 import collaboratorRoutes from "./routes/collaborators"; 
+import userRoutes from "./routes/users"; 
 
 const app: Application = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
-app.use(authenticateToken);
 // Authentication routes
 app.use("/auth", authRoutes);
 
@@ -21,6 +21,8 @@ app.use("/categories", categoryRoutes);
 
 //Collaborators routes
 app.use("/collaborators", collaboratorRoutes);
+
+app.use("/users", userRoutes);
 
 // Default route
 app.get("/", (req: Request, res: Response) => {
