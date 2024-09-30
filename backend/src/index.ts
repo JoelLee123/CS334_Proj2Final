@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from "express";
+import cookieParser from 'cookie-parser';
 import authRoutes from "./routes/auth";
 import { authenticateToken } from './middleware/auth';
 import notesRoutes from "./routes/notes";
@@ -10,6 +11,8 @@ const app: Application = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
+app.use(cookieParser());
+
 // Authentication routes
 app.use("/auth", authRoutes);
 
