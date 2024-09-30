@@ -47,19 +47,27 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
 
     /* Set the expiration time based on remember me flag */
-    const expiresIn = rememberMe ? "30d" : "1h";
+    const expiresIn = rememberMe
+      ? "3650d"
+      : "1h"; /* Remember me set to 10 years */
+
+    /* Convert expiresIn to milliseconds for cookie maxAge */
+    const maxAge = rememberMe ? 3650 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000;
 
     /* Generate a JWT token */
-    const token = jwt.sign({ id: user.id, email: user.email }, secret, {
-      expiresIn: expiresIn,
-    });
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      secret,
+      {
+        expiresIn: expiresIn,
+      }
+    );
 
     /* Set the token in the cookie header */
     res.cookie("token", token, {
-      httpOnly: true, // Cookie cannot be accessed by JavaScript, mitigating XSS attacks
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production", // Send only over HTTPS in production
-      sameSite: "strict", // Prevents CSRF attacks
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      maxAge: maxAge,
     });
 
     return res.status(200).json({ message: "Login successful" });

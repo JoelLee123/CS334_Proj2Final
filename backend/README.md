@@ -223,7 +223,12 @@ curl -b cookies.txt -X GET http://localhost:3000/users/me | jq '.'
 * Update current authenticated user:
 
 ```bash
-curl -b cookies.txt -X PUT http://localhost:3000/users/me | jq '.'
+curl -b cookies.txt -X PUT http://localhost:3000/users/me
+-H "Content-Type: application/json" \
+-d '{
+    "username": "your_username",
+    "avatar_url": "your_avatar_url",
+}' | jq '.'
 ```
 
 * Delete current authenticated user:
