@@ -74,6 +74,7 @@ YOUR_JWT_TOKEN: Login to get a token
 ***************************************************************
 * Registration:
 
+```bash
 curl -X POST http://localhost:<PORT_>/auth/register \
 -H "Content-Type: application/json" \
 -d '{
@@ -81,15 +82,20 @@ curl -X POST http://localhost:<PORT_>/auth/register \
     "email": "your_email@example.com",
     "password": "your_password"
 }' | jq '.'
+```
 
 * Login:
 
+```bash
 curl -X POST http://localhost:<PORT_>/auth/login \
 -H "Content-Type: application/json" \
 -d '{
     "email": "your_email@example.com",
     "password": "your_password"
+    "rememberMe": <true> | <false>
 }' | jq '.'
+```
+
 ***************************************************************
                     Category:
 ***************************************************************
