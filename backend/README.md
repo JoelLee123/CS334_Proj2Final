@@ -1,12 +1,12 @@
 *************************************************************************************************
-SYSTEM REQUIREMENTS:
+## SYSTEM REQUIREMENTS:
 *************************************************************************************************
 * Node.js version: v18.20.4
 * 
 *************************************************************************************************
 
 *************************************************************************************************
-DEPENDENCIES:
+## DEPENDENCIES:
 *************************************************************************************************
 * Express.js: For building the REST API.
 * Prisma: ORM to interact with the PostgreSQL database.
@@ -14,11 +14,11 @@ DEPENDENCIES:
 *************************************************************************************************
 
 *************************************************************************************************
-CURRENT DATA SCHEMA: (still under consideration)
+## CURRENT DATA SCHEMA: (still under consideration)
 *************************************************************************************************
 The _prisma_migrations table is automatically created by Prisma when you use the migration system. It keeps track of all the migrations that have been applied to our database, including their names, timestamps, and whether they were applied successfully. It needs to stay in our database.
 
-User model:
+**User model:**
 * id: An integer field that is auto-incremented and serves as the primary key (@id).
 * username and email: Both are unique, meaning no two users can have the same username or email.
 * password: Stores the user's password.
@@ -27,7 +27,7 @@ User model:
 * updated_at: Automatically updates whenever the record is modified (@updatedAt).
 * collaborators: Defines a relationship to the Collaborator model, indicating that a user can be associated with multiple collaborations.
 
-Notes model:
+**Notes model:**
 * id: Primary key, auto-incremented.
 * title: The title of the note.
 * content: Stores the content of the note.
@@ -36,13 +36,13 @@ Notes model:
 * collaborators: A relation to the Collaborator model to allow multiple users to be associated with a note.
 * created_at and updated_at: Similar to the User model, these fields track when the note was created and last updated.
 
-Category model:
+**Category model:**
 * id: Primary key, auto-incremented.
 * name: A unique string for the category name, ensuring no two categories have the same name.
 * notes: Defines the one-to-many relationship between Category and Note. A category can have multiple notes.
 * created_at and updated_at: Track the creation and modification times.
 
-Collaborator model:
+**Collaborator model:**
 * note and user: Establish foreign key relationships between Note and User using noteId and userId, respectively.
 * Each combination of noteId and userId is unique, meaning the same user cannot collaborate on the same note more than once.
 *************************************************************************************************
@@ -57,12 +57,15 @@ HOW TO USE THE APPLICATION (BACKEND):
 -   SUPABASE_URL
 -   SUPABASE_KEY
 -   PORT
+-   JWT_SECRET
 
 *****************************************************************************************
 TESTING WITH CURL
 *****************************************************************************************
-Run the server:
-* npm run start
+* Run the server:
+```bash
+npm run start
+```
 
 YOUR_JWT_TOKEN: Login to get a token
 
@@ -87,7 +90,6 @@ curl -X POST http://localhost:<PORT_>/auth/login \
     "email": "your_email@example.com",
     "password": "your_password"
 }' | jq '.'
-
 ***************************************************************
                     Category:
 ***************************************************************
@@ -181,3 +183,46 @@ curl -X GET http://localhost:<PORT_>/collaborators/<note_id> \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
 
 //***************************************************************
+
+***************************************************************
+                       Users:
+***************************************************************
+* Get all users:
+
+``` bash
+curl -X GET http://localhost:<PORT_>/users/ \
+```
+
+* Get current authenticated user:
+
+```bash
+curl -X GET http://localhost:<PORT_>/users/me \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```
+
+* Update current authenticated user:
+
+```bash
+curl -X PUT http://localhost:<PORT_>/users/me \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```
+
+* Delete current authenticated user:
+
+```bash
+curl -X DELETE http://localhost:<PORT_>/users/me \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```
+
+* Get all notes for current authenticated user:
+
+```bash
+curl -X GET http://localhost:<PORT_>/users/me/notes \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```
+
+* Get user by email:
+
+```bash
+curl -X GET http://localhost:<PORT_>/users/:email
+```
