@@ -91,7 +91,7 @@ curl -c cookies.txt -X POST http://localhost:3000/auth/login \
 -H "Content-Type: application/json" \
 -d '{
     "email": "your_email@example.com",
-    "password": "your_password"
+    "password": "your_password",
     "rememberMe": <true> | <false>
 }' | jq '.'
 ```
@@ -122,7 +122,7 @@ curl -X GET http://localhost:3000/categories/all | jq '.'
 * Add a New Note
 
 ```bash
-curl -X POST http://localhost:3000/notes/add \
+curl -b cookies.txt -X POST http://localhost:3000/notes/add \
 -H "Content-Type: application/json" \
 -d '{
   "title": "My First Note",
@@ -146,25 +146,25 @@ curl -b cookies.txt -X GET http://localhost:3000/notes/all?categoryID=<category_
 * Get all notes sorted by most recently worked on
 
 ```bash
-curl -X GET "http://localhost:3000/notes/all?sortBy=recent" | jq '.'
+curl -b cookies.txt -X GET "http://localhost:3000/notes/all?sortBy=recent" | jq '.'
 ```
 
 * Get all notes in a specific category, sorted by most recently worked on:
 
 ```bash
-curl -X GET "http://localhost:3000/notes/all?categoryID=<category_id>&sortBy=recent" | jq '.'
+curl -b cookies.txt -X GET "http://localhost:3000/notes/all?categoryID=<category_id>&sortBy=recent" | jq '.'
 ```
 
 * Fetch a Specific Note by ID
 
 ```bash
-curl -X GET http://localhost:3000/notes/NOTE_ID | jq '.'
+curl -b cookies.txt -X GET http://localhost:3000/notes/NOTE_ID | jq '.'
 ```
 
 * Update a Note
 
 ```bash
-curl -X PUT http://localhost:3000/notes/update/NOTE_ID \
+curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
 -H "Content-Type: application/json" \
 -d '{
   "title": "Updated Note Title",
@@ -176,7 +176,7 @@ curl -X PUT http://localhost:3000/notes/update/NOTE_ID \
 * Delete a Note
 
 ```bash
-curl -X DELETE http://localhost:3000/notes/delete/NOTE_ID | jq '.'
+curl -b cookies.txt -X DELETE http://localhost:3000/notes/delete/NOTE_ID | jq '.'
 ```
 
 ***************************************************************
@@ -185,7 +185,7 @@ curl -X DELETE http://localhost:3000/notes/delete/NOTE_ID | jq '.'
 * Add a Collaborator:
 
 ```bash
-curl -X POST http://localhost:3000/collaborators/add \
+curl -b cookies.txt -X POST http://localhost:3000/collaborators/add \
 -H "Content-Type: application/json" \
 -d '{
   "noteId": <note_id>,
