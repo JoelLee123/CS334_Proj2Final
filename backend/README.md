@@ -60,7 +60,7 @@ HOW TO USE THE APPLICATION (BACKEND):
 -   JWT_SECRET
 
 *****************************************************************************************
-TESTING WITH CURL
+# TESTING WITH CURL
 *****************************************************************************************
 * Run the server:
 ```bash
@@ -70,12 +70,12 @@ npm run start
 YOUR_JWT_TOKEN: Login to get a token
 
 ***************************************************************
-                    Auth:
+## Auth:
 ***************************************************************
 * Registration:
 
 ```bash
-curl -X POST http://localhost:<PORT_>/auth/register \
+curl -X POST http://localhost:3000/auth/register \
 -H "Content-Type: application/json" \
 -d '{
     "username": "your_username",
@@ -87,7 +87,7 @@ curl -X POST http://localhost:<PORT_>/auth/register \
 * Login:
 
 ```bash
-curl -X POST http://localhost:<PORT_>/auth/login \
+curl -c cookies.txt -X POST http://localhost:3000/auth/login \
 -H "Content-Type: application/json" \
 -d '{
     "email": "your_email@example.com",
@@ -97,138 +97,150 @@ curl -X POST http://localhost:<PORT_>/auth/login \
 ```
 
 ***************************************************************
-                    Category:
+## Category:
 ***************************************************************
 * Add category:
 
-curl -X POST http://localhost:<PORT_>/categories/add \
--H "Authorization: Bearer YOUR_JWT_TOKEN" \
+```bash
+curl -X POST http://localhost:3000/categories/add
 -H "Content-Type: application/json" \
 -d '{
   "name": "New Category"
 }' | jq '.'
+```
+
 
 * Get all categories:
 
-curl -X GET http://localhost:<PORT_>/categories/all \
--H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+```bash
+curl -X GET http://localhost:3000/categories/all | jq '.'
+```
 
 ***************************************************************
-                    Notes:
+## Notes:
 ***************************************************************
 * Add a New Note
 
-curl -X POST http://localhost:<PORT_>/notes/add \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+```bash
+curl -X POST http://localhost:3000/notes/add \
 -H "Content-Type: application/json" \
 -d '{
   "title": "My First Note",
   "content": "This is the content of my first note.",
   "categoryId": 1
 }' | jq '.'
+```
 
 * Get All Notes for the Authenticated User(no filters)
 
-curl -X GET http://localhost:<PORT_>/notes/all \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/notes/all | jq '.'
+```
 
 * Get All Notes for the Authenticated User(filter by category)
 
-curl -X GET http://localhost:<PORT_>/notes/all?categoryID=<category_id> -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/notes/all?categoryID=<category_id> | jq '.'
+```
 
 * Get all notes sorted by most recently worked on
 
-curl -X GET "http://localhost:<PORT_>/notes/all?sortBy=recent" -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+```bash
+curl -X GET "http://localhost:3000/notes/all?sortBy=recent" | jq '.'
+```
 
 * Get all notes in a specific category, sorted by most recently worked on:
 
-curl -X GET "http://localhost:<PORT_>/notes/all?categoryID=<category_id>&sortBy=recent" -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+```bash
+curl -X GET "http://localhost:3000/notes/all?categoryID=<category_id>&sortBy=recent" | jq '.'
+```
 
 * Fetch a Specific Note by ID
 
-curl -X GET http://localhost:<PORT_>/notes/NOTE_ID \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -X GET http://localhost:3000/notes/NOTE_ID | jq '.'
+```
 
 * Update a Note
 
-curl -X PUT http://localhost:<PORT_>/notes/update/NOTE_ID \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+```bash
+curl -X PUT http://localhost:3000/notes/update/NOTE_ID \
 -H "Content-Type: application/json" \
 -d '{
   "title": "Updated Note Title",
   "content": "This is the updated content of my note.",
   "categoryId": 1
 }' | jq '.'
+```
 
 * Delete a Note
 
-curl -X DELETE http://localhost:<PORT_>/notes/delete/NOTE_ID \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -X DELETE http://localhost:3000/notes/delete/NOTE_ID | jq '.'
+```
 
 ***************************************************************
-                       Collaborators:
+## Collaborators:
 ***************************************************************
 * Add a Collaborator:
 
-curl -X POST http://localhost:<PORT_>/collaborators/add \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+```bash
+curl -X POST http://localhost:3000/collaborators/add \
 -H "Content-Type: application/json" \
 -d '{
   "noteId": <note_id>,
   "userId": <user_id>
 }' | jq '.'
+```
 
 * Remove a Collaborator:
 
-curl -X DELETE http://localhost:<PORT_>/collaborators/remove/1/2 \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X DELETE http://localhost:3000/collaborators/remove/1/2  | jq '.'
+```
 
 * Get Collaborators:
 
-curl -X GET http://localhost:<PORT_>/collaborators/<note_id> \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
-
-//***************************************************************
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/collaborators/<note_id> | jq '.'
+```
 
 ***************************************************************
-                       Users:
+## Users:
 ***************************************************************
 * Get all users:
 
 ``` bash
-curl -X GET http://localhost:<PORT_>/users/ \
+curl -X GET http://localhost:3000/users | jq '.'
 ```
 
 * Get current authenticated user:
 
 ```bash
-curl -X GET http://localhost:<PORT_>/users/me \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+curl -b cookies.txt -X GET http://localhost:3000/users/me | jq '.'
 ```
 
 * Update current authenticated user:
 
 ```bash
-curl -X PUT http://localhost:<PORT_>/users/me \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+curl -b cookies.txt -X PUT http://localhost:3000/users/me | jq '.'
 ```
 
 * Delete current authenticated user:
 
 ```bash
-curl -X DELETE http://localhost:<PORT_>/users/me \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+curl -b cookies.txt -X DELETE http://localhost:3000/users/me | jq '.'
 ```
 
 * Get all notes for current authenticated user:
 
 ```bash
-curl -X GET http://localhost:<PORT_>/users/me/notes \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+curl -b cookies.txt -X GET http://localhost:3000/users/me/notes | jq '.'
 ```
 
 * Get user by email:
 
 ```bash
-curl -X GET http://localhost:<PORT_>/users/:email
+curl -X GET http://localhost:3000/users/:email | jq '.'
 ```
+***************************************************************
