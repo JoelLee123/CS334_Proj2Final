@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SignInPage = () => {
-  // Username and password stored for validation
-  const [username, setName] = useState("");
+  // email and password stored for validation
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // Allow for navigation upon validation
   // Manage login status
@@ -14,24 +14,33 @@ const SignInPage = () => {
   // Need to set up prisma and backend functionality
   const CheckValidation = async (e) => {
     try {
+       const response = await fetch("http://localhost:3000/auth/login", {
+        method:"POST",
+        headers:{
+          "Content-Type": "application/json"
+        },
+        body:JSON.stringify({email, password})
+       });
+
+       const data = response.json();
     
     //Testing:
-    const user = {
-      username: "lara",
-      password: "password123"
-    };
+    // const user = {
+    //   email: "lara",
+    //   password: "password123"
+    // };
 
-    if (username === user.username && password === user.password){
+    if (response.ok){
       // Navigate to homepage
 
-      // alert("Login successful!");
+      alert("Login successful!");
       navigate("/HomePage")
     }else{
-      alert("Invalid username or password")
+      alert("Invalid email or password")
     }
       
     } catch (error) {
-      setError("Invalid username or login")
+      setError("Invalid email or login")
     }
   }
 
@@ -46,9 +55,9 @@ const SignInPage = () => {
         <input 
           className="border border-DarkestBlue rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setName(e.target.value)}
+          placeholder="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input 
           className="border border-DarkestBlue rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"

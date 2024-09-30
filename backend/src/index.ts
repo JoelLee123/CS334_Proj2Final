@@ -6,12 +6,14 @@ import notesRoutes from "./routes/notes";
 import categoryRoutes from "./routes/categories";
 import collaboratorRoutes from "./routes/collaborators"; 
 import userRoutes from "./routes/users"; 
+import cors from "cors";
 
 const app: Application = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 // Authentication routes
 app.use("/auth", authRoutes);

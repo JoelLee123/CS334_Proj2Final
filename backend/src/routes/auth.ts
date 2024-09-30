@@ -69,7 +69,7 @@ router.post("/login", async (req, res) => {
       secure: process.env.NODE_ENV === "production", // Send only over HTTPS in production
       maxAge: maxAge,
     });
-
+    console.log("Login successful")
     return res.status(200).json({ message: "Login successful" });
   } catch (error) {
     return res.status(500).json({ message: "Error logging in", error });
