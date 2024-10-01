@@ -85,7 +85,7 @@ router.get("/me/notes", authenticateToken, async (req, res) => {
 
     /* Find all notes the user is collaborating on */
     const collaborators = await prisma.collaborator.findMany({
-      where: { userId: user.id },
+      where: { userEmail: user.email },
       include: {
         note: true,
       },

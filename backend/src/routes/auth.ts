@@ -2,8 +2,8 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../service/prisma";
-import { authenticateToken } from "../middleware/auth";
-const sendgridEmail = require('../service/sendgrid');
+const sendgridEmail = require("../service/sendgrid");
+const crypto = require("crypto");
 
 const router = Router();
 const secret = process.env.JWT_SECRET || "your-secret-key";
@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
 
     /* Generate a JWT token */
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { email: user.email, role: user.role },
       secret,
       {
         expiresIn: expiresIn,
@@ -80,13 +80,45 @@ router.post("/login", async (req, res) => {
 
 /* Password Reset Route */
 router.post("/password-reset", async (req, res) => {
-  const email = req.query.email;  // Access the email from query parameters
+  const email = req.query.email?.toString();
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
   try {
-    sendgridEmail.sendPasswordResetEmail(email);
+    /* Generate the reset token */
+    const passwordResetToken = createPasswordResetToken();
+
+    /* Store the hashed token and expiration in the database */
+    await prisma.user.update({
+      where: { email },
+      data: {
+        reset_token: passwordResetToken,
+        reset_token_expiry: new Date(
+          Date.now() + 10 * 60 * 1000
+        ) /* Expires in 10 minutes */,
+      },
+    });
+
+    sendgridEmail.sendPasswordResetEmail(email, passwordResetToken);
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {
     return res.status(400).json({ message: "Error sending email", error });
   }
 });
+
+const createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  const passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  return passwordResetToken;
+};
 
 export default router;
