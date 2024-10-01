@@ -12,10 +12,25 @@ const SignUpPage = () => {
   const HandleRegistration = async (e) =>{
     //Generate a get request from database
     try {
-        // alert("Login successful!");
-        navigate("/HomePage")     
+        const response = await fetch("http://localhost:3000/auth/register",{
+        method:"POST",
+        headers:{
+          "Content-Type": "application/json"
+        },
+        // username, email, password
+        body:JSON.stringify({"username":username, "email":email, "password": password})
+        });
+
+        const data = response.json();
+        if (response.ok){
+          console.log("Sign up successful!");
+          navigate("/HomePage") 
+        }else{
+          console.log("Sign up unsuccessful!")
+        }
+            
    } catch (error) {
-     setError("Invalid username or login")
+     setError("User unsuccessfully signed up")
    }
 
   }
