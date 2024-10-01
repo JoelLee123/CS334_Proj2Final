@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from "react";
+import { FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
 const SignInPage = () => {
@@ -7,8 +8,12 @@ const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // Allow for navigation upon validation
+  const [isTicked, setIsTicked] = useState(false);
   // Manage login status
-  const [setError] = useState(null);
+  const [error, setError] = useState(null);
+  const handleRememberMe =() =>{
+    setIsTicked(true);
+  }
 
   // Generate a post request to the database
   // Need to set up prisma and backend functionality
@@ -19,21 +24,16 @@ const SignInPage = () => {
         headers:{
           "Content-Type": "application/json"
         },
-        body:JSON.stringify({email, password})
+        body:JSON.stringify({email, password, isTicked})
        });
+       console.log("Remember me functionality: ", isTicked);
 
        const data = response.json();
-    
-    //Testing:
-    // const user = {
-    //   email: "lara",
-    //   password: "password123"
-    // };
 
     if (response.ok){
       // Navigate to homepage
 
-      alert("Login successful!");
+      alert("Login successful! Remember me functionality: ", isTicked);
       navigate("/HomePage")
     }else{
       alert("Invalid email or password")
@@ -66,6 +66,12 @@ const SignInPage = () => {
           value={password}
           onChange={(e)=>setPassword(e.target.value)}
         />
+        <FormGroup>
+          <FormControlLabel 
+            control={<Checkbox checked={isTicked} onChange={handleRememberMe} />} // sets is ticked to be true
+            label="Remember Me"
+          />
+        </FormGroup>
       <nav>
         <button className="bg-black text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2 text-center" onClick={CheckValidation} >
           Login?

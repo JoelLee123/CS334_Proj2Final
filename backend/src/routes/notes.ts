@@ -8,7 +8,7 @@ const router = Router();
 router.post('/add', authenticateToken, async (req, res) => {
     const { title, content, categoryId } = req.body;
     const user = (req as any).user;
-
+    console.log("here");
     try {
         // Create the note in the database
         const note = await prisma.note.create({
@@ -21,9 +21,10 @@ router.post('/add', authenticateToken, async (req, res) => {
                 },
             },
         });
-
+        console.log("Note created");
         return res.status(201).json({ message: 'Note created', note });
     } catch (error) {
+        console.log("Error creating notes")
         return res.status(400).json({ message: 'Error creating note', error });
     }
 });
