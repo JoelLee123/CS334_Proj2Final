@@ -189,7 +189,7 @@ curl -b cookies.txt -X POST http://localhost:3000/collaborators/add \
 -H "Content-Type: application/json" \
 -d '{
   "noteId": <note_id>,
-  "userEmail": <user_email>
+  "userEmail": "<user_email>"
 }' | jq '.'
 ```
 
@@ -246,6 +246,6 @@ curl -b cookies.txt -X GET http://localhost:3000/users/me/notes | jq '.'
 * Get user by email:
 
 ```bash
-curl -X GET http://localhost:3000/users/:email | jq '.'
+curl -X GET http://localhost:3000/users/email | jq '.'
 ```
 ***************************************************************

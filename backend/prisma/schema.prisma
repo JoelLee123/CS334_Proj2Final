@@ -32,7 +32,7 @@ model Note {
 model Category {
   id         Int      @id @default(autoincrement())
   name       String   @unique
-  notes      Note[] // Add this relation
+  notes      Note[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
