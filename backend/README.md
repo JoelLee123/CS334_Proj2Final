@@ -102,7 +102,7 @@ curl -c cookies.txt -X POST http://localhost:3000/auth/login \
 * Add category:
 
 ```bash
-curl -X POST http://localhost:3000/categories/add
+curl -b cookies.txt -X POST http://localhost:3000/categories/add \
 -H "Content-Type: application/json" \
 -d '{
   "name": "New Category"
@@ -113,7 +113,7 @@ curl -X POST http://localhost:3000/categories/add
 * Get all categories:
 
 ```bash
-curl -X GET http://localhost:3000/categories/all | jq '.'
+curl -b cookies.txt -X GET http://localhost:3000/categories/all | jq '.'
 ```
 
 ***************************************************************
@@ -189,7 +189,7 @@ curl -b cookies.txt -X POST http://localhost:3000/collaborators/add \
 -H "Content-Type: application/json" \
 -d '{
   "noteId": <note_id>,
-  "userId": <user_id>
+  "userEmail": <user_email>
 }' | jq '.'
 ```
 
@@ -227,7 +227,7 @@ curl -b cookies.txt -X PUT http://localhost:3000/users/me
 -H "Content-Type: application/json" \
 -d '{
     "username": "your_username",
-    "avatar_url": "your_avatar_url",
+    "avatar_url": "your_avatar_url"
 }' | jq '.'
 ```
 
