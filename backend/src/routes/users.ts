@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
-import { authenticateToken } from "../middleware/auth"; // Assuming JWT auth middleware is already set up
+import { authenticateToken } from "../middleware/auth";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -124,4 +123,5 @@ router.get("/:email", async (req, res) => {
     res.status(500).json({ message: "Error fetching user", error });
   }
 });
+
 export default router;

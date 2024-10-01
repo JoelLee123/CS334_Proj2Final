@@ -2,6 +2,8 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../service/prisma";
+import { authenticateToken } from "../middleware/auth";
+const sendgridEmail = require('../service/sendgrid');
 
 const router = Router();
 const secret = process.env.JWT_SECRET || "your-secret-key";
@@ -73,6 +75,17 @@ router.post("/login", async (req, res) => {
     return res.status(200).json({ message: "Login successful" });
   } catch (error) {
     return res.status(500).json({ message: "Error logging in", error });
+  }
+});
+
+/* Password Reset Route */
+router.post("/password-reset", async (req, res) => {
+  const email = req.query.email;  // Access the email from query parameters
+  try {
+    sendgridEmail.sendPasswordResetEmail(email);
+    return res.status(200).json({ message: "Password reset email sent" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error sending email", error });
   }
 });
 
