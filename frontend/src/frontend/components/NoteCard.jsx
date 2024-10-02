@@ -1,10 +1,12 @@
 import React from 'react';
 import { XCircle } from 'lucide-react';
 
-const NoteCard = ({ title, content, date }) => (
+const NoteCard = ({ title, category, content, date }) => (
   <div className="bg-Ivory rounded-lg shadow-md p-4 mb-4 w-full max-w-md">
     <div className="flex justify-between items-start mb-2">
       <h2 className="text-xl font-bold text-DarkestBlue">{title}</h2>
+      
+      <h3 className="text-xl font-bold text-DarkestBlue">{category}</h3>
       <button className="text-DarkBlue hover:text-DarkestBlue">
         <XCircle size={24} />
       </button>
