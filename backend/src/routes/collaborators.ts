@@ -6,8 +6,7 @@ const router = Router();
 
 // Add a collaborator to a note
 router.post('/add', authenticateToken, async (req, res) => {
-    const { noteId, userId } = req.body;
-    const user = (req as any).user;
+    const { noteId, userEmail } = req.body;
 
     try {
         // Verify that the user owns the note
@@ -24,7 +23,7 @@ router.post('/add', authenticateToken, async (req, res) => {
         const collaborator = await prisma.collaborator.create({
             data: {
                 noteId: Number(noteId),
-                userId: Number(userId),
+                userEmail: String(userEmail),
             },
         });
 
@@ -35,8 +34,8 @@ router.post('/add', authenticateToken, async (req, res) => {
 });
 
 // Remove a collaborator from a note
-router.delete('/remove/:noteId/:userId', authenticateToken, async (req, res) => {
-    const { noteId, userId } = req.params;
+router.delete('/remove/:noteId/:userEmail', authenticateToken, async (req, res) => {
+    const { noteId, userEmail } = req.params;
     const user = (req as any).user;
 
     try {
@@ -54,7 +53,7 @@ router.delete('/remove/:noteId/:userId', authenticateToken, async (req, res) => 
         await prisma.collaborator.deleteMany({
             where: {
                 noteId: Number(noteId),
-                userId: Number(userId),
+                userEmail: String(userEmail),
             },
         });
 

@@ -17,7 +17,7 @@ router.post('/add', authenticateToken, async (req, res) => {
                 content,
                 categoryId,
                 collaborators: {
-                    create: { userId: user.id },
+                    create: { userEmail: user.email },
                 },
             },
         });
@@ -39,7 +39,7 @@ router.get('/all', authenticateToken, async (req, res) => {
         const whereClause: any = {
             collaborators: {
                 some: {
-                    userId: user.id,
+                    userEmail: user.email,
                 },
             },
         };
@@ -82,7 +82,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
             where: {
                 id: Number(id),
                 collaborators: {
-                    some: { userId: user.id },
+                    some: { userEmail: user.email },
                 },
             },
             include: {
@@ -118,7 +118,7 @@ router.put('/update/:id', authenticateToken, async (req, res) => {
 
         if (!note) return res.status(404).json({ message: 'Note not found' });
 
-        const isCollaborator = note.collaborators.some(collab => collab.userId === user.id);
+        const isCollaborator = note.collaborators.some(collab => collab.userEmail === user.email);
         if (!isCollaborator) return res.status(403).json({ message: 'Unauthorized' });
 
         // Update the note in the database
@@ -149,7 +149,7 @@ router.delete('/delete/:id', authenticateToken, async (req, res) => {
 
         if (!note) return res.status(404).json({ message: 'Note not found' });
 
-        const isCollaborator = note.collaborators.some(collab => collab.userId === user.id);
+        const isCollaborator = note.collaborators.some(collab => collab.userEmail === user.email);
         if (!isCollaborator) return res.status(403).json({ message: 'Unauthorized' });
 
         // Delete all collaborators for the note

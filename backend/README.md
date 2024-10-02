@@ -1,12 +1,12 @@
 *************************************************************************************************
-SYSTEM REQUIREMENTS:
+## SYSTEM REQUIREMENTS:
 *************************************************************************************************
 * Node.js version: v18.20.4
 * 
 *************************************************************************************************
 
 *************************************************************************************************
-DEPENDENCIES:
+## DEPENDENCIES:
 *************************************************************************************************
 * Express.js: For building the REST API.
 * Prisma: ORM to interact with the PostgreSQL database.
@@ -14,11 +14,11 @@ DEPENDENCIES:
 *************************************************************************************************
 
 *************************************************************************************************
-CURRENT DATA SCHEMA: (still under consideration)
+## CURRENT DATA SCHEMA: (still under consideration)
 *************************************************************************************************
 The _prisma_migrations table is automatically created by Prisma when you use the migration system. It keeps track of all the migrations that have been applied to our database, including their names, timestamps, and whether they were applied successfully. It needs to stay in our database.
 
-User model:
+**User model:**
 * id: An integer field that is auto-incremented and serves as the primary key (@id).
 * username and email: Both are unique, meaning no two users can have the same username or email.
 * password: Stores the user's password.
@@ -27,7 +27,7 @@ User model:
 * updated_at: Automatically updates whenever the record is modified (@updatedAt).
 * collaborators: Defines a relationship to the Collaborator model, indicating that a user can be associated with multiple collaborations.
 
-Notes model:
+**Notes model:**
 * id: Primary key, auto-incremented.
 * title: The title of the note.
 * content: Stores the content of the note.
@@ -36,13 +36,13 @@ Notes model:
 * collaborators: A relation to the Collaborator model to allow multiple users to be associated with a note.
 * created_at and updated_at: Similar to the User model, these fields track when the note was created and last updated.
 
-Category model:
+**Category model:**
 * id: Primary key, auto-incremented.
 * name: A unique string for the category name, ensuring no two categories have the same name.
 * notes: Defines the one-to-many relationship between Category and Note. A category can have multiple notes.
 * created_at and updated_at: Track the creation and modification times.
 
-Collaborator model:
+**Collaborator model:**
 * note and user: Establish foreign key relationships between Note and User using noteId and userId, respectively.
 * Each combination of noteId and userId is unique, meaning the same user cannot collaborate on the same note more than once.
 *************************************************************************************************
@@ -57,127 +57,195 @@ HOW TO USE THE APPLICATION (BACKEND):
 -   SUPABASE_URL
 -   SUPABASE_KEY
 -   PORT
+-   JWT_SECRET
 
 *****************************************************************************************
-TESTING WITH CURL
+# TESTING WITH CURL
 *****************************************************************************************
-Run the server:
-* npm run start
+* Run the server:
+```bash
+npm run start
+```
 
 YOUR_JWT_TOKEN: Login to get a token
 
 ***************************************************************
-                    Auth:
+## Auth:
 ***************************************************************
 * Registration:
 
-curl -X POST http://localhost:<PORT_>/auth/register \
+```bash
+curl -X POST http://localhost:3000/auth/register \
 -H "Content-Type: application/json" \
 -d '{
     "username": "your_username",
     "email": "your_email@example.com",
     "password": "your_password"
 }' | jq '.'
+```
 
 * Login:
 
-curl -X POST http://localhost:<PORT_>/auth/login \
+```bash
+curl -c cookies.txt -X POST http://localhost:3000/auth/login \
 -H "Content-Type: application/json" \
 -d '{
     "email": "your_email@example.com",
-    "password": "your_password"
+    "password": "your_password",
+    "rememberMe": <true> | <false>
 }' | jq '.'
+```
 
 ***************************************************************
-                    Category:
+## Category:
 ***************************************************************
 * Add category:
 
-curl -X POST http://localhost:<PORT_>/categories/add \
--H "Authorization: Bearer YOUR_JWT_TOKEN" \
+```bash
+curl -b cookies.txt -X POST http://localhost:3000/categories/add \
 -H "Content-Type: application/json" \
 -d '{
   "name": "New Category"
 }' | jq '.'
+```
+
 
 * Get all categories:
 
-curl -X GET http://localhost:<PORT_>/categories/all \
--H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/categories/all | jq '.'
+```
 
 ***************************************************************
-                    Notes:
+## Notes:
 ***************************************************************
 * Add a New Note
 
-curl -X POST http://localhost:<PORT_>/notes/add \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+```bash
+curl -b cookies.txt -X POST http://localhost:3000/notes/add \
 -H "Content-Type: application/json" \
 -d '{
   "title": "My First Note",
   "content": "This is the content of my first note.",
   "categoryId": 1
 }' | jq '.'
+```
 
 * Get All Notes for the Authenticated User(no filters)
 
-curl -X GET http://localhost:<PORT_>/notes/all \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/notes/all | jq '.'
+```
 
 * Get All Notes for the Authenticated User(filter by category)
 
-curl -X GET http://localhost:<PORT_>/notes/all?categoryID=<category_id> -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/notes/all?categoryID=<category_id> | jq '.'
+```
 
 * Get all notes sorted by most recently worked on
 
-curl -X GET "http://localhost:<PORT_>/notes/all?sortBy=recent" -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET "http://localhost:3000/notes/all?sortBy=recent" | jq '.'
+```
 
 * Get all notes in a specific category, sorted by most recently worked on:
 
-curl -X GET "http://localhost:<PORT_>/notes/all?categoryID=<category_id>&sortBy=recent" -H "Authorization: Bearer YOUR_JWT_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET "http://localhost:3000/notes/all?categoryID=<category_id>&sortBy=recent" | jq '.'
+```
 
 * Fetch a Specific Note by ID
 
-curl -X GET http://localhost:<PORT_>/notes/NOTE_ID \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/notes/NOTE_ID | jq '.'
+```
 
 * Update a Note
 
-curl -X PUT http://localhost:<PORT_>/notes/update/NOTE_ID \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+```bash
+curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
 -H "Content-Type: application/json" \
 -d '{
   "title": "Updated Note Title",
   "content": "This is the updated content of my note.",
   "categoryId": 1
 }' | jq '.'
+```
 
 * Delete a Note
 
-curl -X DELETE http://localhost:<PORT_>/notes/delete/NOTE_ID \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X DELETE http://localhost:3000/notes/delete/NOTE_ID | jq '.'
+```
 
 ***************************************************************
-                       Collaborators:
+## Collaborators:
 ***************************************************************
 * Add a Collaborator:
 
-curl -X POST http://localhost:<PORT_>/collaborators/add \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+```bash
+curl -b cookies.txt -X POST http://localhost:3000/collaborators/add \
 -H "Content-Type: application/json" \
 -d '{
   "noteId": <note_id>,
-  "userId": <user_id>
+  "userEmail": "<user_email>"
 }' | jq '.'
+```
 
 * Remove a Collaborator:
 
-curl -X DELETE http://localhost:<PORT_>/collaborators/remove/1/2 \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X DELETE http://localhost:3000/collaborators/remove/1/2  | jq '.'
+```
 
 * Get Collaborators:
 
-curl -X GET http://localhost:<PORT_>/collaborators/<note_id> \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" | jq '.'
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/collaborators/<note_id> | jq '.'
+```
 
-//***************************************************************
+***************************************************************
+## Users:
+***************************************************************
+* Get all users:
+
+``` bash
+curl -X GET http://localhost:3000/users | jq '.'
+```
+
+* Get current authenticated user:
+
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/users/me | jq '.'
+```
+
+* Update current authenticated user:
+
+```bash
+curl -b cookies.txt -X PUT http://localhost:3000/users/me
+-H "Content-Type: application/json" \
+-d '{
+    "username": "your_username",
+    "avatar_url": "your_avatar_url"
+}' | jq '.'
+```
+
+* Delete current authenticated user:
+
+```bash
+curl -b cookies.txt -X DELETE http://localhost:3000/users/me | jq '.'
+```
+
+* Get all notes for current authenticated user:
+
+```bash
+curl -b cookies.txt -X GET http://localhost:3000/users/me/notes | jq '.'
+```
+
+* Get user by email:
+
+```bash
+curl -X GET http://localhost:3000/users/email | jq '.'
+```
+***************************************************************

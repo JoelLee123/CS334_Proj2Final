@@ -1,7 +1,7 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl         = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -9,14 +9,13 @@ generator client {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  username      String         @unique
-  email         String         @unique
-  password      String
-  avatar_url    String?
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
-  collaborators Collaborator[]
+  email              String         @id @unique
+  username           String         @unique
+  password           String
+  avatar_url         String?
+  reset_token        String?
+  reset_token_expiry DateTime?
+  collaborators      Collaborator[]
 }
 
 model Note {
@@ -33,16 +32,16 @@ model Note {
 model Category {
   id         Int      @id @default(autoincrement())
   name       String   @unique
-  notes      Note[] // Add this relation
+  notes      Note[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model Collaborator {
-  note   Note @relation(fields: [noteId], references: [id])
-  noteId Int
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
+  note      Note   @relation(fields: [noteId], references: [id])
+  noteId    Int
+  user      User   @relation(fields: [userEmail], references: [email])
+  userEmail String
 
-  @@unique([noteId, userId]) // This ensures that each combination of noteId and userId is unique
+  @@unique([noteId, userEmail]) // This ensures that each combination of noteId and userEmail is unique
 }
