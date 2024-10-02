@@ -1,12 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { marked } from 'marked';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons'; // Importing icons
 
 const HomePage = () => {
   const [markdown, setMarkdown] = useState('');
   const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState([]);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/categories/all", {
+        method: "GET",
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+
+      const data = await response.json();
+
+      //We want the category names to populate the dropdown list
+      if (data.categories && Array.isArray(data.categories)) {
+        const categoryNames = data.categories.map(category => ({
+          id: category.id,
+          name: category.name
+        }));
+        setCategories(categoryNames); //set categories with only id and name
+      } else {
+        throw new Error('Invalid categories format');
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      setError('Failed to load categories');
+    }
+  };
 
   const handleChange = (event) => {
     setMarkdown(event.target.value);
@@ -21,7 +56,7 @@ const HomePage = () => {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = 'note.md'; // need to change the name 
+    anchor.download = 'note.md';
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
@@ -41,26 +76,25 @@ const HomePage = () => {
        credentials: 'include'
       });
 
-      const data = response.json();
+      const data = await response.json();
 
       if (response.ok){
         console.log("Note saved")
-       
-      }else{
+      } else {
         console.log("Note not saved", data.message);
       }
         
-      } catch (error) {
-        setError("Invalid note");
-        console.error(error);
-      }
+    } catch (error) {
+      setError("Invalid note");
+      console.error(error);
+    }
   };
 
   return (
     <div className="bg-LighterBlue min-h-screen p-3 flex flex-col justify-center items-center">
       <div className="w-full max-w-4xl flex flex-col items-center space-y-6 mt-4">
         <h1 className="text-4xl font-bold text-center text-DarkestBlue mb-0">Markdown Notes</h1>
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 items-center">
           <input 
             className="border border-DarkestBlue rounded p-2 focus:outline-none bg-Ivory focus:ring-2 focus:ring-blue-500"
             type="text"
@@ -68,14 +102,33 @@ const HomePage = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <input 
+          <select 
             className="border border-DarkestBlue rounded p-2 focus:outline-none bg-Ivory focus:ring-2 focus:ring-blue-500"
-            type="text"
-            placeholder="Add a category"
             value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)} // need to implement changes to ensure that category names is associated with an id?
-          />
+            onChange={(e) => setCategoryId(e.target.value)}
+          >
+            <option value="" disabled>Select a category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Icon Buttons */}
+          <div className="flex space-x-2">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+              <FontAwesomeIcon icon={faPencilAlt} />
+            </button>
+            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </div>
         </div>
+
         <textarea
           value={markdown}
           onChange={handleChange}
@@ -111,6 +164,6 @@ const HomePage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default HomePage;
