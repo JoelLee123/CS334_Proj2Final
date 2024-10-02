@@ -8,6 +8,14 @@ const router = Router();
 router.post('/add', authenticateToken, async (req, res) => {
     const { title, content, categoryId } = req.body;
     const user = (req as any).user;
+    console.log("content detail",{ title, content, categoryId });
+    console.log("User details",{ user});
+
+    // if (!title || typeof title !== 'string' || !content || typeof content !== 'string' || !categoryId || typeof categoryId !== 'string') {
+    //     return res.status(400).json({ message: 'Invalid input data' });
+    // }
+    
+    const categoryIdNum = Number(categoryId);
 
     try {
         // Create the note in the database
@@ -15,15 +23,16 @@ router.post('/add', authenticateToken, async (req, res) => {
             data: {
                 title,
                 content,
-                categoryId,
+                categoryId: categoryIdNum,
                 collaborators: {
                     create: { userEmail: user.email },
                 },
             },
         });
-
+        console.log("Note created");
         return res.status(201).json({ message: 'Note created', note });
     } catch (error) {
+        console.log("Error creating notes")
         return res.status(400).json({ message: 'Error creating note', error });
     }
 });

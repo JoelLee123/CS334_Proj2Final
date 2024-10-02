@@ -54,7 +54,7 @@ const FrontPage = () => {
                     </h2>
                 </header>
                 <Link to='/Sign-up'>
-                    <button className="bg-black text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
+                    <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
                         Sign up
                     </button>
                 </Link>
