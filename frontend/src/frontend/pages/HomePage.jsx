@@ -30,7 +30,6 @@ const HomePage = () => {
 
   const handleSave = async (e) => {
     console.log('Save button clicked');
-    // Implement your save logic here
 
     try {
       const response = await fetch("http://localhost:3000/notes/add", {
@@ -45,11 +44,10 @@ const HomePage = () => {
       const data = response.json();
 
       if (response.ok){
-        alert("Note saved");
+        console.log("Note saved")
        
       }else{
-        alert( "Note not saved: ", data.message);
-        console.log("Note not saved");
+        console.log("Note not saved", data.message);
       }
         
       } catch (error) {

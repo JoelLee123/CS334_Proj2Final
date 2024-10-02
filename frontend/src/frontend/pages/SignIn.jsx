@@ -36,10 +36,10 @@ const SignInPage = () => {
     if (response.ok){
       // Navigate to homepage
 
-      alert(`Login successful! Remember me functionality: ${isTicked}`); // Corrected
+      console.log(`Login successful! Remember me functionality: ${isTicked}`); // Corrected
       navigate("/HomePage")
     }else{
-      alert("Invalid email or password")
+      console.log("Invalid email or password")
     }
       
     } catch (error) {
