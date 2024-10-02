@@ -73,6 +73,9 @@ router.post("/login", async (req, res) => {
       maxAge: maxAge,
     });
     console.log("Login successful")
+    // After setting the cookie
+    console.log("Token set in cookie:", token);
+
     return res.status(200).json({ message: "Login successful" });
   } catch (error) {
     return res.status(500).json({ message: "Error logging in", error });

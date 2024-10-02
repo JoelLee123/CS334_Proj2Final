@@ -11,29 +11,32 @@ const SignInPage = () => {
   const [isTicked, setIsTicked] = useState(false);
   // Manage login status
   const [error, setError] = useState(null);
-  const handleRememberMe =() =>{
-    setIsTicked(true);
+  const handleRememberMe = () => {
+    setIsTicked(!isTicked); // Toggle the checkbox
   }
+  
 
   // Generate a post request to the database
   // Need to set up prisma and backend functionality
   const CheckValidation = async (e) => {
     try {
-       const response = await fetch("http://localhost:3000/auth/login", {
-        method:"POST",
-        headers:{
-          "Content-Type": "application/json"
+      const response = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
         },
-        body:JSON.stringify({email, password, isTicked})
-       });
+        credentials: "include", // Include credentials
+        body: JSON.stringify({ email, password, isTicked })
+    });
+    
        console.log("Remember me functionality: ", isTicked);
 
-       const data = response.json();
+       const data = await response.json();
 
     if (response.ok){
       // Navigate to homepage
 
-      alert("Login successful! Remember me functionality: ", isTicked);
+      alert(`Login successful! Remember me functionality: ${isTicked}`); // Corrected
       navigate("/HomePage")
     }else{
       alert("Invalid email or password")
@@ -53,15 +56,15 @@ const SignInPage = () => {
       </header>
       <div className="flex flex-col space-y-4 mt-5">
         <input 
-          className="border border-DarkestBlue rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="text"
           placeholder="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input 
-          className="border border-DarkestBlue rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="text"
+          className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="password"
           placeholder="password"
           value={password}
           onChange={(e)=>setPassword(e.target.value)}
@@ -73,7 +76,7 @@ const SignInPage = () => {
           />
         </FormGroup>
       <nav>
-        <button className="bg-black text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2 text-center" onClick={CheckValidation} >
+        <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2 text-center" onClick={CheckValidation} >
           Login?
         </button>
       </nav>

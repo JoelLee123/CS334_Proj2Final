@@ -44,21 +44,21 @@ const SignUpPage = () => {
         <input 
           type="text"
           placeholder="Username"
-          className="border border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
+          className="border border-black bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
           value={username}
           onChange={(e) => setName(e.target.value)}
         />
         <input 
           type="text"
           placeholder="Email"
-          className="border border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
+          className="border border-black bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input 
           type="text"
           placeholder="Password"
-          className="border border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
+          className="border border-black bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
 
@@ -66,11 +66,11 @@ const SignUpPage = () => {
         <input 
           type="text"
           placeholder="Confirm Password"
-          className="border border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
+          className="border border-black bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
         />
       </div>
       <nav className="mt-5">
-          <button className="bg-black text-white px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
+          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
             Continue
           </button>
       </nav>

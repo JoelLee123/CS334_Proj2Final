@@ -6,7 +6,6 @@ const HomePage = () => {
   const [markdown, setMarkdown] = useState('');
   const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  // const [content, setContent] = useState('');
   const [error, setError] = useState(false);
 
   const handleChange = (event) => {
@@ -30,7 +29,6 @@ const HomePage = () => {
   };
 
   const handleSave = async (e) => {
-    // const { title, content, categoryId } = req.body;
     console.log('Save button clicked');
     // Implement your save logic here
 
@@ -40,7 +38,7 @@ const HomePage = () => {
        headers:{
          "Content-Type": "application/json"
        },
-       body:JSON.stringify({title, markdown, categoryId}),
+       body:JSON.stringify({title, content:markdown, categoryId}),
        credentials: 'include'
       });
 
@@ -50,11 +48,13 @@ const HomePage = () => {
         alert("Note saved");
        
       }else{
-        alert("Note not saved")
+        alert( "Note not saved: ", data.message);
+        console.log("Note not saved");
       }
         
       } catch (error) {
-        setError("Invalid note")
+        setError("Invalid note");
+        console.error(error);
       }
   };
 
@@ -64,14 +64,14 @@ const HomePage = () => {
         <h1 className="text-4xl font-bold text-center text-DarkestBlue mb-0">Markdown Notes</h1>
         <div className="flex space-x-4">
           <input 
-            className="border border-DarkestBlue rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-DarkestBlue rounded p-2 focus:outline-none bg-Ivory focus:ring-2 focus:ring-blue-500"
             type="text"
             placeholder="Add a title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
           <input 
-            className="border border-DarkestBlue rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-DarkestBlue rounded p-2 focus:outline-none bg-Ivory focus:ring-2 focus:ring-blue-500"
             type="text"
             placeholder="Add a category"
             value={categoryId}
@@ -82,7 +82,7 @@ const HomePage = () => {
           value={markdown}
           onChange={handleChange}
           rows="12"
-          className="w-full p-3 border rounded-lg border-LighterBlue focus:outline-none focus:ring-2 focus:ring-DarkBlue"
+          className="w-full p-3 border rounded-lg border-LighterBlue focus:outline-none bg-Ivory focus:ring-2 focus:ring-DarkBlue"
           placeholder="Enter Markdown content"
         />
 
