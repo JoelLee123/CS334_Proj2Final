@@ -7,6 +7,7 @@ import NoteCard from '../components/NoteCard';  // Adjust the import path as nec
 const NotesPage = () => {
 
   const [notes, setNotes] = useState([]);
+  const [searchTitle, setSearch]=useState("");
 
   const getNotes = async () => {
     try {
@@ -31,6 +32,10 @@ const NotesPage = () => {
     }
   };
 
+  const handleSearchTitle = async () => {
+    console.log({searchTitle});
+  };
+
 
   useEffect(() => {
     getNotes();  // Call getNotes when component mounts
@@ -40,6 +45,19 @@ const NotesPage = () => {
     <div className="bg-LighterBlue min-h-screen p-5">
       <h1 className="text-3xl font-bold text-DarkestBlue text-center mb-8">Your notes</h1>
       <div className="flex flex-col items-center">
+        <div classname ='mb-4 flex flex-col space-x-4' >
+      <input 
+          className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 "
+          type="text"
+          placeholder="Enter title"
+          value={searchTitle}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button
+        onClick={handleSearchTitle} 
+        className="bg-DarkestBlue  text-white rounded p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 "
+        >  search </button>
+        </div>
         {notes.length > 0 ? (
           notes.map((note, index) => (
             <NoteCard
