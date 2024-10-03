@@ -112,12 +112,16 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
 // Update a note
 router.put('/update/:id', authenticateToken, async (req, res) => {
+    console.log('Hello');
     const { id } = req.params;
     const { title, content, categoryId } = req.body;
     const user = (req as any).user;
 
+    console.log(`Attempting to update note with ID: ${id}`);
+    console.log('Request body:', { title, content, categoryId });
+
     try {
-        // Verify that the user is a collaborator on this note
+        // Verify that the note exists and the user is a collaborator
         const note = await prisma.note.findUnique({
             where: { id: Number(id) },
             include: {
@@ -125,20 +129,36 @@ router.put('/update/:id', authenticateToken, async (req, res) => {
             },
         });
 
-        if (!note) return res.status(404).json({ message: 'Note not found' });
+        if (!note) {
+            console.log(`Note with ID ${id} not found`);
+            return res.status(404).json({ message: 'Note not found' });
+        }
 
         const isCollaborator = note.collaborators.some(collab => collab.userEmail === user.email);
-        if (!isCollaborator) return res.status(403).json({ message: 'Unauthorized' });
+        if (!isCollaborator) {
+            console.log(`User ${user.email} is not a collaborator on note ${id}`);
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        // Prepare update data
+        const updateData: any = {};
+        if (title !== undefined) updateData.title = title;
+        if (content !== undefined) updateData.content = content;
+        if (categoryId !== undefined) updateData.categoryId = Number(categoryId);
+
+        console.log('Update data:', updateData);
 
         // Update the note in the database
         const updatedNote = await prisma.note.update({
             where: { id: Number(id) },
-            data: { title, content, categoryId },
+            data: updateData,
         });
 
+        console.log('Note updated successfully:', updatedNote);
         return res.status(200).json({ message: 'Note updated', updatedNote });
     } catch (error) {
-        return res.status(400).json({ message: 'Error updating note', error });
+        console.error('Error updating note:', error);
+        return res.status(400).json({ message: 'Error updating note', error: (error as Error).message });
     }
 });
 
