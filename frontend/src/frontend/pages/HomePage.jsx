@@ -9,6 +9,14 @@ const HomePage = () => {
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(false);
+  //Used for add category pop up
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal
+  //Allows for reuse of add category pop up
+  const [modalType, setModalType] = useState('');
+  //Used for adding a new category name to the dropdown list
+  const [newCategoryName, setNewCategoryName] = useState('');
+  //Error pop up (used by delete category)
+  const [errorPopup, setErrorPopup] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -41,6 +49,117 @@ const HomePage = () => {
       console.error('Error fetching categories:', error);
       setError('Failed to load categories');
     }
+  };
+
+  // Function to open the modal
+  const openModal = (type) => {
+    setModalType(type);
+    if (type == 'edit') {
+      const selectedCategory = categories.find((cat) => cat.id === parseInt(categoryId))
+      setNewCategoryName(selectedCategory ? selectedCategory.name : '');
+    }
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setNewCategoryName('');
+  };
+
+  //Add category button (+ icon, POST request)
+  const handleAddCategory = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/categories/add", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: newCategoryName }), // Send the category name
+        credentials: 'include' // Include authentication token in the request
+      });
+
+      if (!response.ok) {
+        throw new Error('Error adding category');
+      }
+
+      const data = await response.json();
+      // Assuming the backend returns the newly created category
+      setCategories([...categories, data.category]); // Add the new category to the list
+      closeModal(); // Close the modal
+    } catch (error) {
+      console.error('Error adding category:', error);
+    }
+  };
+
+  //Edit category button (pencil icon, PUT request)
+  const handleUpdateCategory = async () => {
+    if (!categoryId) {
+      setErrorPopup('Please select a category to edit');
+      return;
+    }
+
+    console.log('Category ID in update method:', categoryId);
+
+    try {
+      const response = await fetch(`http://localhost:3000/categories/update/${categoryId}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: newCategoryName }), // Updated category name
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Error updating category');
+      }
+
+      const data = await response.json();
+      setCategories(categories.map((category) => 
+        category.id === parseInt(categoryId) ? data.updatedCategory : category
+      ));
+      closeModal();
+    } catch (error) {
+      console.error('Error updating category:', error);
+      setErrorPopup('Failed to update category');
+    }
+  };
+
+  //Delete category button (trash icon, DELETE request)
+  const handleDeleteCategory = async () => {
+    if (!categoryId) { // Check if a category is selected
+      setErrorPopup('Please select a category to delete');
+      return;
+    }
+
+    console.log('Category ID in delete method:', categoryId);
+
+    try {
+      const response = await fetch(`http://localhost:3000/categories/delete/${categoryId}`, {
+        method: "DELETE",
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Error deleting category');
+      }
+
+      console.log("The response was ok");
+
+      // Remove the deleted category from the state
+      setCategories(categories.filter((category) => category.id !== parseInt(categoryId)));
+      setCategoryId(''); // Reset the selected category
+      setErrorPopup(''); // Clear any previous error messages
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      setErrorPopup('Failed to delete category');
+    }
+  };
+
+  // Function to close the error popup
+  const closeErrorPopup = () => {
+    setErrorPopup('');
   };
 
   const handleChange = (event) => {
@@ -118,17 +237,56 @@ const HomePage = () => {
 
           {/* Icon Buttons */}
           <div className="flex space-x-2">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => openModal('add')}>
               <FontAwesomeIcon icon={faPlus} />
             </button>
-            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => openModal('edit')}>
               <FontAwesomeIcon icon={faPencilAlt} />
             </button>
-            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={handleDeleteCategory}>
               <FontAwesomeIcon icon={faTrash} />
             </button>
           </div>
         </div>
+
+        {/* Modal for Adding/Editing Category */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg">
+              <h2 className="text-xl font-bold mb-4">{modalType === 'add' ? 'Add New Category' : 'Edit Category'}</h2>
+              <input
+                type="text"
+                placeholder="Category Name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                className="border border-gray-300 p-2 mb-4 w-full"
+              />
+              <div className="flex justify-end space-x-2">
+                <button onClick={closeModal} className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded">
+                  Cancel
+                </button>
+                <button onClick={modalType === 'add' ? handleAddCategory : handleUpdateCategory} className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded">
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error Popup */}
+        {errorPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg">
+              <h2 className="text-xl font-bold mb-4 text-red-600">Error</h2>
+              <p>{errorPopup}</p>
+              <div className="flex justify-end space-x-2 mt-4">
+                <button onClick={closeErrorPopup} className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <textarea
           value={markdown}
