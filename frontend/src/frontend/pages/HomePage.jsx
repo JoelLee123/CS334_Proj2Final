@@ -54,7 +54,7 @@ const HomePage = () => {
   // Function to open the modal
   const openModal = (type) => {
     setModalType(type);
-    if (type == 'edit') {
+    if (type === 'edit') {
       const selectedCategory = categories.find((cat) => cat.id === parseInt(categoryId))
       setNewCategoryName(selectedCategory ? selectedCategory.name : '');
     }
