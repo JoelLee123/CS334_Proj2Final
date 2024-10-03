@@ -11,7 +11,7 @@ const NotesPage = () => {
   const getNotes = async () => {
     try {
       const response = await fetch("http://localhost:3000/notes/all", {
-       method:"Get",
+       method:"GET",
        credentials: 'include'
       });
 

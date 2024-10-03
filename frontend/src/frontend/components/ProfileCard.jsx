@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProfileCard = ({ username, email }) => {
+const ProfileCard = ({ username, email, password }) => {
     return (
         <div className="bg-Ivory rounded-lg shadow-md p-4 mb-4 w-full max-w-md">
             <h2 className="text-xl font-bold text-DarkestBlue mb-2 text-center">General</h2>

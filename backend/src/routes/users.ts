@@ -22,12 +22,13 @@ router.get("/", async (req, res) => {
 /* Get the current user's information (using token email) */
 router.get("/me", authenticateToken, async (req, res) => {
   const { email } = (req as any).user; /* Extract email from token */
-
+  
   try {
     const user = await prisma.user.findUniqueOrThrow({
       where: { email: email },
     });
 
+    console.log({user});
     res.status(200).json({ user });
   } catch (error) {
     res.status(404).json({ message: "Error fetching user", error });
