@@ -29,7 +29,7 @@ router.post('/add', authenticateToken, async (req, res) => {
                 },
             },
         });
-        console.log("Note created");
+        console.log( 'Note created', {note} );
         return res.status(201).json({ message: 'Note created', note });
     } catch (error) {
         console.log("Error creating notes")

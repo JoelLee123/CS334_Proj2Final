@@ -199,6 +199,7 @@ const HomePage = () => {
 
       if (response.ok){
         console.log("Note saved")
+        console.log(data.note['email']);
       } else {
         console.log("Note not saved", data.message);
       }
