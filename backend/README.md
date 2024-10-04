@@ -187,6 +187,15 @@ curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
   "categoryId": 1
 }' | jq '.'
 ```
+* Update a Note's status
+
+```bash
+curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
+-H "Content-Type: application/json" \
+-d '{
+  "status": "NEW_STATUS"
+}' | jq '.'
+```
 
 * Delete a Note
 
