@@ -1,7 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import cookieParser from 'cookie-parser';
 import authRoutes from "./routes/auth";
-import { authenticateToken } from './middleware/auth';
 import notesRoutes from "./routes/notes";
 import categoryRoutes from "./routes/categories";
 import collaboratorRoutes from "./routes/collaborators"; 
