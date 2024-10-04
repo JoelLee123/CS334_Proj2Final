@@ -96,6 +96,20 @@ curl -c cookies.txt -X POST http://localhost:3000/auth/login \
 }' | jq '.'
 ```
 
+* Request Reset Password:
+
+```bash
+curl -X POST "http://localhost:3000/request-password-reset?email=example@example.com"
+```
+
+* Reset Passwords:
+
+```bash
+curl -X POST "http://localhost:3000/reset-password" \
+-H "Content-Type: application/json" \
+-d '{"password": "newPassword123", "reset_token": "yourResetTokenHere"}'
+```
+
 ***************************************************************
 ## Category:
 ***************************************************************

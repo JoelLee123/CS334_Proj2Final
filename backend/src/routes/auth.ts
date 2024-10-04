@@ -25,7 +25,7 @@ router.post("/register", async (req, res) => {
       },
     });
 
-    console.log("User registered")
+    console.log("User registered");
     return res.status(201).json({ message: "User registered", user });
   } catch (error) {
     return res.status(400).json({ message: "Error registering user", error });
@@ -58,13 +58,9 @@ router.post("/login", async (req, res) => {
     const maxAge = rememberMe ? 3650 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000;
 
     /* Generate a JWT token */
-    const token = jwt.sign(
-      { email: user.email },
-      secret,
-      {
-        expiresIn: expiresIn,
-      }
-    );
+    const token = jwt.sign({ email: user.email }, secret, {
+      expiresIn: expiresIn,
+    });
 
     /* Set the token in the cookie header */
     res.cookie("token", token, {
@@ -72,7 +68,7 @@ router.post("/login", async (req, res) => {
       secure: process.env.NODE_ENV === "production", // Send only over HTTPS in production
       maxAge: maxAge,
     });
-    console.log("Login successful")
+    console.log("Login successful");
     return res.status(200).json({ message: "Login successful" });
   } catch (error) {
     return res.status(500).json({ message: "Error logging in", error });
@@ -118,16 +114,20 @@ router.post("/reset-password", async (req, res) => {
   const { password, reset_token } = req.body;
 
   try {
+    /* Hash the password */
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    /* Update the password */
     const user = await prisma.user.update({
-    where: { reset_token },
+      where: { reset_token },
       data: {
-        password
+        password: hashedPassword,
       },
     });
 
     return res.status(200).json({ message: "Password succesfully updated" });
   } catch (error) {
-    return res.status(400).json({ message: "Error sending email", error });
+    return res.status(400).json({ message: "Error updating password", error });
   }
 });
 
