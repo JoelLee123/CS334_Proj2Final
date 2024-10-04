@@ -12,9 +12,9 @@ import axios from 'axios'; // For making API requests
 import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 
+
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar }));
-
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -45,14 +45,14 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Collaborative note-taking app backend");
 });
 
-// Store users editing notes
-const editingUsers: { [noteId: string]: Set<WebSocket> } = {};
 const clients = new Map(); // Store connected clients
 
 // WebSocket connection handler
 wss.on('connection', (ws) => {
-    // Object to store cookies for this session
-    let sessionCookies: string = '';
+  // Object to store cookies for this session
+  let sessionCookies: string = '';
+  let userEmail: string | undefined;
+  let username: string | undefined;
 
     // Listen for messages from the WebSocket client
     ws.on('message', async (message: Object) => {
@@ -66,7 +66,8 @@ wss.on('connection', (ws) => {
 
         try {
             if (command === 'login') {
-                const [email, password, rememberMe] = params;
+                const [email,password,rememberMe] = params;
+                userEmail = email;
 
                 // Make an API call to login and store cookies for the session
                 const response = await client.post(`http://localhost:${PORT}/auth/login`, {
@@ -78,147 +79,75 @@ wss.on('connection', (ws) => {
                     // Capture cookies from the response
                     headers: { Cookie: sessionCookies },
                 });
-                
-                // Store the connected client by their email (or unique ID)
-                clients.set(email, ws);
 
-                // Send the API response as JSON
-                ws.send(JSON.stringify(response.data));
+                // Extract cookies from the response headers and store them for later use
+                const cookies = response.headers['set-cookie'];
+                if (cookies) {
+                  sessionCookies = cookies.join('; ');
+                }
 
-            } else if (command === 'register') {
-                const [username, email, password] = params;
-
-                const response = await client.post(`http://localhost:${PORT}/auth/register`, {
-                    username,
-                    email,
-                    password
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true,
+                // Make another request to get the user's info after login
+                const userInfoResponse = await axios.get(`http://localhost:${PORT}/users/${email}`, {
+                  headers: { Cookie: sessionCookies } // Send the session cookies along with the request
                 });
 
-                ws.send(JSON.stringify(response.data));
+                // Extract the username from the user info response
+                username = userInfoResponse.data.username;
+
+                // Store the connected client by their email
+                clients.set(userEmail, ws);
+                console.log("Client connected on webserver");
+
+                ws.send(JSON.stringify(`Logged in as ${username}`));
 
             } else if (command === 'editNote') {
+
                 const [noteId] = params;
-                const userEmail = [...clients.keys()].find(key => clients.get(key) === ws); // Find email of the editing user
 
-                // Add the user to the editing list for this note
-                if (!editingUsers[noteId]) {
-                    editingUsers[noteId] = new Set();
-                }
-                editingUsers[noteId].add(ws);
+                // Fetch note details
+                const noteResponse = await axios.get(`http://localhost:${PORT}/notes/${noteId}`, {
+                  withCredentials: true,
+                  headers: { Cookie: sessionCookies }, 
+                });
 
-                // Notify other users editing the same note
-                for (const user of editingUsers[noteId]) {
-                    if (user !== ws) {
-                        user.send(JSON.stringify({ message: 'User is editing', noteId }));
-                    }
-                }
-                //TODO: only notify those users collaborating on this note.
-                
-                // Broadcast to all clients (except the one who is editing)
-              clients.forEach((clientWs, email) => {
-                if (clientWs !== ws) {
-                    clientWs.send(JSON.stringify({
-                        message: `User ${userEmail} is editing note ${noteId}`
+                // Extract the note and collaborators from the API response
+                const note = noteResponse.data.note;
+                const collaborators = note.collaborators.map((collaborator: { userEmail: string }) =>       collaborator.userEmail);
+
+                // Notify connected collaborators that the user has started editing
+                collaborators.forEach((collaboratorEmail: string) => {
+                  const collaboratorWs = clients.get(collaboratorEmail);
+                  if (collaboratorWs && collaboratorWs !== ws) {
+                    collaboratorWs.send(JSON.stringify({
+                      message: `User ${username} is editing note ${noteId}`
                     }));
-                }
-              });
+                  }
+                });
 
             } else if (command === 'stopEditing') {
                 const [noteId] = params;
 
-                // Remove the user from the editing list for this note
-                if (editingUsers[noteId]) {
-                    editingUsers[noteId].delete(ws);
-                    if (editingUsers[noteId].size === 0) {
-                        delete editingUsers[noteId]; // Cleanup if no one is editing
-                    }
-                }
-
-            } else if (command === 'fetchNotes') {
-
-                const [categoryID, sortBy] = params;
-
-                // Construct query parameters based on categoryID and sortBy
-                const queryParams: any = {};
-                if (categoryID) queryParams.categoryID = categoryID;
-                if (sortBy) queryParams.sortBy = sortBy;
-
-                // Make an API call to fetch the notes, passing session cookies for authentication
-                const response = await client.get(`http://localhost:${PORT}/notes/all`, {
-                    params: queryParams,
-                    withCredentials: true,
-                    headers: { Cookie: sessionCookies }, // Pass stored cookies
+                // Fetch note details
+                const noteResponse = await axios.get(`http://localhost:${PORT}/notes/${noteId}`, {
+                  withCredentials: true,
+                  headers: { Cookie: sessionCookies },
                 });
 
-                // Send the API response as JSON
-                ws.send(JSON.stringify(response.data));
-            }else if (command === 'addNote') {
+                const note = noteResponse.data.note;
+                const collaborators = note.collaborators.map((collaborator: { userEmail: string }) => collaborator.userEmail);
 
-                const [title, content, categoryId] = params;
-
-                const response = await client.post(`http://localhost:${PORT}/notes/add`, {
-                    title,
-                    content,
-                    categoryId: Number(categoryId),
-                }, {
-                    withCredentials: true,
-                    headers: { Cookie: sessionCookies },
+                // Notify connected collaborators that the user has stopped editing
+                collaborators.forEach((collaboratorEmail: string) => {
+                  const collaboratorWs = clients.get(collaboratorEmail);
+                  if (collaboratorWs && collaboratorWs !== ws) {
+                    collaboratorWs.send(JSON.stringify({
+                      message: `User ${username} has stopped editing note ${noteId}`,
+                    }));
+                  }
                 });
-
-                ws.send(JSON.stringify(response.data));
-
-            } else if (command === 'fetchNote') {
-
-                const [noteId] = params;
-
-                const response = await client.get(`http://localhost:${PORT}/notes/${noteId}`, {
-                    withCredentials: true,
-                    headers: { Cookie: sessionCookies },
-                });
-
-                ws.send(JSON.stringify(response.data));
-
-            } else if (command === 'updateNote') {
-
-                const [noteId, title, content, categoryId] = params;
-
-                const response = await client.put(`http://localhost:${PORT}/notes/update/${noteId}`, {
-                    title,
-                    content,
-                    categoryId: Number(categoryId),
-                }, {
-                    withCredentials: true,
-                    headers: { Cookie: sessionCookies },
-                });
-
-                // Broadcast updated content to other users editing the note
-                if (editingUsers[noteId]) {
-                    for (const user of editingUsers[noteId]) {
-                        if (user !== ws) {
-                            user.send(JSON.stringify({ message: 'Note content updated', noteId, content }));
-                        }
-                    }
-                }
-
-                ws.send(JSON.stringify(response.data));
-
-            } else if (command === 'deleteNote') {
-
-                const [noteId] = params;
-
-                const response = await client.delete(`http://localhost:${PORT}/notes/delete/${noteId}`, {
-                    withCredentials: true,
-                    headers: { Cookie: sessionCookies },
-                });
-
-                ws.send(JSON.stringify(response.data));
+            } else {
+                ws.send(`Command not recognized: ${command}`);
             }
-
         } catch (error) {
           // Ensure error has a message property
           if (error instanceof Error) {
@@ -232,6 +161,10 @@ wss.on('connection', (ws) => {
     // When the client disconnects
     ws.on('close', () => {
         console.log('Client disconnected');
+        if (userEmail) {
+          clients.delete(userEmail); // Remove the client from the clients map
+          console.log(`Removed ${userEmail} from connected clients`);
+        }
     });
 });
 

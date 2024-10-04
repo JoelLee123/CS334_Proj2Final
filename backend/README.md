@@ -188,6 +188,16 @@ curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
 }' | jq '.'
 ```
 
+* Update a Note's status
+
+```bash
+curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
+-H "Content-Type: application/json" \
+-d '{
+  "status": "NEW_STATUS"
+}' | jq '.'
+```
+
 * Delete a Note
 
 ```bash
@@ -281,8 +291,9 @@ npm install -g wscat
 wscat -c ws://localhost:3000
 
 * Login:
+This needs to be sent to the websocket server after a user connects via the API. This is done to link the session with the user and authenticate the websocket session. If the session is not authenticated, it cannot make API requests.
 
-login,<user_email>,<user_password>,<true_>
+login,<user_email,password,login>
 
 * Start Editing a Note:
 Command for starting to edit a note, which will notify collaborators.
@@ -293,31 +304,6 @@ editNote,<note_id>
 Use this command to indicate that you have stopped editing a note.
 
 stopEditing,<note_id>
-
-* Fetch All Notes:
-To retrieve a list of all notes based on a category and sorting order.
-
-fetchNotes,<category_id>,recent
-
-* Fetch a Single Note:
-To fetch details of a specific note by its ID.
-
-fetchNote,<note_id>
-
-* Add a New Note:
-To create a new note under a specific category.
-
-addNote,Note Title,Note Content,<category_id>
-
-* Update a Note:
-To update an existing note’s title, content, or category.
-
-updateNote,<note_id>,Updated Title,Updated Content,2
-
-* Delete a Note:
-To delete a specific note by its ID.
-
-deleteNote,<note_id>
 
 * Open additional clients and repeat the steps to test real-time collaboration
 
