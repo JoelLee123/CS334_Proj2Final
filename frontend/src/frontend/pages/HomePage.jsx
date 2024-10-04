@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons'; // Importing icons
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const [markdown, setMarkdown] = useState('');
@@ -18,9 +19,31 @@ const HomePage = () => {
   //Error pop up (used by delete category)
   const [errorPopup, setErrorPopup] = useState('');
 
+  //Receive edit note data
+  const location = useLocation();
+  //Reirect to notes page
+  const navigate = useNavigate();
+  //Decide if we are editing a note
+  const [isEditMode, setIsEditMode] = useState(false);
+
+
   useEffect(() => {
+    if (location.state) {
+      //Set state values (editing a note)
+      setIsEditMode(true);
+      setTitle(location.state.title);
+      setMarkdown(location.state.content);
+      setCategoryId(location.state.categoryId);
+    } else {
+      // If no note is passed, it's a new note (create mode)
+      setIsEditMode(false);
+      //setNoteId(null);
+      setTitle('');
+      setMarkdown('');
+      setCategoryId('');
+    }
     fetchCategories();
-  }, []);
+  }, [location.state]);
 
   const fetchCategories = async () => {
     try {
@@ -183,11 +206,15 @@ const HomePage = () => {
   };
 
   const handleSave = async (e) => {
+    e.preventDefault();
     console.log('Save button clicked');
+    const url = isEditMode ? `http://localhost:3000/notes/update/${location.state.ID}` : 'http://localhost:3000/notes/add';
+    const method = isEditMode ? 'PUT' : 'POST';
 
+    console.log('URL:', url);
     try {
-      const response = await fetch("http://localhost:3000/notes/add", {
-       method:"POST",
+      const response = await fetch(url, {
+       method: method,
        headers:{
          "Content-Type": "application/json"
        },
@@ -198,14 +225,15 @@ const HomePage = () => {
       const data = await response.json();
 
       if (response.ok){
-        console.log("Note saved")
-        console.log(data.note['email']);
+        console.log(isEditMode ? "Note updated" : "Note saved");
+        //console.log(data.note['email']); - GAVE A WEIRD ERROR
+        navigate('/notes');
       } else {
         console.log("Note not saved", data.message);
       }
         
     } catch (error) {
-      setError("Invalid note");
+      setError(isEditMode ? "Error updating note" : "Invalid note");
       console.error(error);
     }
   };
@@ -213,7 +241,7 @@ const HomePage = () => {
   return (
     <div className="bg-LighterBlue min-h-screen p-3 flex flex-col justify-center items-center">
       <div className="w-full max-w-4xl flex flex-col items-center space-y-6 mt-4">
-        <h1 className="text-4xl font-bold text-center text-DarkestBlue mb-0">Markdown Notes</h1>
+        <h1 className="text-4xl font-bold text-center text-DarkestBlue mb-0">{isEditMode ? "Edit Note" : "Add Note"}</h1>
         <div className="flex space-x-4 items-center">
           <input 
             className="border border-DarkestBlue rounded p-2 focus:outline-none bg-Ivory focus:ring-2 focus:ring-blue-500"
@@ -317,7 +345,7 @@ const HomePage = () => {
             onClick={handleSave}
             className="bg-black hover:bg-DarkBlue text-Ivory font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
           >
-            Save
+            {isEditMode ? 'Update' : 'Save'}
           </button>
         </div>
       </div>

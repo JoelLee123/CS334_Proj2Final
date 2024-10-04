@@ -1,10 +1,15 @@
 import React from 'react';
 import { XCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import '../css/NotesHover.css';
 
+const NoteCard = ({ title, date, ID, categoryId, content, getNotes}) => {
 
-const NoteCard = ({ title, date, ID, categoryId, content}) => {
-  const handleDeleteNote = async () => {
-    // Add your delete logic here
+  //For editing a note, reroute to Home Page
+  const navigate = useNavigate();
+
+  const handleDeleteNote = async (e) => {
+    e.stopPropagation(); //Prevent the event from bubbling to the parent div
     console.log("Note delete button clicked!");
     console.log("ID: ", {ID})
 
@@ -17,7 +22,8 @@ const NoteCard = ({ title, date, ID, categoryId, content}) => {
         const data = await response.json();
 
         if (response.ok){
-          console.log("Note has been deleted")
+          console.log("Note has been deleted");
+          getNotes(); //Refresh page for remaining notes
         } else {
           console.log("Note has not been deleted", data.message);
         }
@@ -28,8 +34,13 @@ const NoteCard = ({ title, date, ID, categoryId, content}) => {
     
   };
 
+  const handleNoteClick = () => {
+    navigate('/homepage', { state: {title, categoryId, content, ID}});  //Redirect to the Home Page
+  }
+
   return(
-    <div className="bg-Ivory rounded-lg shadow-md p-4 mb-4 w-full max-w-md">
+
+    <div className="note-card bg-Ivory rounded-lg shadow-md p-4 mb-4 w-full max-w-md cursor-pointer" onClick={handleNoteClick}>
       <div className="flex justify-between items-start mb-2">
         <h2 className="text-xl font-bold text-DarkestBlue">{title}</h2>
         

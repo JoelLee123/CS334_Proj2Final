@@ -20,7 +20,6 @@ const NotesPage = () => {
       // const sampleNotes = data.notes;
 
       if (response.ok){
-        console.log("Note saved")
         console.log(data.notes);
         setNotes(data.notes);
       } else {
@@ -67,6 +66,7 @@ const NotesPage = () => {
               ID={note.id}
               category={note.category}
               content={note.content}
+              getNotes={getNotes}
             />
           ))
         ) : (
