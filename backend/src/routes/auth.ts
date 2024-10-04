@@ -79,8 +79,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/* Password Reset Route */
-router.post("/password-reset", async (req, res) => {
+/* Request Password Reset Route */
+router.post("/request-password-reset", async (req, res) => {
   const email = req.query.email?.toString();
 
   const user = await prisma.user.findUnique({
@@ -93,7 +93,7 @@ router.post("/password-reset", async (req, res) => {
 
   try {
     /* Generate the reset token */
-    const passwordResetToken = createPasswordResetToken();
+    const passwordResetToken = crypto.randomBytes(32).toString("hex");
 
     /* Store the hashed token and expiration in the database */
     await prisma.user.update({
@@ -113,13 +113,22 @@ router.post("/password-reset", async (req, res) => {
   }
 });
 
-const createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString("hex");
-  const passwordResetToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-  return passwordResetToken;
-};
+/* Password reset route */
+router.post("/reset-password", async (req, res) => {
+  const { password, reset_token } = req.body;
+
+  try {
+    const user = await prisma.user.update({
+    where: { reset_token },
+      data: {
+        password
+      },
+    });
+
+    return res.status(200).json({ message: "Password succesfully updated" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error sending email", error });
+  }
+});
 
 export default router;

@@ -13,7 +13,7 @@ model User {
   username           String         @unique
   password           String
   avatar_url         String?
-  reset_token        String?
+  reset_token        String?        @unique
   reset_token_expiry DateTime?
   collaborators      Collaborator[]
 }
