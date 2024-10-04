@@ -190,7 +190,7 @@ curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
 * Update a Note's status
 
 ```bash
-curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
+curl -b cookies.txt -X PUT http://localhost:3000/notes/update-status/NOTE_ID \
 -H "Content-Type: application/json" \
 -d '{
   "status": "NEW_STATUS"
