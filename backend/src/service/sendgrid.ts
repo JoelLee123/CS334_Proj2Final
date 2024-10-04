@@ -14,7 +14,6 @@ const sendEmail = async (toEmail: string) => {
 
   try {
     await sgMail.send(msg);
-    console.log("Email sent to", toEmail);
   } catch (error) {
     console.error("Error sending email:", error);
   }
@@ -28,7 +27,19 @@ const sendPasswordResetEmail = async (toEmail: string, resetToken: string) => {
     to: toEmail,
     from: "24737615@sun.ac.za",
     subject: "Password Reset Request",
-    html: `Please click the link to reset your password: <a href="${resetURL}">${resetURL}</a>`,
+    html: `
+      <html>
+        <body>
+          <p>Please click the link below to reset your password:</p>
+          <a href="${resetURL}" target="_blank" style="color: #1a73e8; text-decoration: none;">
+            Reset Password
+          </a>
+          <br/>
+          <p>If the above link doesn't work, you can copy and paste the following URL into your browser:</p>
+          <p><a href="${resetURL}" target="_blank">${resetURL}</a></p>
+        </body>
+      </html>
+    `,
   };
 
   try {
@@ -63,5 +74,5 @@ const sendNoteSharedEmail = async (
 module.exports = {
   sendEmail,
   sendPasswordResetEmail,
-  sendNoteSharedEmail
+  sendNoteSharedEmail,
 };

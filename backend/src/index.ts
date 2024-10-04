@@ -1,7 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import cookieParser from 'cookie-parser';
 import authRoutes from "./routes/auth";
-import { authenticateToken } from './middleware/auth';
 import notesRoutes from "./routes/notes";
 import categoryRoutes from "./routes/categories";
 import collaboratorRoutes from "./routes/collaborators"; 
@@ -15,6 +14,7 @@ import { CookieJar } from 'tough-cookie';
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar }));
+
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -235,7 +235,7 @@ wss.on('connection', (ws) => {
     });
 });
 
-// Start the server (which includes WebSockets)
+// Start the server
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -94,7 +94,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
         if (!note) {
             return res.status(404).json({ message: 'Note not found or access denied' });
         }
-      
+
         return res.status(200).json({ note });
     } catch (error) {
         return res.status(500).json({ message: 'Error fetching note', error });

@@ -96,6 +96,21 @@ curl -c cookies.txt -X POST http://localhost:3000/auth/login \
 }' | jq '.'
 ```
 
+* Request Reset Password:
+
+```bash
+curl -X POST "http://localhost:3000/auth/request-password-reset?email=example@example.com" \
+| jq '.'
+```
+
+* Reset Passwords:
+
+```bash
+curl -X POST "http://localhost:3000/auth/reset-password" \
+-H "Content-Type: application/json" \
+-d '{"password": "newPassword123", "reset_token": "yourResetTokenHere"}' | jq '.'
+```
+
 ***************************************************************
 ## Category:
 ***************************************************************
@@ -267,11 +282,7 @@ wscat -c ws://localhost:3000
 
 * Login:
 
-login,sl@example.com,word1234,true
-
-* Register New User:
-
-register,NewUser,example@example.com,password123
+login,<user_email>,<user_password>,<true_>
 
 * Start Editing a Note:
 Command for starting to edit a note, which will notify collaborators.
