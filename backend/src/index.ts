@@ -176,7 +176,32 @@ wss.on('connection', (ws) => {
                     }));
                   }
                 });
-            } else {
+            } else if (command === 'notifyNewCollaborator') {
+                const [noteId, newCollaboratorEmail] = params;
+
+                try {
+                    // Notify the new collaborator via WebSocket if they are connected
+                    const newCollaboratorWs = clients.get(newCollaboratorEmail);
+                    if (newCollaboratorWs) {
+                        newCollaboratorWs.send(JSON.stringify({
+                            message: `You have been added as a collaborator to note ${noteId} by ${username}`,
+                        }));
+                    } else {
+                        ws.send(JSON.stringify({
+                            message: `User ${newCollaboratorEmail} is not connected.`
+                        }));
+                    }
+                    // Notify the user who issued the notify command that the notification was successful
+                    ws.send(JSON.stringify({
+                      message: `${newCollaboratorEmail} has been notified.`
+                    }));
+                } catch (error) {
+                    ws.send(JSON.stringify({
+                      message: `Error notifying ${newCollaboratorEmail}`
+                    }));
+                    console.error('Error handling notifyNewCollaborator command:', error);
+                }
+            }else {
                 ws.send(`Command not recognized: ${command}`);
             }
         } catch (error) {

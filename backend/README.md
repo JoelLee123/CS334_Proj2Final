@@ -315,6 +315,11 @@ Use this command to indicate that you are done editing a note. The note’s stat
 ```bash
 stopEditing,<note_id>
 ```
+* Notify a user that you have added them as a collaborator:
+```bash
+notifyNewCollaborator,<note_id>,<collaboratorEmail>
+```
+
 * Open additional clients and repeat the steps to test real-time collaboration
 
 * Disconnect from the WebSocket
