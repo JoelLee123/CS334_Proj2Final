@@ -5,8 +5,9 @@ import NoteCard from '../components/NoteCard';  // Adjust the import path as nec
 // Gets the list of notes
 const NotesPage = () => {
   const [notes, setNotes] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [searchTitle, setSearch]=useState("");
-  const [categoryId, setCategoryId]=useState("");
+  const [selectCategory, setSelectedCategory]=useState("");
   const [selectTime, setSelectedTime] = useState("");
   const [order, setOrder] = useState("ascending");
 
@@ -32,6 +33,28 @@ const NotesPage = () => {
     }
   };
 
+  const getCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/categories/all", {
+       method:"GET",
+       credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok){
+        console.log("Categories fetched: ", data)
+
+        setCategories(data);
+      } else {
+        console.log("Categories not fetched", data.message);
+      }
+        
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // Filter notes based on searchTitle and well as time
   const filter = notes.filter(note => { // changed
     console.log("here with title: ", searchTitle);
@@ -45,11 +68,17 @@ const NotesPage = () => {
     console.log("selected time: ", matchTime);
     console.log("updated at times: ", note.updated_at);
 
-    return matchTime && matchTitle;
+    const matchCategory = selectCategory
+    ? note.categoryId === Number(selectCategory)
+    : true;
+    console.log("selected category: ", matchCategory);
+
+    return matchTime && matchTitle && matchCategory;
   });
 
   useEffect(() => {
     getNotes();  // Call getNotes when component mounts, needs to set to one instance 
+    // getCategories();
   }, []); 
 
 
@@ -60,8 +89,8 @@ const NotesPage = () => {
     return order === "ascending" ? FirstDate - SecondDate : SecondDate - FirstDate;
   });
 
-  // choose between the three states of the notes
-  const notesDisplayed = searchTitle || sortAD || selectTime ? filter : notes; 
+  // choose between the four states of the notes
+  const notesDisplayed = selectCategory || searchTitle || sortAD || selectTime ? filter : notes; 
 
   return (
     <div className="bg-LighterBlue min-h-screen p-5">
@@ -75,11 +104,23 @@ const NotesPage = () => {
           value={searchTitle}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <select 
+            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            value={selectCategory}
+            onClick={getCategories}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">Select category</option>
+            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
           <select 
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             value={selectTime}
             onChange={(e) => setSelectedTime(e.target.value)}
-            
           >
             <option value="">Time created</option>
             {[...new Set(notes.map(note => new Date(note.updated_at).toISOString().split('T')[0]))].map((date) => (
@@ -96,18 +137,6 @@ const NotesPage = () => {
             <option value="ascending" >Time Asc</option>
             <option value="descending" >Time Desc</option>
           </select>
-          {/* <select 
-            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-          >
-            <option value="" disabled> Apply filter</option>
-            {notes.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select> */}
       </div>
       {notesDisplayed.length > 0 ? ( // Applying filtering based on notes
           notesDisplayed.map((note, index) => (
@@ -116,7 +145,7 @@ const NotesPage = () => {
               title={note.title}
               date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed 
               ID={note.id}
-              category={note.category}
+              category={note.categoryId}
               content={note.content}
               getNotes={getNotes}
             />
