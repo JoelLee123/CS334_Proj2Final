@@ -2,10 +2,8 @@ import { useState } from 'react';
 import React, { useEffect } from 'react';
 import NoteCard from '../components/NoteCard';  // Adjust the import path as necessary
 
-
 // Gets the list of notes
 const NotesPage = () => {
-
   const [notes, setNotes] = useState([]);
   const [searchTitle, setSearch]=useState("");
   const [categoryId, setCategoryId]=useState("");
@@ -19,7 +17,6 @@ const NotesPage = () => {
       });
 
       const data = await response.json();
-      // const sampleNotes = data.notes;
 
       if (response.ok){
         console.log("Note fetched: ", data.notes)
@@ -34,12 +31,15 @@ const NotesPage = () => {
     }
   };
 
-  const handleSearchTitle = async () => {
-    console.log({searchTitle});
-  };
+  // Filter notes based on searchTitle
+  const filterTitle = searchTitle.trim() 
+    ? notes.filter(note => 
+        note.title.toLowerCase().includes(searchTitle.toLowerCase())
+      ) 
+    : notes; // If the search is empty then, display the normal notes
 
   useEffect(() => {
-    getNotes();  // Call getNotes when component mounts
+    getNotes();  // Call getNotes when component mounts, needs to set to one instance 
   }, []); 
 
   return (
@@ -54,8 +54,8 @@ const NotesPage = () => {
           value={searchTitle}
           onChange={(e) => setSearch(e.target.value)}
         />
+        {/* MIGHT NOT NEED */}
         <button
-          onClick={handleSearchTitle}
           className="bg-DarkestBlue text-white rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Search
@@ -79,8 +79,8 @@ const NotesPage = () => {
           ))}
         </select>
       </div>
-        {notes.length > 0 ? (
-          notes.map((note, index) => (
+      {filterTitle.length > 0 ? ( // Applying filtering based on notes
+          filterTitle.map((note, index) => (
             <NoteCard
               key={index}
               title={note.title}
