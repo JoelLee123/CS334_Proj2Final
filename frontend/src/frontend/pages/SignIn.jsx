@@ -52,7 +52,7 @@ const SignInPage = () => {
   return (
     <div className="bg-LighterBlue min-h-screen p-5 text-center">
       <header>
-        <h1 className="text-3xl font-bold text-black" >My Simple React SignIn Page</h1>
+        <h1 className="text-3xl font-bold text-black" >SignIn Page</h1>
       </header>
       <div className="flex flex-col space-y-4 mt-5">
         <input 

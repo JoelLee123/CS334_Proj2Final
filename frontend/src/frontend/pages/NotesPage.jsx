@@ -8,6 +8,7 @@ const NotesPage = () => {
   const [searchTitle, setSearch]=useState("");
   const [categoryId, setCategoryId]=useState("");
   const [selectTime, setSelectedTime] = useState("");
+  const [order, setOrder] = useState("ascending");
 
   const getNotes = async () => {
     try {
@@ -39,10 +40,10 @@ const NotesPage = () => {
     :true;
 
     const matchTime = selectTime
-    ? new Date(note.created_at).toISOString().split('T')[0] === selectTime
+    ? new Date(note.updated_at).toISOString().split('T')[0] === selectTime
     : true;
     console.log("selected time: ", matchTime);
-    console.log("created at times: ", note.created_at);
+    console.log("updated at times: ", note.updated_at);
 
     return matchTime && matchTitle;
   });
@@ -51,8 +52,16 @@ const NotesPage = () => {
     getNotes();  // Call getNotes when component mounts, needs to set to one instance 
   }, []); 
 
+
+  // sorts data ascending or descending based on last updated
+  const sortAD = filter.sort((dateOne,dateTwo) => {
+    const FirstDate = new Date(dateOne.updated_at);
+    const SecondDate = new Date(dateTwo.updated_at);
+    return order === "ascending" ? FirstDate - SecondDate : SecondDate - FirstDate;
+  });
+
   // choose between the three states of the notes
-  const notesDisplayed = searchTitle || selectTime ? filter : notes; 
+  const notesDisplayed = searchTitle || sortAD || selectTime ? filter : notes; 
 
   return (
     <div className="bg-LighterBlue min-h-screen p-5">
@@ -72,12 +81,20 @@ const NotesPage = () => {
             onChange={(e) => setSelectedTime(e.target.value)}
             
           >
-            <option value="" >Select a created time</option>
-            {[...new Set(notes.map(note => new Date(note.created_at).toISOString().split('T')[0]))].map((date) => (
+            <option value="">Time created</option>
+            {[...new Set(notes.map(note => new Date(note.updated_at).toISOString().split('T')[0]))].map((date) => (
               <option key={date} value={date}>
                 {new Date(date).toLocaleDateString()}
               </option>
             ))}
+          </select>
+          <select 
+            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            value={order}
+            onChange={(e) => setOrder(e.target.value)}
+          >
+            <option value="ascending" >Time Asc</option>
+            <option value="descending" >Time Desc</option>
           </select>
           {/* <select 
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
@@ -97,7 +114,7 @@ const NotesPage = () => {
             <NoteCard
               key={index}
               title={note.title}
-              date={new Date(note.created_at).toLocaleString()} // Needs to be fixed 
+              date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed 
               ID={note.id}
               category={note.category}
               content={note.content}
