@@ -274,7 +274,7 @@ curl -b cookies.txt -X GET http://localhost:3000/users/me/notes | jq '.'
 curl -X GET http://localhost:3000/users/email | jq '.'
 ```
 ***************************************************************
-WebSocket Testing Commands (WebSocket Server Running at ws://localhost:3000)
+# WebSocket Testing (WebSocket Server Running at ws://localhost:3000)
 ***************************************************************
 Besides adding a status field for a note and providing an endpoint to update a note's status,  only index.ts was modified.
 
