@@ -22,8 +22,8 @@ const NotesPage = () => {
       // const sampleNotes = data.notes;
 
       if (response.ok){
-        console.log("Note fetched")
-        console.log(data.notes);
+        console.log("Note fetched: ", data.notes)
+
         setNotes(data.notes);
       } else {
         console.log("Note not fetched", data.message);
@@ -88,6 +88,7 @@ const NotesPage = () => {
               ID={note.id}
               category={note.category}
               content={note.content}
+              getNotes={getNotes}
             />
           ))
         ) : (
