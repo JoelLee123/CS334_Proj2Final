@@ -276,6 +276,12 @@ curl -X GET http://localhost:3000/users/email | jq '.'
 ***************************************************************
 WebSocket Testing Commands (WebSocket Server Running at ws://localhost:3000)
 ***************************************************************
+Besides adding a status field for a note and providing an endpoint to update a note's status,  only index.ts was modified.
+
+ The server integrates with the existing API for note retrieval, and status updates. A client's websocket session starts with a login(this command can automatically get sent by the UI after a user logs in normally via the API) to authenticate the session, after which users can interact with the notes. Each note has a status that determines if it is available for editing (Idle) or being edited by another user (<username_> is editing this note). The system sends real-time updates to all collaborators connected to the WebSocket.
+ For example, if two users are collaborating on a note: User A starts editing the note with editNote,<note_id>. User B receives a message saying, "User A is editing note <note_id>." While User A is busy editing the note, User B can see the status of the note "User A is editing this note". User B will not be able to edit this note while User A is busy editing it. When user A stops editing the note with stopEditing,<note_id> User B receives a message saying, "User A has stopped editing note <note_id>", the note's status changes to Idle, and User B can edit the note.
+ The UI will decide what websocket command gets triggered by what buttons. Also, say a user can only have access to the edit button when a note's status is Idle. Furthermore, since each note has a status field that gets updated in real time, this can be displayed on the note(ie. "Idle" or "User A is editing this note").
+
 *****
 * Run the server:
 ```bash
@@ -287,24 +293,28 @@ npm run start
 npm install -g wscat
 
 * Connect to WebSocket Server:
-
+```bash
 wscat -c ws://localhost:3000
+```
 
-* Login:
-This needs to be sent to the websocket server after a user connects via the API. This is done to link the session with the user and authenticate the websocket session. If the session is not authenticated, it cannot make API requests.
-
-login,<user_email,password,login>
+* Authenticate the WebSocket Session:
+This needs to be sent to the websocket server.This is done to link the session with the user and authenticate the websocket session. If the session is not authenticated, it cannot make API requests.
+Upon successful login, the WebSocket server will map the user's email to their WebSocket connection.
+```bash
+login,<user_email>,<password_>,true
+```
 
 * Start Editing a Note:
-Command for starting to edit a note, which will notify collaborators.
-
+Command for starting to edit a note, which will notify connected collaborators.
+The server first checks if the note's status is Idle. If Idle, it will update the note's status to "<username_> is editing this note", and notify all collaborators connected via WebSocket that the user has started editing. If not Idle, the WebSocket will send a message to the user informing them that another user is currently editing the note.
+```bash
 editNote,<note_id>
-
+```
 * Stop Editing a Note:
-Use this command to indicate that you have stopped editing a note.
-
+Use this command to indicate that you are done editing a note. The note’s status is updated back to Idle, and all connected collaborators are notified that the user has stopped editing the note.
+```bash
 stopEditing,<note_id>
-
+```
 * Open additional clients and repeat the steps to test real-time collaboration
 
 * Disconnect from the WebSocket

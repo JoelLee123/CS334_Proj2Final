@@ -101,28 +101,51 @@ wss.on('connection', (ws) => {
                 ws.send(JSON.stringify(`Logged in as ${username}`));
 
             } else if (command === 'editNote') {
+              const [noteId] = params;
 
-                const [noteId] = params;
-
-                // Fetch note details
+              try {
+                // Fetch note details, including the current status
                 const noteResponse = await axios.get(`http://localhost:${PORT}/notes/${noteId}`, {
-                  withCredentials: true,
-                  headers: { Cookie: sessionCookies }, 
+                    withCredentials: true,
+                    headers: { Cookie: sessionCookies },
                 });
 
-                // Extract the note and collaborators from the API response
+                // Extract the note, status, and collaborators from the API response
                 const note = noteResponse.data.note;
-                const collaborators = note.collaborators.map((collaborator: { userEmail: string }) =>       collaborator.userEmail);
+                const collaborators = note.collaborators.map((collaborator: { userEmail: string }) =>         collaborator.userEmail);
 
-                // Notify connected collaborators that the user has started editing
-                collaborators.forEach((collaboratorEmail: string) => {
-                  const collaboratorWs = clients.get(collaboratorEmail);
-                  if (collaboratorWs && collaboratorWs !== ws) {
-                    collaboratorWs.send(JSON.stringify({
-                      message: `User ${username} is editing note ${noteId}`
+                // Check the note's status
+                if (note.status === 'Idle') {
+                    // If the note is idle, update the status to reflect the current user is editing
+                    const updatedNoteResponse = await axios.put(`http://localhost:${PORT}/notes/update-status/$       {noteId}`, {
+                        status: `${username} is editing this note`
+                    }, {
+                        withCredentials: true,
+                        headers: { Cookie: sessionCookies },
+                    });
+
+                    // Notify connected collaborators that the user has started editing
+                    collaborators.forEach((collaboratorEmail: string) => {
+                        const collaboratorWs = clients.get(collaboratorEmail);
+                        if (collaboratorWs && collaboratorWs !== ws) {
+                            collaboratorWs.send(JSON.stringify({
+                                message: `User ${username} is editing note ${noteId}`
+                            }));
+                        }
+                    });
+
+                } else {
+                    // If the note is not idle, notify the user trying to edit
+                    ws.send(JSON.stringify({
+                        message: `Cannot edit. Note ${noteId} is currently being edited by ${note.status.       replace(' is editing this note', '')}.`
                     }));
-                  }
-                });
+                }
+                } catch (error) {
+                    ws.send(JSON.stringify({
+                        message: 'Error retrieving or updating the note status.'
+                    }));
+                    console.error('Error handling editNote command:', error);
+                }
 
             } else if (command === 'stopEditing') {
                 const [noteId] = params;
@@ -135,6 +158,14 @@ wss.on('connection', (ws) => {
 
                 const note = noteResponse.data.note;
                 const collaborators = note.collaborators.map((collaborator: { userEmail: string }) => collaborator.userEmail);
+
+                //When a user is done editing, update the status to Idle
+                const updatedNoteResponse = await axios.put(`http://localhost:${PORT}/notes/update-status/${noteId}`, {
+                status: `Idle`
+                }, {
+                    withCredentials: true,
+                    headers: { Cookie: sessionCookies },
+                });
 
                 // Notify connected collaborators that the user has stopped editing
                 collaborators.forEach((collaboratorEmail: string) => {
