@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +13,21 @@ const SignInPage = () => {
   const handleRememberMe = () => {
     setIsTicked(!isTicked); // Toggle the checkbox
   }
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email");
+    const storedPassword = localStorage.getItem("password");
+    const rememberMe = localStorage.getItem("rememberMe") ==="true";
+
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+    if (storedPassword) {
+      setPassword(storedPassword);
+    }
+
+    setIsTicked(rememberMe);
+  }, []);
 
   // Generate a post request to the database for login
   const CheckValidation = async () => {
@@ -33,6 +48,19 @@ const SignInPage = () => {
       if (response.ok) {
         // Navigate to homepage on successful login
         console.log(`Login successful! Remember me functionality: ${isTicked}`);
+
+          // Store credentials if "Remember Me" is checked
+        if (isTicked) {
+          localStorage.setItem("email", email);
+          localStorage.setItem("password", password); // Optionally store the password
+          localStorage.setItem("rememberMe", true);
+        } else {
+          // Clear stored credentials if not checked
+          localStorage.removeItem("email");
+          localStorage.removeItem("password");
+          localStorage.setItem("rememberMe", false);
+        }
+        
         navigate("/HomePage");
       } else {
         // If the response is not OK, set error message

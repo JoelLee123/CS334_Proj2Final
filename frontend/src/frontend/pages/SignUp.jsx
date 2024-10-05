@@ -17,6 +17,7 @@ const SignUpPage = () => {
         headers:{
           "Content-Type": "application/json"
         },
+        credentials: "include", // Include credentials (cookies)
         // username, email, password
         body:JSON.stringify({"username":username, "email":email, "password": password})
         });
