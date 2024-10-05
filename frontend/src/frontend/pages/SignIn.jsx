@@ -49,13 +49,14 @@ const SignInPage = () => {
         // Navigate to homepage on successful login
         console.log(`Login successful! Remember me functionality: ${isTicked}`);
 
-          // Store credentials if "Remember Me" is checked
+        // Adds remember me functionality and sets to true
         if (isTicked) {
           localStorage.setItem("email", email);
-          localStorage.setItem("password", password); // Optionally store the password
+          localStorage.setItem("password", password);
           localStorage.setItem("rememberMe", true);
         } else {
           // Clear stored credentials if not checked
+          // Adds remember me functionality and sets to false
           localStorage.removeItem("email");
           localStorage.removeItem("password");
           localStorage.setItem("rememberMe", false);
