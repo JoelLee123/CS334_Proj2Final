@@ -2,14 +2,14 @@ import { useState } from 'react';
 import React, { useEffect } from 'react';
 import NoteCard from '../components/NoteCard';  // Adjust the import path as necessary
 
-
 // Gets the list of notes
 const NotesPage = () => {
-
   const [notes, setNotes] = useState([]);
-  const [searchTitle, setSearch]=useState("");
-  const [categoryId, setCategoryId]=useState("");
   const [categories, setCategories] = useState([]);
+  const [searchTitle, setSearch]=useState("");
+  const [selectCategory, setSelectedCategory]=useState("");
+  const [selectTime, setSelectedTime] = useState("");
+  const [order, setOrder] = useState("ascending");
 
   const getNotes = async () => {
     try {
@@ -19,7 +19,6 @@ const NotesPage = () => {
       });
 
       const data = await response.json();
-      // const sampleNotes = data.notes;
 
       if (response.ok){
         console.log("Note fetched: ", data.notes)
@@ -34,13 +33,64 @@ const NotesPage = () => {
     }
   };
 
-  const handleSearchTitle = async () => {
-    console.log({searchTitle});
+  const getCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/categories/all", {
+       method:"GET",
+       credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok){
+        console.log("Categories fetched: ", data)
+
+        setCategories(data);
+      } else {
+        console.log("Categories not fetched", data.message);
+      }
+        
+    } catch (error) {
+      console.error(error);
+    }
   };
 
+  // Filter notes based on searchTitle and well as time
+  const filter = notes.filter(note => { // changed
+    console.log("here with title: ", searchTitle);
+    const matchTitle = searchTitle.trim()
+    ? note.title.toLowerCase().includes(searchTitle.toLowerCase())
+    :true;
+
+    const matchTime = selectTime
+    ? new Date(note.updated_at).toISOString().split('T')[0] === selectTime
+    : true;
+    console.log("selected time: ", matchTime);
+    console.log("updated at times: ", note.updated_at);
+
+    const matchCategory = selectCategory
+    ? note.categoryId === Number(selectCategory)
+    : true;
+    console.log("selected category: ", matchCategory);
+
+    return matchTime && matchTitle && matchCategory;
+  });
+
   useEffect(() => {
-    getNotes();  // Call getNotes when component mounts
+    getNotes();  // Call getNotes when component mounts, needs to set to one instance 
+    // getCategories();
   }, []); 
+
+
+  // sorts data ascending or descending based on last updated
+  const sortAD = filter.sort((dateOne,dateTwo) => {
+    const FirstDate = new Date(dateOne.updated_at);
+    const SecondDate = new Date(dateTwo.updated_at);
+    return order === "ascending" ? FirstDate - SecondDate : SecondDate - FirstDate;
+  });
+
+  // choose between the four states of the notes
+  const notesDisplayed = selectCategory || searchTitle || sortAD || selectTime ? filter : notes; 
 
   return (
     <div className="bg-LighterBlue min-h-screen p-5">
@@ -54,46 +104,56 @@ const NotesPage = () => {
           value={searchTitle}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button
-          onClick={handleSearchTitle}
-          className="bg-DarkestBlue text-white rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          Search
-        </button>
-        <select
-          className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-          value={categoryId}
-          // onClick={getAllCategories}
-          onChange={(e) => setCategoryId(e.target.value)}
-        >
-          <option value="" disabled>
-            Filter by category
-          </option>
-          {categories.map((category, index) => (
-            <option 
-            key={index} value={category}
-            category = {category.category}>
-            <h3 className="text-xl font-bold text-DarkestBlue">{category.category}</h3>
-              {/* {category.name} */}
-            </option>
-          ))}
-        </select>
+        <select 
+            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            value={selectCategory}
+            onClick={getCategories}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">Select category</option>
+            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+          <select 
+            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            value={selectTime}
+            onChange={(e) => setSelectedTime(e.target.value)}
+          >
+            <option value="">Time created</option>
+            {[...new Set(notes.map(note => new Date(note.updated_at).toISOString().split('T')[0]))].map((date) => (
+              <option key={date} value={date}>
+                {new Date(date).toLocaleDateString()}
+              </option>
+            ))}
+          </select>
+          <select 
+            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            value={order}
+            onChange={(e) => setOrder(e.target.value)}
+          >
+            <option value="ascending" >Time Asc</option>
+            <option value="descending" >Time Desc</option>
+          </select>
       </div>
-        {notes.length > 0 ? (
-          notes.map((note, index) => (
+      {notesDisplayed.length > 0 ? ( // Applying filtering based on notes
+          notesDisplayed.map((note, index) => (
             <NoteCard
               key={index}
               title={note.title}
-              date={note.created_at}
+              date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed 
               ID={note.id}
-              category={note.category}
+              category={note.categoryId}
               content={note.content}
               getNotes={getNotes}
             />
           ))
         ) : (
-          <p className='text-DarkestBlue'
-          >Loading your notes...</p>
+          <p className='text-DarkestBlue'>
+          {notes.length > 0 ? "Loading your notes..." : "No notes available"} {/*this might not be working*/}
+        </p>
         )}
       </div>
     </div>

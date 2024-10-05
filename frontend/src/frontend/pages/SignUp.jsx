@@ -7,7 +7,7 @@ const SignUpPage = () => {
   const[email, setEmail] = useState("");
 
   const navigate = useNavigate();
-  const [setError]=useState(null);
+  const [error, setError] = useState(null); // Manage sign up error state
 
   const HandleRegistration = async (e) =>{
     //Generate a get request from database
@@ -35,10 +35,14 @@ const SignUpPage = () => {
 
   }
 
+  const handleCancel = () => {
+    navigate("/");
+  }
+
   return (
     <div className="font-sans bg-LighterBlue min-h-screen p-5 text-center"> 
       <header>
-        <h1 className="text-3xl font-bold text-black">SignUp Page</h1>
+        <h1 className="text-3xl font-bold text-black">Sign Up</h1>
       </header>
       <div className="flex flex-col space-y-4 mt-5">
         <input 
@@ -72,6 +76,9 @@ const SignUpPage = () => {
       <nav className="mt-5">
           <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
             Continue
+          </button>
+          <button className="bg-red-600 text-Ivory px-4 py-2 rounded hover:bg-red-700 transition mb-2" onClick={handleCancel}>
+            Cancel
           </button>
       </nav>
     </div>
