@@ -1,59 +1,60 @@
-import React from 'react';
-import { useState } from "react";
+import React, { useState } from 'react';
 import { FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
 const SignInPage = () => {
-  // email and password stored for validation
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // Allow for navigation upon validation
   const [isTicked, setIsTicked] = useState(false);
-  // Manage login status
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // Manage login error state
+
+  const navigate = useNavigate();
+
   const handleRememberMe = () => {
     setIsTicked(!isTicked); // Toggle the checkbox
   }
-  
 
-  // Generate a post request to the database
-  // Need to set up prisma and backend functionality
-  const CheckValidation = async (e) => {
+  // Generate a post request to the database for login
+  const CheckValidation = async () => {
     try {
       const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+          "Content-Type": "application/json"
         },
-        credentials: "include", // Include credentials
+        credentials: "include", // Include credentials (cookies)
         body: JSON.stringify({ email, password, isTicked })
-    });
+      });
     
-       console.log("Remember me functionality: ", isTicked);
+      console.log("Remember me functionality: ", isTicked);
 
-       const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok){
-      // Navigate to homepage
-
-      console.log(`Login successful! Remember me functionality: ${isTicked}`); // Corrected
-      navigate("/HomePage")
-    }else{
-      console.log("Invalid email or password")
-    }
+      if (response.ok) {
+        // Navigate to homepage on successful login
+        console.log(`Login successful! Remember me functionality: ${isTicked}`);
+        navigate("/HomePage");
+      } else {
+        // If the response is not OK, set error message
+        setError("Invalid email or password. Please try again.");
+      }
       
     } catch (error) {
-      setError("Invalid email or login")
+      // In case of a network or other error
+      setError("An error occurred during login. Please try again later.");
     }
   }
 
- 
+  const handleCancel = () => {
+    navigate("/");
+  }
 
   return (
     <div className="bg-LighterBlue min-h-screen p-5 text-center">
       <header>
-        <h1 className="text-3xl font-bold text-black" >SignIn Page</h1>
+        <h1 className="text-3xl font-bold text-black">Sign In</h1>
       </header>
+
       <div className="flex flex-col space-y-4 mt-5">
         <input 
           className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -67,19 +68,31 @@ const SignInPage = () => {
           type="password"
           placeholder="password"
           value={password}
-          onChange={(e)=>setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
+
         <FormGroup>
           <FormControlLabel 
             control={<Checkbox checked={isTicked} onChange={handleRememberMe} />} // sets is ticked to be true
             label="Remember Me"
           />
         </FormGroup>
-      <nav>
-        <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2 text-center" onClick={CheckValidation} >
-          Login?
-        </button>
-      </nav>
+
+        {/* Conditionally render error message if it exists */}
+        {error && (
+          <div className="text-red-500 text-sm mt-2">
+            {error}
+          </div>
+        )}
+
+        <nav>
+          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={CheckValidation}>
+            Login
+          </button>
+          <button className="bg-red-600 text-Ivory px-4 py-2 rounded hover:bg-red-700 transition mb-2" onClick={handleCancel}>
+            Cancel
+          </button>
+        </nav>
       </div>
     </div>
   );
