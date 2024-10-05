@@ -96,6 +96,21 @@ curl -c cookies.txt -X POST http://localhost:3000/auth/login \
 }' | jq '.'
 ```
 
+* Request Reset Password:
+
+```bash
+curl -X POST "http://localhost:3000/auth/request-password-reset?email=example@example.com" \
+| jq '.'
+```
+
+* Reset Passwords:
+
+```bash
+curl -X POST "http://localhost:3000/auth/reset-password" \
+-H "Content-Type: application/json" \
+-d '{"password": "newPassword123", "reset_token": "yourResetTokenHere"}' | jq '.'
+```
+
 ***************************************************************
 ## Category:
 ***************************************************************
@@ -172,6 +187,15 @@ curl -b cookies.txt -X PUT http://localhost:3000/notes/update/NOTE_ID \
   "categoryId": 1
 }' | jq '.'
 ```
+* Update a Note's status
+
+```bash
+curl -b cookies.txt -X PUT http://localhost:3000/notes/update-status/NOTE_ID \
+-H "Content-Type: application/json" \
+-d '{
+  "status": "NEW_STATUS"
+}' | jq '.'
+```
 
 * Delete a Note
 
@@ -189,7 +213,7 @@ curl -b cookies.txt -X POST http://localhost:3000/collaborators/add \
 -H "Content-Type: application/json" \
 -d '{
   "noteId": <note_id>,
-  "userEmail": <user_email>
+  "userEmail": "<user_email>"
 }' | jq '.'
 ```
 
@@ -246,6 +270,6 @@ curl -b cookies.txt -X GET http://localhost:3000/users/me/notes | jq '.'
 * Get user by email:
 
 ```bash
-curl -X GET http://localhost:3000/users/:email | jq '.'
+curl -X GET http://localhost:3000/users/email | jq '.'
 ```
 ***************************************************************

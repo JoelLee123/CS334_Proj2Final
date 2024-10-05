@@ -162,6 +162,39 @@ router.put('/update/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// Update the status of a note
+router.put('/update-status/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body; // Get the new status from the request body
+    const user = (req as any).user;
+
+    try {
+        // Verify that the user is a collaborator on this note
+        const note = await prisma.note.findUnique({
+            where: { id: Number(id) },
+            include: {
+                collaborators: true,
+            },
+        });
+
+        if (!note) return res.status(404).json({ message: 'Note not found' });
+
+        const isCollaborator = note.collaborators.some(collab => collab.userEmail === user.email);
+        if (!isCollaborator) return res.status(403).json({ message: 'Unauthorized' });
+
+        // Update the note status in the database
+        const updatedNote = await prisma.note.update({
+            where: { id: Number(id) },
+            data: { status }, // Update the status field
+        });
+
+        return res.status(200).json({ message: 'Note status updated', updatedNote });
+    } catch (error) {
+        return res.status(400).json({ message: 'Error updating note status', error });
+    }
+});
+
+
 // Delete a note
 router.delete('/delete/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;

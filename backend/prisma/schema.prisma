@@ -13,7 +13,7 @@ model User {
   username           String         @unique
   password           String
   avatar_url         String?
-  reset_token        String?
+  reset_token        String?        @unique
   reset_token_expiry DateTime?
   collaborators      Collaborator[]
 }
@@ -27,12 +27,13 @@ model Note {
   collaborators Collaborator[]
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
+  status        String         @default("Idle")
 }
 
 model Category {
   id         Int      @id @default(autoincrement())
   name       String   @unique
-  notes      Note[] // Add this relation
+  notes      Note[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
