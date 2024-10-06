@@ -13,6 +13,7 @@ const NoteCard = ({ title, date, ID, categoryId, category, content, getNotes }) 
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
+    console.log("categoryId received in note card: ", categoryId);
     if (isModalOpen) {
       document.body.classList.add('body-modal-open');
     } else {

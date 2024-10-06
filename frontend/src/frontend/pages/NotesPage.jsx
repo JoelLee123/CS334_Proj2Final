@@ -145,6 +145,7 @@ const NotesPage = () => {
               title={note.title}
               date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed 
               ID={note.id}
+              categoryId={note.categoryId}
               category={note.category?.name}
               content={note.content}
               getNotes={getNotes}
