@@ -211,16 +211,19 @@ const HomePage = () => {
     const url = isEditMode ? `http://localhost:3000/notes/update/${location.state.ID}` : 'http://localhost:3000/notes/add';
     const method = isEditMode ? 'PUT' : 'POST';
 
-    console.log('URL:', url);
     try {
       const response = await fetch(url, {
        method: method,
        headers:{
          "Content-Type": "application/json"
        },
-       body:JSON.stringify({title, content:markdown, categoryId}),
+       body:JSON.stringify({title, content:markdown, categoryId: parseInt(categoryId)}),
        credentials: 'include'
       });
+
+      console.log("Category from save/update: ", categoryId);
+      console.log("Category from save/update (2): ", parseInt(categoryId));
+      
 
       const data = await response.json();
 

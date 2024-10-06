@@ -24,7 +24,7 @@ const SignUpPage = () => {
         const data = response.json();
         if (response.ok){
           console.log("Sign up successful!");
-          navigate("/HomePage") 
+          navigate("/Sign-in"); 
         }else{
           console.log("Sign up unsuccessful!")
         }

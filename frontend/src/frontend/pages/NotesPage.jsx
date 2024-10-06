@@ -86,14 +86,14 @@ const NotesPage = () => {
               title={note.title}
               date={note.created_at}
               ID={note.id}
-              category={note.category}
+              category={note.category?.name}
               content={note.content}
               getNotes={getNotes}
             />
           ))
         ) : (
-          <p className='text-DarkestBlue'
-          >Loading your notes...</p>
+          <p className='text-Black'
+          >You have no notes </p>
         )}
       </div>
     </div>
