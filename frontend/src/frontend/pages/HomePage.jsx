@@ -111,6 +111,7 @@ const HomePage = () => {
       setCategories([...categories, data.category]); // Add the new category to the list
       closeModal(); // Close the modal
     } catch (error) {
+      setErrorPopup('Error: Category already exists');
       console.error('Error adding category:', error);
     }
   };
@@ -176,7 +177,7 @@ const HomePage = () => {
       setErrorPopup(''); // Clear any previous error messages
     } catch (error) {
       console.error('Error deleting category:', error);
-      setErrorPopup('Failed to delete category');
+      setErrorPopup('Error: Category still in use, cannot delete');
     }
   };
 
@@ -242,7 +243,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="bg-LighterBlue min-h-screen p-3 flex flex-col justify-center items-center">
+    <div className="bg-LighterBlue min-h-screen p-3 flex flex-col justify-start items-center">
       <div className="w-full max-w-4xl flex flex-col items-center space-y-6 mt-4">
         <h1 className="text-4xl font-bold text-center text-DarkestBlue mb-0">{isEditMode ? "Edit Note" : "Add Note"}</h1>
         <div className="flex space-x-4 items-center">
@@ -337,7 +338,7 @@ const HomePage = () => {
           />
         </div>
 
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 mb-4">
           <button
             onClick={handleDownload}
             className="bg-black hover:bg-DarkestBlue text-Ivory font-bold py-2 px-4 rounded transition duration-300 ease-in-out"

@@ -7,7 +7,6 @@ const ProfilePage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [selectedUser, setSelectedUser] = useState(""); 
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updateMessage, setUpdateMessage] = useState("");
   const navigate = useNavigate();
@@ -91,8 +90,6 @@ const ProfilePage = () => {
     } catch (error) {
       console.log("Couldn't get user details", error);
       setError("Failed to fetch user details");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -102,7 +99,6 @@ const ProfilePage = () => {
 
   const isFormValid = username && password && selectedUser;
 
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
@@ -123,7 +119,7 @@ const ProfilePage = () => {
             email={userDetails.email}
           />
         ) : (
-          <p>No user details available</p>
+          <p></p>
         )}
 
         <div className="flex flex-col space-y-4 mt-5">

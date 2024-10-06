@@ -154,7 +154,7 @@ const NoteCard = ({ title, date, ID, categoryId, category, content, getNotes }) 
   }, [ID]);
 
   return (
-    <div className="note-card bg-Ivory rounded-lg shadow-md p-4 mb-4 w-full max-w-md cursor-pointer" onClick={() => navigate('/homepage', { state: { title, categoryId, content, ID } })}>
+    <div className="note-card bg-Ivory rounded-lg shadow-md p-4 mb-4 w-full max-w-3xl cursor-pointer" onClick={() => navigate('/homepage', { state: { title, categoryId, content, ID } })}>
       <div className="flex justify-between items-start mb-2">
         <h1 className="text-xl font-bold text-DarkestBlue">{title}</h1>
         <div className="flex space-x-2">
@@ -169,15 +169,15 @@ const NoteCard = ({ title, date, ID, categoryId, category, content, getNotes }) 
           </button>
         </div>
       </div>
-
+  
       <h2 className="text-lg font-semibold text-DarkestBlue mb-2">Category: {category}</h2>
       <p className="text-DarkBlue mb-2">{content}</p>
       <p className="text-DarkBlue text-sm">{date}</p>
-
+  
       <h3 className="text-lg font-bold text-DarkestBlue mb-2">
         Collaborators: {collaborators.length > 0 ? collaborators.map(c => c.username).join(', ') : "None"}
       </h3>
-
+  
       {isModalOpen && (
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
