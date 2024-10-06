@@ -34,49 +34,64 @@ router.post('/add', authenticateToken, async (req, res) => {
 });
 
 // Remove a collaborator from a note
-router.delete('/remove/:noteId/:userEmail', authenticateToken, async (req, res) => {
-    const { noteId, userEmail } = req.params;
-    const user = (req as any).user;
+router.delete('/remove', authenticateToken, async (req, res) => {
+  const { noteId, userEmail } = req.body;
+  const user = (req as any).user;
 
-    try {
-        // Verify that the user owns the note
-        const note = await prisma.note.findUnique({
-            where: { id: Number(noteId) },
-            include: {
-                collaborators: true,
-            },
-        });
+  try {
+      // Verify that the user owns the note
+      const note = await prisma.note.findUnique({
+          where: { id: Number(noteId) },
+          include: {
+              collaborators: true,
+          },
+      });
 
-        if (!note) return res.status(404).json({ message: 'Note not found' });
+      if (!note) return res.status(404).json({ message: 'Note not found' });
 
-        // Remove the collaborator
-        await prisma.collaborator.deleteMany({
-            where: {
-                noteId: Number(noteId),
-                userEmail: String(userEmail),
-            },
-        });
+      // Remove the collaborator
+      await prisma.collaborator.deleteMany({
+          where: {
+              noteId: Number(noteId),
+              userEmail: String(userEmail),
+          },
+      });
 
-        return res.status(200).json({ message: 'Collaborator removed' });
-    } catch (error) {
-        return res.status(400).json({ message: 'Error removing collaborator', error });
-    }
+      return res.status(200).json({ message: 'Collaborator removed' });
+  } catch (error) {
+      return res.status(400).json({ message: 'Error removing collaborator', error });
+  }
 });
 
-// Get all collaborators for a specific note
-router.get('/:noteId', authenticateToken, async (req, res) => {
-    const { noteId } = req.params;
-
-    try {
-        const collaborators = await prisma.collaborator.findMany({
-            where: { noteId: Number(noteId) },
-            include: { user: true }, // Include user details if needed
-        });
-
-        return res.status(200).json({ collaborators });
-    } catch (error) {
-        return res.status(400).json({ message: 'Error fetching collaborators', error });
-    }
+// Get collaborators for a specific note
+router.get("/:noteId", authenticateToken, async (req, res) => {
+  const { noteId } = req.params;
+  
+  try {
+    const collaborators = await prisma.collaborator.findMany({
+      where: {
+        noteId: parseInt(noteId)
+      },
+      include: {
+        user: {
+          select: {
+            email: true,
+            username: true
+          }
+        }
+      }
+    });
+    
+    const formattedCollaborators = collaborators.map(collab => ({
+      email: collab.user.email,
+      username: collab.user.username
+    }));
+    
+    res.status(200).json({ collaborators: formattedCollaborators });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching collaborators", error });
+  }
 });
+  
 
 export default router;
