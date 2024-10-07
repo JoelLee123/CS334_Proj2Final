@@ -67,7 +67,7 @@ router.post("/login", async (req, res) => {
       secure: process.env.NODE_ENV === "production", // Send only over HTTPS in production
       maxAge: maxAge,
     });
-    console.log("Login successful")
+    console.log("Login successful");
     // After setting the cookie
     console.log("Token set in cookie:", token);
     return res.status(200).json({ message: "Login successful" });
@@ -123,7 +123,7 @@ router.post("/reset-password", async (req, res) => {
       where: { reset_token },
       data: {
         password: hashedPassword,
-        reset_token: null
+        reset_token: null,
       },
     });
 

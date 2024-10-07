@@ -165,12 +165,10 @@ router.put("/update/:id", authenticateToken, async (req, res) => {
     return res.status(200).json({ message: "Note updated", updatedNote });
   } catch (error) {
     console.error("Error updating note:", error);
-    return res
-      .status(400)
-      .json({
-        message: "Error updating note",
-        error: (error as Error).message,
-      });
+    return res.status(400).json({
+      message: "Error updating note",
+      error: (error as Error).message,
+    });
   }
 });
 
