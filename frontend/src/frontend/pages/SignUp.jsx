@@ -21,7 +21,7 @@ const SignUpPage = () => {
         body:JSON.stringify({"username":username, "email":email, "password": password})
         });
 
-        const data = response.json();
+        const data = await response.json();
         if (response.ok){
           console.log("Sign up successful!");
           navigate("/HomePage") 
