@@ -11,11 +11,14 @@ router.post('/add', authenticateToken, async (req, res) => {
     console.log("content detail",{ title, content, categoryId });
     console.log("User details",{ user});
 
-    // if (!title || typeof title !== 'string' || !content || typeof content !== 'string' || !categoryId || typeof categoryId !== 'string') {
-    //     return res.status(400).json({ message: 'Invalid input data' });
-    // }
-    
-    const categoryIdNum = Number(categoryId);
+    var categoryIdNum;
+
+    /* Choose the default category if not selected */
+    if (categoryId === "") {
+        categoryIdNum = 1;
+    } else {
+        categoryIdNum = Number(categoryId);
+    }
 
     try {
         // Create the note in the database
