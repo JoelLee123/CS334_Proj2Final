@@ -1,25 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { marked } from "marked";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faPencilAlt,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-const NotesPage = ({ noteId }) => {
+const NotesPage = () => {
   const [markdown, setMarkdown] = useState("");
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [categories, setCategories] = useState([]);
   const [collaboratorEmail, setCollaboratorEmail] = useState("");
   const [collaborators, setCollaborators] = useState([]);
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("");
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [errorPopup, setErrorPopup] = useState("");
   const [shareError, setShareError] = useState("");
   const location = useLocation();
 
@@ -35,11 +25,11 @@ const NotesPage = ({ noteId }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/collaborators/add/${location.state.ID}`,
+        "http://localhost:3000/collaborators/add",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: collaboratorEmail }),
+          body: JSON.stringify({ userEmail: collaboratorEmail, noteId: `${location.state.id}` }),
           credentials: "include",
         }
       );
@@ -70,13 +60,16 @@ const NotesPage = ({ noteId }) => {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, content: markdown, categoryId: categoryId ? categoryId : 1 }),
+          body: JSON.stringify({
+            title,
+            content: markdown,
+            categoryId: categoryId ? categoryId : 1,
+          }),
           credentials: "include",
         }
       );
 
       if (!response.ok) throw new Error("Error updating note");
-
     } catch (error) {
       console.error("Error updating note:", error);
     }
@@ -104,92 +97,6 @@ const NotesPage = ({ noteId }) => {
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  };
-
-  const handleAddCategory = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/categories/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newCategoryName }),
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Error adding category");
-
-      const data = await response.json();
-      setCategories([...categories, data.category]);
-      closeCategoryModal();
-    } catch (error) {
-      console.error("Error adding category:", error);
-    }
-  };
-
-  const handleUpdateCategory = async () => {
-    if (!categoryId) return setErrorPopup("Please select a category to edit");
-
-    try {
-      const response = await fetch(
-        `http://localhost:3000/categories/update/${categoryId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: newCategoryName }),
-          credentials: "include",
-        }
-      );
-      if (!response.ok) throw new Error("Error updating category");
-
-      const data = await response.json();
-      setCategories(
-        categories.map((cat) =>
-          cat.id === parseInt(categoryId) ? data.updatedCategory : cat
-        )
-      );
-      closeCategoryModal();
-    } catch (error) {
-      console.error("Error updating category:", error);
-      setErrorPopup("Failed to update category");
-    }
-  };
-
-  const handleDeleteCategory = async () => {
-    if (!categoryId) return setErrorPopup("Please select a category to delete");
-
-    try {
-      const response = await fetch(
-        `http://localhost:3000/categories/delete/${categoryId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-      if (!response.ok) throw new Error("Error deleting category");
-
-      setCategories(
-        categories.filter((cat) => cat.id !== parseInt(categoryId))
-      );
-      setCategoryId("");
-      setErrorPopup("");
-    } catch (error) {
-      console.error("Error deleting category:", error);
-      setErrorPopup("Failed to delete category");
-    }
-  };
-
-  const openCategoryModal = (type) => {
-    setModalType(type);
-    if (type === "edit") {
-      const selectedCategory = categories.find(
-        (cat) => cat.id === parseInt(categoryId)
-      );
-      setNewCategoryName(selectedCategory ? selectedCategory.name : "");
-    }
-    setIsCategoryModalOpen(true);
-  };
-
-  const closeCategoryModal = () => {
-    setIsCategoryModalOpen(false);
-    setNewCategoryName("");
   };
 
   const renderMarkdown = () => {
@@ -237,70 +144,16 @@ const NotesPage = ({ noteId }) => {
             ))}
           </select>
 
-          <div className="flex space-x-2">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => openCategoryModal("add")}
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </button>
-            <button
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => openCategoryModal("edit")}
-            >
-              <FontAwesomeIcon icon={faPencilAlt} />
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              onClick={handleDeleteCategory}
-            >
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
-          </div>
+          {/* Share Button (moved to category button's place) */}
+          <button
+            onClick={openShareModal}
+            className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+          >
+            Share
+          </button>
         </div>
 
-        {isCategoryModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg">
-              <h2 className="text-xl font-bold mb-4">
-                {modalType === "add" ? "Add New Category" : "Edit Category"}
-              </h2>
-              <input
-                type="text"
-                placeholder="Category Name"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                className="border border-gray-300 p-2 mb-4 w-full"
-              />
-              <div className="flex justify-end space-x-2">
-                <button
-                  onClick={closeCategoryModal}
-                  className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={
-                    modalType === "add"
-                      ? handleAddCategory
-                      : handleUpdateCategory
-                  }
-                  className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={openShareModal}
-          className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
-        >
-          Share
-        </button>
-
+        {/* Share Note Modal */}
         {isShareModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded-lg">
@@ -325,23 +178,6 @@ const NotesPage = ({ noteId }) => {
                   className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
                 >
                   Share
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {errorPopup && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg">
-              <h2 className="text-xl font-bold mb-4 text-red-600">Error</h2>
-              <p>{errorPopup}</p>
-              <div className="flex justify-end space-x-2 mt-4">
-                <button
-                  onClick={() => setErrorPopup("")}
-                  className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded"
-                >
-                  Close
                 </button>
               </div>
             </div>
