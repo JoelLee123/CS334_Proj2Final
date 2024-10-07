@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NoteCard from "../components/NoteCard"; // Adjust the import path as necessary
+import NoteModal from "../modals/NoteModal";
 
 const HomePage = ({ setNoteId }) => {
   const [notes, setNotes] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [searchTitle, setSearch] = useState("");
   const [selectCategory, setSelectedCategory] = useState("");
@@ -40,7 +42,7 @@ const HomePage = ({ setNoteId }) => {
 
       const data = await response.json();
       if (response.ok) {
-        setCategories(data);
+        setCategories(data.categories);
       } else {
         console.log("Categories not fetched", data.message);
       }
@@ -49,8 +51,8 @@ const HomePage = ({ setNoteId }) => {
     }
   };
 
-  // Function to create a new blank note
-  const handleCreateNote = async () => {
+  // Handle note creation through modal
+  const handleCreateNote = async (noteData) => {
     try {
       const response = await fetch("http://localhost:3000/notes/add", {
         method: "POST",
@@ -58,7 +60,11 @@ const HomePage = ({ setNoteId }) => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ title: "", content: "", categoryId: 1 }), // Use default categoryId
+        body: JSON.stringify({
+          title: noteData.title,
+          content: "", // Default content
+          categoryId: noteData.categoryId || 1, // Use selected category or default
+        }),
       });
 
       if (!response.ok) {
@@ -66,9 +72,15 @@ const HomePage = ({ setNoteId }) => {
       }
 
       const data = await response.json();
-      // Pass the newly created note ID to the NotesPage as a prop
-      setNoteId(data.note.id);
-      navigate("/notes"); // Redirect to the NotesPage (editing)
+      const note = data.note;
+      navigate(`/notes`, {
+        state: {
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          categoryId: note.categoryId,
+        },
+      });
     } catch (error) {
       console.error("Error creating note:", error);
     }
@@ -76,6 +88,7 @@ const HomePage = ({ setNoteId }) => {
 
   useEffect(() => {
     getNotes();
+    getCategories();
   }, []);
 
   // Apply filtering based on search title, time, and category
@@ -116,7 +129,7 @@ const HomePage = ({ setNoteId }) => {
       {/* Create Note Button */}
       <div className="flex justify-center mb-4">
         <button
-          onClick={handleCreateNote}
+          onClick={() => setIsModalOpen(true)} // Open modal on button click
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Create Note
@@ -140,13 +153,11 @@ const HomePage = ({ setNoteId }) => {
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {[...new Set(notes.map((note) => note.categoryId))].map(
-              (category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              )
-            )}
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
           <select
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
@@ -196,6 +207,14 @@ const HomePage = ({ setNoteId }) => {
           </p>
         )}
       </div>
+
+      {/* Note Creation Modal */}
+      <NoteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreate={handleCreateNote}
+        categories={categories}
+      />
     </div>
   );
 };
