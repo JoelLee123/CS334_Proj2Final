@@ -129,7 +129,7 @@ wss.on("connection", (ws) => {
           if (note.status === "Idle") {
             // If the note is idle, update the status to reflect the current user is editing
             const updatedNoteResponse = await axios.put(
-              `http://localhost:${PORT}/notes/update-status/$       {noteId}`,
+              `http://localhost:${PORT}/notes/update-status/${noteId}`,
               {
                 status: `${username} is editing this note`,
               },
