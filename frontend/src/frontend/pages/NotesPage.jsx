@@ -145,15 +145,15 @@ const NotesPage = () => {
               title={note.title}
               date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed 
               ID={note.id}
-              category={note.categoryId}
+              categoryId={note.categoryId}
+              category={note.category?.name}
               content={note.content}
               getNotes={getNotes}
             />
           ))
         ) : (
-          <p className='text-DarkestBlue'>
-          {notes.length > 0 ? "Loading your notes..." : "No notes available"} {/*this might not be working*/}
-        </p>
+          <p className='text-Black'
+          >You have no notes </p>
         )}
       </div>
     </div>
