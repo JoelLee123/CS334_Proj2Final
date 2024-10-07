@@ -194,6 +194,10 @@ const NotesPage = ({ noteId }) => {
     setNewCategoryName("");
   };
 
+  const renderMarkdown = () => {
+    return { __html: marked(markdown) };
+  };
+
   const handleDownload = () => {
     const blob = new Blob([markdown], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
