@@ -31,20 +31,6 @@ const FrontPage = () => {
         <div className="serif bg-LighterBlue min-h-screen">
             <header className=" bg-DarkestBlue flex justify-between items-center mb-4 p-5">
                 <h1 className="serif text-3xl font-bold text-black">Welcome to ScribeMark</h1>
-                <button onClick={toggleMenu} className="text-black focus:outline-none">
-                    <div className="flex flex-col space-y-1">
-                        <span className="block w-8 h-1 bg-black"></span>
-                        <span className="block w-8 h-1 bg-black"></span>
-                        <span className="block w-8 h-1 bg-black"></span>
-                    </div>
-                </button>
-                {menuOpen && (
-                    <nav ref={menuRef} className=" flex flex-col absolute right-5 bg-white shadow-md rounded">
-                        <Link to='/About' className="text-black hover:text-blue-600 p-2">About Us</Link>
-                        <Link to='/Features' className="text-black hover:text-blue-600 p-2">Features</Link>
-                        <Link to='/Contact' className="text-black hover:text-blue-600 p-2">Contact</Link>
-                    </nav>
-                )}
             </header>
             <nav className="flex flex-col items-center my-5">
                 <img src={image} alt="An illustration of adventure" style={{ width: '300px', height: 'auto' }} className="mb-4" />
