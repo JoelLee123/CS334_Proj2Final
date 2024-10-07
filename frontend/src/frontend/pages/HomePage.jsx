@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NoteCard from "../components/NoteCard"; // Adjust the import path as necessary
-import NoteModal from "../modals/NoteModal";
+import NoteModal from "../components/NoteModal";
+import CategoryModal from "../components/CategoryModal";
 
 const HomePage = ({ setNoteId }) => {
   const [notes, setNotes] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [searchTitle, setSearch] = useState("");
   const [selectCategory, setSelectedCategory] = useState("");
@@ -86,6 +88,47 @@ const HomePage = ({ setNoteId }) => {
     }
   };
 
+  const handleManageCategories = async ({ action, id, name }) => {
+    try {
+      let response;
+      if (action === "add") {
+        response = await fetch("http://localhost:3000/categories/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ name }),
+        });
+      } else if (action === "edit") {
+        response = await fetch(`http://localhost:3000/categories/update/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ name }),
+        });
+      } else if (action === "delete") {
+        response = await fetch(
+          `http://localhost:3000/categories/delete/${id}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
+      }
+
+      if (response.ok) {
+        getCategories(); // Refresh the categories list
+      } else {
+        console.error("Error managing category");
+      }
+    } catch (error) {
+      console.error("Error managing category:", error);
+    }
+  };
+
   useEffect(() => {
     getNotes();
     getCategories();
@@ -126,13 +169,19 @@ const HomePage = ({ setNoteId }) => {
         Your Notes
       </h1>
 
-      {/* Create Note Button */}
-      <div className="flex justify-center mb-4">
+      {/* Create Note and Manage Categories Buttons */}
+      <div className="flex justify-center mb-4 space-x-4">
         <button
-          onClick={() => setIsModalOpen(true)} // Open modal on button click
+          onClick={() => setIsNoteModalOpen(true)} // Open note modal
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Create Note
+        </button>
+        <button
+          onClick={() => setIsCategoryModalOpen(true)} // Open category modal
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Manage Categories
         </button>
       </div>
 
@@ -210,9 +259,17 @@ const HomePage = ({ setNoteId }) => {
 
       {/* Note Creation Modal */}
       <NoteModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isNoteModalOpen}
+        onClose={() => setIsNoteModalOpen(false)}
         onCreate={handleCreateNote}
+        categories={categories}
+      />
+
+      {/* Category Management Modal */}
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onManageCategories={handleManageCategories}
         categories={categories}
       />
     </div>
