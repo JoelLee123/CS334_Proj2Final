@@ -31,8 +31,11 @@ const SignUpPage = () => {
         const data = await response.json();
         if (response.ok){
           console.log("Sign up successful!");
-          navigate("/Sign-in") 
+          navigate("/Sign-in"); 
         }else{
+          if (data.error['code'] === 'P2002'){     
+            setError("Email or name already exists");
+          }
           console.log("Sign up unsuccessful: ", data.error['code']);
         }
             

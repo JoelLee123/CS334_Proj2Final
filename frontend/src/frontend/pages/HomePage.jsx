@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons'; // Importing icons
+import { faPlus, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
@@ -10,34 +10,23 @@ const HomePage = () => {
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(false);
-  //Used for add category pop up
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal
-  //Allows for reuse of add category pop up
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('');
-  //Used for adding a new category name to the dropdown list
   const [newCategoryName, setNewCategoryName] = useState('');
-  //Error pop up (used by delete category)
   const [errorPopup, setErrorPopup] = useState('');
-
-  //Receive edit note data
-  const location = useLocation();
-  //Reirect to notes page
-  const navigate = useNavigate();
-  //Decide if we are editing a note
   const [isEditMode, setIsEditMode] = useState(false);
 
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (location.state) {
-      //Set state values (editing a note)
       setIsEditMode(true);
       setTitle(location.state.title);
       setMarkdown(location.state.content);
       setCategoryId(location.state.categoryId);
     } else {
-      // If no note is passed, it's a new note (create mode)
       setIsEditMode(false);
-      //setNoteId(null);
       setTitle('');
       setMarkdown('');
       setCategoryId('');
@@ -58,13 +47,8 @@ const HomePage = () => {
 
       const data = await response.json();
 
-      //We want the category names to populate the dropdown list
       if (data.categories && Array.isArray(data.categories)) {
-        const categoryNames = data.categories.map(category => ({
-          id: category.id,
-          name: category.name
-        }));
-        setCategories(categoryNames); //set categories with only id and name
+        setCategories(data.categories);
       } else {
         throw new Error('Invalid categories format');
       }
@@ -74,7 +58,6 @@ const HomePage = () => {
     }
   };
 
-  // Function to open the modal
   const openModal = (type) => {
     setModalType(type);
     if (type === 'edit') {
@@ -84,13 +67,11 @@ const HomePage = () => {
     setIsModalOpen(true);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setIsModalOpen(false);
     setNewCategoryName('');
   };
 
-  //Add category button (+ icon, POST request)
   const handleAddCategory = async () => {
     try {
       const response = await fetch("http://localhost:3000/categories/add", {
@@ -98,31 +79,33 @@ const HomePage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: newCategoryName }), // Send the category name
-        credentials: 'include' // Include authentication token in the request
+        body: JSON.stringify({ name: newCategoryName }),
+        credentials: 'include'
       });
 
       if (!response.ok) {
-        throw new Error('Error adding category');
+        if (response.status === 409) {
+          setErrorPopup('Could not add category, category already exists');
+        } else {
+          throw new Error('Error adding category');
+        }
+        return;
       }
 
       const data = await response.json();
-      // Assuming the backend returns the newly created category
-      setCategories([...categories, data.category]); // Add the new category to the list
-      closeModal(); // Close the modal
+      setCategories([...categories, data.category]);
+      closeModal();
     } catch (error) {
       console.error('Error adding category:', error);
+      setErrorPopup('Error adding category');
     }
   };
 
-  //Edit category button (pencil icon, PUT request)
   const handleUpdateCategory = async () => {
     if (!categoryId) {
       setErrorPopup('Please select a category to edit');
       return;
     }
-
-    console.log('Category ID in update method:', categoryId);
 
     try {
       const response = await fetch(`http://localhost:3000/categories/update/${categoryId}`, {
@@ -130,7 +113,7 @@ const HomePage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: newCategoryName }), // Updated category name
+        body: JSON.stringify({ name: newCategoryName }),
         credentials: 'include'
       });
 
@@ -149,14 +132,11 @@ const HomePage = () => {
     }
   };
 
-  //Delete category button (trash icon, DELETE request)
   const handleDeleteCategory = async () => {
-    if (!categoryId) { // Check if a category is selected
+    if (!categoryId) {
       setErrorPopup('Please select a category to delete');
       return;
     }
-
-    console.log('Category ID in delete method:', categoryId);
 
     try {
       const response = await fetch(`http://localhost:3000/categories/delete/${categoryId}`, {
@@ -168,19 +148,15 @@ const HomePage = () => {
         throw new Error('Error deleting category');
       }
 
-      console.log("The response was ok");
-
-      // Remove the deleted category from the state
       setCategories(categories.filter((category) => category.id !== parseInt(categoryId)));
-      setCategoryId(''); // Reset the selected category
-      setErrorPopup(''); // Clear any previous error messages
+      setCategoryId('');
+      setErrorPopup('');
     } catch (error) {
       console.error('Error deleting category:', error);
-      setErrorPopup('Failed to delete category');
+      setErrorPopup('Error: Category still in use, cannot delete');
     }
   };
 
-  // Function to close the error popup
   const closeErrorPopup = () => {
     setErrorPopup('');
   };
@@ -207,26 +183,22 @@ const HomePage = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    console.log('Save button clicked');
     const url = isEditMode ? `http://localhost:3000/notes/update/${location.state.ID}` : 'http://localhost:3000/notes/add';
     const method = isEditMode ? 'PUT' : 'POST';
 
-    console.log('URL:', url);
     try {
       const response = await fetch(url, {
        method: method,
        headers:{
          "Content-Type": "application/json"
        },
-       body:JSON.stringify({title, content:markdown, categoryId}),
+       body:JSON.stringify({title, content:markdown, categoryId: parseInt(categoryId)}),
        credentials: 'include'
       });
 
       const data = await response.json();
 
       if (response.ok){
-        console.log(isEditMode ? "Note updated" : "Note saved");
-        //console.log(data.note['email']); - GAVE A WEIRD ERROR
         navigate('/notes');
       } else {
         console.log("Note not saved", data.message);
@@ -239,7 +211,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="bg-LighterBlue min-h-screen p-3 flex flex-col justify-center items-center">
+    <div className="bg-LighterBlue min-h-screen p-3 flex flex-col justify-start items-center">
       <div className="w-full max-w-4xl flex flex-col items-center space-y-6 mt-4">
         <h1 className="text-4xl font-bold text-center text-DarkestBlue mb-0">{isEditMode ? "Edit Note" : "Add Note"}</h1>
         <div className="flex space-x-4 items-center">
@@ -257,13 +229,12 @@ const HomePage = () => {
           >
             <option value="" disabled>Select a category</option>
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+              <option key={category.id} value={category.id.toString()}>
                 {category.name}
               </option>
             ))}
           </select>
 
-          {/* Icon Buttons */}
           <div className="flex space-x-2">
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => openModal('add')}>
               <FontAwesomeIcon icon={faPlus} />
@@ -277,7 +248,6 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Modal for Adding/Editing Category */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded-lg">
@@ -289,6 +259,7 @@ const HomePage = () => {
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 className="border border-gray-300 p-2 mb-4 w-full"
               />
+              {errorPopup && <p className="text-red-500 mb-4">{errorPopup}</p>}
               <div className="flex justify-end space-x-2">
                 <button onClick={closeModal} className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded">
                   Cancel
@@ -301,7 +272,6 @@ const HomePage = () => {
           </div>
         )}
 
-        {/* Error Popup */}
         {errorPopup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded-lg">
@@ -334,7 +304,7 @@ const HomePage = () => {
           />
         </div>
 
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 mb-4">
           <button
             onClick={handleDownload}
             className="bg-black hover:bg-DarkestBlue text-Ivory font-bold py-2 px-4 rounded transition duration-300 ease-in-out"

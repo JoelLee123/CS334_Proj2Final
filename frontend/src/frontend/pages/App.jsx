@@ -7,7 +7,6 @@ import SignInPage from './SignIn';
 import FrontPage from './StartPg';
 import ProfilePage from './ProfilePage';
 import NotesPage from './NotesPage';
-import SharedPage from './SharedPage';
 import Navbar from "../components/NavBar";
 
 function App() {
@@ -22,7 +21,6 @@ function App() {
           <Route path="/Sign-up" element={<SignUpPage />} />
           <Route path="/Profile" element={<ProfilePage />} />
           <Route path="/notes" element={<NotesPage />} />
-          <Route path="/shared" element={<SharedPage />} />
         </Routes>
       </div>
     </Router>
