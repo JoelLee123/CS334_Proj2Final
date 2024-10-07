@@ -22,7 +22,6 @@ const NotesPage = ({ noteId }) => {
   const [errorPopup, setErrorPopup] = useState("");
   const [shareError, setShareError] = useState("");
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     setTitle(location.state?.title || "");
@@ -67,7 +66,7 @@ const NotesPage = ({ noteId }) => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `http://localhost:3000/notes/update/${location.state.ID}`,
+        `http://localhost:3000/notes/update/${location.state.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -78,7 +77,6 @@ const NotesPage = ({ noteId }) => {
 
       if (!response.ok) throw new Error("Error updating note");
 
-      navigate("/notes");
     } catch (error) {
       console.error("Error updating note:", error);
     }
@@ -379,7 +377,7 @@ const NotesPage = ({ noteId }) => {
             onClick={handleSave}
             className="bg-black hover:bg-DarkBlue text-Ivory font-bold py-2 px-4 rounded"
           >
-            Update
+            Save
           </button>
         </div>
       </div>
