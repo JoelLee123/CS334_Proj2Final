@@ -1,32 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import image from '../images/adventuretime.png';
 
 const FrontPage = () => {
-    const [menuOpen, setMenuOpen] = useState(false); // State to control menu visibility
-    const menuRef = useRef(null); // Ref to reference the menu
-
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen); // Toggle the menu open/closed
-    };
-
-    // Close the menu if clicked outside
-    const handleClickOutside = (event) => {
-        if (menuRef.current && !menuRef.current.contains(event.target)) {
-            setMenuOpen(false); // Close menu
-        }
-    };
-
-    useEffect(() => {
-        // Attach the click event listener
-        document.addEventListener('mousedown', handleClickOutside);
-        
-        // Clean up the event listener on component unmount
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
     return (
         <div className="serif bg-LighterBlue min-h-screen">
             <header className=" bg-DarkestBlue flex justify-between items-center mb-4 p-5">

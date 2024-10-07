@@ -88,7 +88,7 @@ const SignUpPage = () => {
 
         />
       </div>
-      <nav className="mt-5">
+      <nav className="mt-5 space-x-4">
           <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
             Continue
           </button>

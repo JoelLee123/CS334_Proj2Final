@@ -43,7 +43,7 @@ const SignInPage = () => {
     
       console.log("Remember me functionality: ", isTicked);
 
-      const data = await response.json();
+      // const data = await response.json();
 
       if (response.ok) {
         // Navigate to homepage on successful login
@@ -76,6 +76,10 @@ const SignInPage = () => {
 
   const handleCancel = () => {
     navigate("/");
+  }
+
+  const handleForgotPassword = () => {
+    console.log("In functionality forgot password");
   }
 
   return (
@@ -114,7 +118,7 @@ const SignInPage = () => {
           </div>
         )}
 
-        <nav>
+        <nav className='space-x-4'>
           <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={CheckValidation}>
             Login
           </button>
@@ -122,6 +126,9 @@ const SignInPage = () => {
             Cancel
           </button>
         </nav>
+        <button className="text-black underline cursor-pointer hover:text-DarkestBlue transition" onClick={handleForgotPassword}>
+            Forgot password?
+        </button>
       </div>
     </div>
   );
