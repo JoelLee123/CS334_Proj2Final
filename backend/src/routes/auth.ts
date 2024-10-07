@@ -121,7 +121,7 @@ router.post("/reset-password", async (req, res) => {
       where: { reset_token },
       data: {
         password: hashedPassword,
-        reset_token: null
+        reset_token: null,
       },
     });
 
