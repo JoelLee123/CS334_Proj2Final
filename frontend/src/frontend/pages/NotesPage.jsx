@@ -20,6 +20,41 @@ const NotesPage = () => {
     fetchCategories();
   }, [location.state]);
 
+  // WebSocket connection
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:3000");
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established.");
+    };
+
+    /* Listen to incoming messages */
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "UPDATE_NOTE" && data.id === location.state.id) {
+        setMarkdown(data.content);
+      }
+    };
+
+    return () => {
+      socket.close(); // Clean up on component unmount
+    };
+  }, [location.state.id]);
+
+  // Send updates via WebSocket
+  const handleMarkdownChange = (e) => {
+    const newContent = e.target.value;
+    setMarkdown(newContent);
+
+    // Send updated content to WebSocket server
+    const socketMessage = {
+      type: "UPDATE_NOTE",
+      id: location.state.id,
+      content: newContent,
+    };
+    socket.send(JSON.stringify(socketMessage)); // Ensure socket is in scope or handle sending separately
+  };
+
   const handleShareNote = async () => {
     if (!collaboratorEmail) return setShareError("Please enter an email.");
 
@@ -190,7 +225,7 @@ const NotesPage = () => {
 
         <textarea
           value={markdown}
-          onChange={(e) => setMarkdown(e.target.value)}
+          onChange={handleMarkdownChange}
           rows="12"
           className="w-full p-3 border rounded-lg border-LighterBlue bg-Ivory focus:ring-2 focus:ring-DarkBlue"
           placeholder="Enter Markdown content"
