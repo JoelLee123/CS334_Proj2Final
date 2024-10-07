@@ -28,16 +28,17 @@ const SignUpPage = () => {
         body:JSON.stringify({"username":username, "email":email, "password": password})
         });
 
-        const data = response.json();
+        const data = await response.json();
         if (response.ok){
           console.log("Sign up successful!");
           navigate("/Sign-in") 
         }else{
-          console.log("Sign up unsuccessful!")
+          console.log("Sign up unsuccessful: ", data.error['code']);
         }
             
    } catch (error) {
-     setError("User unsuccessfully signed up")
+     setError("User unsuccessfully signed up");
+     console.log(error);
    }
 
   }
