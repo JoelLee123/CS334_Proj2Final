@@ -24,15 +24,15 @@ const NotesPage = () => {
     if (!collaboratorEmail) return setShareError("Please enter an email.");
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/collaborators/add",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userEmail: collaboratorEmail, noteId: `${location.state.id}` }),
-          credentials: "include",
-        }
-      );
+      const response = await fetch("http://localhost:3000/collaborators/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userEmail: collaboratorEmail,
+          noteId: `${location.state.id}`,
+        }),
+        credentials: "include",
+      });
 
       if (response.status === 404) return setShareError("User not found");
       if (!response.ok) throw new Error("Error sharing note");
@@ -156,26 +156,30 @@ const NotesPage = () => {
         {/* Share Note Modal */}
         {isShareModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg">
-              <h2 className="text-xl font-bold mb-4">Share Note</h2>
+            <div className="bg-white p-8 rounded-lg max-w-lg w-full space-y-6">
+              <h2 className="text-2xl font-bold mb-4 text-center">
+                Share Note
+              </h2>
               <input
                 type="email"
                 placeholder="Enter collaborator's email"
                 value={collaboratorEmail}
                 onChange={(e) => setCollaboratorEmail(e.target.value)}
-                className="border border-gray-300 p-2 mb-4 w-full"
+                className="border border-gray-300 p-3 mb-4 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              {shareError && <p className="text-red-600 mb-4">{shareError}</p>}
-              <div className="flex justify-end space-x-2">
+              {shareError && (
+                <p className="text-red-600 mb-4 text-center">{shareError}</p>
+              )}
+              <div className="flex justify-between space-x-4">
                 <button
                   onClick={closeShareModal}
-                  className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded"
+                  className="w-full bg-gray-500 hover:bg-gray-700 text-white py-3 px-6 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleShareNote}
-                  className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                  className="w-full bg-blue-500 hover:bg-blue-700 text-white py-3 px-6 rounded"
                 >
                   Share
                 </button>

@@ -3,7 +3,15 @@ import { XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../css/NotesHover.css";
 
-const NoteCard = ({ title, date, id, categoryId, content, getNotes }) => {
+const NoteCard = ({
+  title,
+  date,
+  id,
+  categoryId,
+  categoryName,
+  content,
+  getNotes,
+}) => {
   //For editing a note, reroute to Home Page
   const navigate = useNavigate();
 
@@ -47,21 +55,36 @@ const NoteCard = ({ title, date, id, categoryId, content, getNotes }) => {
       className="note-card bg-Ivory rounded-lg shadow-md p-4 mb-4 w-full max-w-md cursor-pointer"
       onClick={handleNoteClick}
     >
-      <div className="flex justify-between items-start mb-2">
-        <h2 className="text-xl font-bold text-DarkestBlue">{title}</h2>
+      <div className="flex flex-col mb-2">
+        {/* Display the note title with a label and distinct styling */}
+        <div className="mb-2">
+          <span className="text-sm font-semibold text-gray-600">Title:</span>
+          <h2 className="text-2xl font-bold text-DarkestBlue mt-1">{title}</h2>
+        </div>
 
-        <h3 className="text-xl font-bold text-DarkestBlue">{categoryId}</h3>
-        <button
-          className="text-DarkBlue hover:text-DarkestBlue"
-          onClick={handleDeleteNote}
-        >
-          <XCircle size={24} />
-        </button>
+        {/* Display the category name with a label and smaller font size */}
+        <div className="mb-4">
+          <span className="text-sm font-semibold text-gray-600">Category:</span>
+          <h3 className="text-lg font-medium text-DarkBlue mt-1">
+            {categoryName}
+          </h3>
+        </div>
       </div>
+
+      {/* Display the note content */}
       <p className="text-DarkBlue mb-2">{content}</p>
+
+      {/* Display the date */}
       <p className="text-DarkBlue text-sm">{date}</p>
+
+      {/* Delete Button */}
+      <button
+        className="absolute top-2 right-2 text-DarkBlue hover:text-DarkestBlue"
+        onClick={handleDeleteNote}
+      >
+        <XCircle size={24} />
+      </button>
     </div>
   );
 };
-
 export default NoteCard;
