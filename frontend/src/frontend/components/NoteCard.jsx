@@ -35,7 +35,7 @@ const NoteCard = ({ title, date, ID, categoryId, content, getNotes}) => {
   };
 
   const handleNoteClick = () => {
-    navigate('/homepage', { state: {title, categoryId, content, ID}});  //Redirect to the Home Page
+    navigate('/notes', { state: {title, categoryId, content, ID}});
   }
 
   return(
