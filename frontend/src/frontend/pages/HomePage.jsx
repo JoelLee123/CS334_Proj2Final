@@ -244,7 +244,7 @@ const HomePage = ({ setNoteId }) => {
               key={index}
               title={note.title}
               date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed
-              ID={note.id}
+              id={note.id}
               category={note.categoryId}
               content={note.content}
               getNotes={getNotes}

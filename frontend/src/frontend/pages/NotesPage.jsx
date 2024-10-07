@@ -70,7 +70,7 @@ const NotesPage = ({ noteId }) => {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, content: markdown, categoryId }),
+          body: JSON.stringify({ title, content: markdown, categoryId: categoryId ? categoryId : 1 }),
           credentials: "include",
         }
       );
