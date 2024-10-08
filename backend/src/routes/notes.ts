@@ -117,7 +117,6 @@ router.get("/:id", authenticateToken, async (req, res) => {
 
 // Update a note
 router.put("/update/:id", authenticateToken, async (req, res) => {
-  console.log("Hello");
   const { id } = req.params;
   const { title, content, categoryId } = req.body;
   const user = (req as any).user;

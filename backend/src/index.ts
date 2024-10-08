@@ -11,6 +11,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import axios from "axios"; // For making API requests
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
+import prisma from "./service/prisma";
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar }));
@@ -44,227 +45,116 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Collaborative note-taking app backend");
 });
 
-const clients = new Map(); // Store connected clients
+// Define the noteRooms structure: A record where each key is a `noteId` and its value is an array of WebSocket connections
+interface NoteRooms {
+  [noteId: string]: WebSocket[];
+}
 
-// WebSocket connection handler
-wss.on("connection", (ws) => {
-  // Object to store cookies for this session
-  let sessionCookies: string = "";
-  let userEmail: string | undefined;
-  let username: string | undefined;
+const noteRooms: NoteRooms = {}; // Example: { "note-123": [ws1, ws2], "note-456": [ws3] }
 
-  // Listen for messages from the WebSocket client
-  ws.on("message", async (message: Object) => {
-    console.log(`Received message: ${message}`);
+// Handle WebSocket connection
+wss.on("connection", (ws: WebSocket) => {
+  let currentNoteId: string | null = null; // Track the current note for each WebSocket connection
 
-    // Check if message is a string or an object and convert to string if necessary
-    const messageString =
-      typeof message === "string" ? message : message.toString();
+  ws.on("message", (message: string) => {
+    const parsedMessage = JSON.parse(message);
 
-    // Split the message into parts
-    const [command, ...params] = messageString.split(",");
-
-    try {
-      if (command === "login") {
-        const [email, password, rememberMe] = params;
-        userEmail = email;
-
-        // Make an API call to login and store cookies for the session
-        const response = await client.post(
-          `http://localhost:${PORT}/auth/login`,
-          {
-            email,
-            password,
-            rememberMe: rememberMe === "true",
-          },
-          {
-            withCredentials: true,
-            // Capture cookies from the response
-            headers: { Cookie: sessionCookies },
-          }
+    switch (parsedMessage.type) {
+      case "joinNote":
+        handleJoinNote(ws, parsedMessage.noteId);
+        currentNoteId = parsedMessage.noteId; // Store the noteId the client has joined
+        break;
+      case "editNote":
+        handleEditNote(
+          parsedMessage.noteId,
+          parsedMessage.content
         );
-
-        // Extract cookies from the response headers and store them for later use
-        const cookies = response.headers["set-cookie"];
-        if (cookies) {
-          sessionCookies = cookies.join("; ");
-        }
-
-        // Make another request to get the user's info after login
-        const userInfoResponse = await axios.get(
-          `http://localhost:${PORT}/users/${email}`,
-          {
-            headers: { Cookie: sessionCookies }, // Send the session cookies along with the request
-          }
+        break;
+      case "leaveNote":
+        handleLeaveNote(ws, parsedMessage.noteId);
+        break;
+      case "updateStatus":
+        handleUpdateStatus(
+          parsedMessage.noteId,
+          parsedMessage.status
         );
-
-        // Extract the username from the user info response
-        username = userInfoResponse.data.username;
-
-        // Store the connected client by their email
-        clients.set(userEmail, ws);
-        console.log("Client connected on webserver");
-
-        ws.send(JSON.stringify(`Logged in as ${username}`));
-      } else if (command === "editNote") {
-        const [noteId] = params;
-
-        try {
-          // Fetch note details, including the current status
-          const noteResponse = await axios.get(
-            `http://localhost:${PORT}/notes/${noteId}`,
-            {
-              withCredentials: true,
-              headers: { Cookie: sessionCookies },
-            }
-          );
-
-          // Extract the note, status, and collaborators from the API response
-          const note = noteResponse.data.note;
-          const collaborators = note.collaborators.map(
-            (collaborator: { userEmail: string }) => collaborator.userEmail
-          );
-
-          // Check the note's status
-          if (note.status === "Idle") {
-            // If the note is idle, update the status to reflect the current user is editing
-            const updatedNoteResponse = await axios.put(
-              `http://localhost:${PORT}/notes/update-status/${noteId}`,
-              {
-                status: `${username} is editing this note`,
-              },
-              {
-                withCredentials: true,
-                headers: { Cookie: sessionCookies },
-              }
-            );
-
-            // Notify connected collaborators that the user has started editing
-            collaborators.forEach((collaboratorEmail: string) => {
-              const collaboratorWs = clients.get(collaboratorEmail);
-              if (collaboratorWs && collaboratorWs !== ws) {
-                collaboratorWs.send(
-                  JSON.stringify({
-                    message: `User ${username} is editing note ${noteId}`,
-                  })
-                );
-              }
-            });
-          } else {
-            // If the note is not idle, notify the user trying to edit
-            ws.send(
-              JSON.stringify({
-                message: `Cannot edit. Note ${noteId} is currently being edited by ${note.status.replace(
-                  " is editing this note",
-                  ""
-                )}.`,
-              })
-            );
-          }
-        } catch (error) {
-          ws.send(
-            JSON.stringify({
-              message: "Error retrieving or updating the note status.",
-            })
-          );
-          console.error("Error handling editNote command:", error);
-        }
-      } else if (command === "stopEditing") {
-        const [noteId] = params;
-
-        // Fetch note details
-        const noteResponse = await axios.get(
-          `http://localhost:${PORT}/notes/${noteId}`,
-          {
-            withCredentials: true,
-            headers: { Cookie: sessionCookies },
-          }
-        );
-
-        const note = noteResponse.data.note;
-        const collaborators = note.collaborators.map(
-          (collaborator: { userEmail: string }) => collaborator.userEmail
-        );
-
-        //When a user is done editing, update the status to Idle
-        const updatedNoteResponse = await axios.put(
-          `http://localhost:${PORT}/notes/update-status/${noteId}`,
-          {
-            status: `Idle`,
-          },
-          {
-            withCredentials: true,
-            headers: { Cookie: sessionCookies },
-          }
-        );
-
-        // Notify connected collaborators that the user has stopped editing
-        collaborators.forEach((collaboratorEmail: string) => {
-          const collaboratorWs = clients.get(collaboratorEmail);
-          if (collaboratorWs && collaboratorWs !== ws) {
-            collaboratorWs.send(
-              JSON.stringify({
-                message: `User ${username} has stopped editing note ${noteId}`,
-              })
-            );
-          }
-        });
-      } else if (command === "notifyNewCollaborator") {
-        const [noteId, newCollaboratorEmail] = params;
-
-        try {
-          // Notify the new collaborator via WebSocket if they are connected
-          const newCollaboratorWs = clients.get(newCollaboratorEmail);
-          if (newCollaboratorWs) {
-            newCollaboratorWs.send(
-              JSON.stringify({
-                message: `You have been added as a collaborator to note ${noteId} by ${username}`,
-              })
-            );
-          } else {
-            ws.send(
-              JSON.stringify({
-                message: `User ${newCollaboratorEmail} is not connected.`,
-              })
-            );
-          }
-          // Notify the user who issued the notify command that the notification was successful
-          ws.send(
-            JSON.stringify({
-              message: `${newCollaboratorEmail} has been notified.`,
-            })
-          );
-        } catch (error) {
-          ws.send(
-            JSON.stringify({
-              message: `Error notifying ${newCollaboratorEmail}`,
-            })
-          );
-          console.error("Error handling notifyNewCollaborator command:", error);
-        }
-      } else {
-        ws.send(`Command not recognized: ${command}`);
-      }
-    } catch (error) {
-      // Ensure error has a message property
-      if (error instanceof Error) {
-        ws.send(`Error handling command ${command}: ${error.message}`);
-      } else {
-        ws.send(`Error handling command ${command}: Unknown error occurred`);
-      }
+        break;
+      default:
+        console.log("Unknown message type");
     }
   });
 
-  // When the client disconnects
+  // Handle client disconnect
   ws.on("close", () => {
-    console.log("Client disconnected");
-    if (userEmail) {
-      clients.delete(userEmail); // Remove the client from the clients map
-      console.log(`Removed ${userEmail} from connected clients`);
+    if (currentNoteId) {
+      handleLeaveNote(ws, currentNoteId);
     }
   });
 });
 
+// Handle a user joining a specific note
+function handleJoinNote(ws: WebSocket, noteId: string): void {
+  // Initialize the room if it doesn't exist
+  if (!noteRooms[noteId]) {
+    noteRooms[noteId] = [];
+  }
+
+  // Add the client (WebSocket connection) to the note's room
+  noteRooms[noteId].push(ws);
+  console.log(`User joined note ${noteId}`);
+}
+
+// Handle editing a note (send updates only to clients in the same note room)
+function handleEditNote(noteId: string, content: string): void {
+  if (!noteRooms[noteId]) return; // No active clients for this note
+
+  // Broadcast to all clients in the same room (same note)
+  noteRooms[noteId].forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({ type: "noteUpdated", noteId, content }));
+    }
+  });
+
+  updateNoteInDatabase(noteId, content);
+}
+
+// Handle a user leaving a note
+function handleLeaveNote(ws: WebSocket, noteId: string): void {
+  if (!noteRooms[noteId]) return;
+
+  // Remove the client from the room
+  noteRooms[noteId] = noteRooms[noteId].filter((client) => client !== ws);
+
+  // If no clients are left in the room, clean up
+  if (noteRooms[noteId].length === 0) {
+    delete noteRooms[noteId]; // Clean up the room if empty
+  }
+
+  console.log(`User left note ${noteId}`);
+}
+
+// Handle updating note status (e.g., "In Use", "Idle")
+function handleUpdateStatus(noteId: string, status: string): void {
+  // Implement your logic to handle status updates (e.g., "In Use", "Idle")
+  console.log(`Note ${noteId} status updated to ${status}`);
+}
+
+// Update note in the database
+async function updateNoteInDatabase(noteId: string, content: string): Promise<void> {
+  try {
+    await prisma.note.update({
+      where: { id: Number(noteId) },
+      data: {
+        content: content,
+        updated_at: new Date(),
+      },
+    });
+    console.log(`Note ${noteId} successfully updated.`);
+  } catch (error) {
+    console.error(`Error updating note ${noteId}:`, error);
+    throw new Error(`Unable to update note ${noteId}`);
+  }
+}
 // Start the server
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
