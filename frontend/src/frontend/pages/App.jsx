@@ -8,6 +8,7 @@ import FrontPage from './StartPg';
 import ProfilePage from './ProfilePage';
 import NotesPage from './NotesPage';
 import Navbar from "../components/NavBar";
+import ResetPass from './Reset_password';  // Correct component name
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/Sign-up" element={<SignUpPage />} />
           <Route path="/Profile" element={<ProfilePage />} />
           <Route path="/notes" element={<NotesPage />} />
+          <Route path="/reset-password" element={<ResetPass />} /> 
         </Routes>
       </div>
     </Router>
@@ -29,7 +31,7 @@ function App() {
 
 function ConditionalNavbar() {
   const location = useLocation();
-  const shouldHideNavbar = location.pathname === '/' || location.pathname === '/Sign-up'|| location.pathname === '/Sign-in';
+  const shouldHideNavbar = location.pathname === '/' || location.pathname === '/Sign-up' || location.pathname === '/Sign-in' || location.pathname === '/reset-password';
 
   return !shouldHideNavbar ? <Navbar /> : null;
 }

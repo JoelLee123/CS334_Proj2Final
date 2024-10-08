@@ -81,6 +81,7 @@ router.post("/login", async (req, res) => {
 router.post("/request-password-reset", async (req, res) => {
   const email = req.query.email?.toString();
 
+  console.log("email: "+email);
   const user = await prisma.user.findUnique({
     where: { email },
   });
@@ -106,8 +107,10 @@ router.post("/request-password-reset", async (req, res) => {
     });
 
     sendgridEmail.sendPasswordResetEmail(email, passwordResetToken);
+    console.log("Password sent successfully");
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {
+    console.log("Error sending email");
     return res.status(400).json({ message: "Error sending email", error });
   }
 });
@@ -128,9 +131,10 @@ router.post("/reset-password", async (req, res) => {
         reset_token: null,
       },
     });
-
+    console.log("Password has been successfully updated: "+hashedPassword)
     return res.status(200).json({ message: "Password succesfully updated" });
   } catch (error) {
+    console.log("Password has NOT been successfully updated");
     return res.status(400).json({ message: "Error updating password", error });
   }
 });
