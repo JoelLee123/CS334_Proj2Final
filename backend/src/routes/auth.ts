@@ -86,6 +86,7 @@ router.post("/request-password-reset", async (req, res) => {
   });
 
   if (!user) {
+    console.log("user not found")
     return res.status(404).json({ message: "User not found" });
   }
 

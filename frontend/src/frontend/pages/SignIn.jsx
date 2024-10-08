@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import { FormGroup, FormControlLabel, Checkbox, Modal, Backdrop, Fade, Typography, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
 const SignInPage = () => {
@@ -7,6 +7,8 @@ const SignInPage = () => {
   const [password, setPassword] = useState("");
   const [isTicked, setIsTicked] = useState(false);
   const [error, setError] = useState(null); // Manage login error state
+  const [openModal, setOpenModal] = useState(false);
+  const [modalEmail, setModalEmail] = useState(""); // Email for the modal
 
   const navigate = useNavigate();
 
@@ -14,10 +16,21 @@ const SignInPage = () => {
     setIsTicked(!isTicked); // Toggle the checkbox
   }
 
+  // Function to open the modal
+  const handleOpen = () => {
+    setOpenModal(true);
+  };
+
+  // Function to close the modal
+  const handleClose = () => {
+    setOpenModal(false);
+    setModalEmail(""); // Clear email when closing modal
+  };
+
   useEffect(() => {
     const storedEmail = localStorage.getItem("email");
     const storedPassword = localStorage.getItem("password");
-    const rememberMe = localStorage.getItem("rememberMe") ==="true";
+    const rememberMe = localStorage.getItem("rememberMe") === "true";
 
     if (storedEmail) {
       setEmail(storedEmail);
@@ -40,13 +53,10 @@ const SignInPage = () => {
         credentials: "include", // Include credentials (cookies)
         body: JSON.stringify({ email, password, isTicked })
       });
-    
+
       console.log("Remember me functionality: ", isTicked);
 
-      // const data = await response.json();
-
       if (response.ok) {
-        // Navigate to homepage on successful login
         console.log(`Login successful! Remember me functionality: ${isTicked}`);
 
         // Adds remember me functionality and sets to true
@@ -56,21 +66,21 @@ const SignInPage = () => {
           localStorage.setItem("rememberMe", true);
         } else {
           // Clear stored credentials if not checked
-          // Adds remember me functionality and sets to false
           localStorage.removeItem("email");
           localStorage.removeItem("password");
           localStorage.setItem("rememberMe", false);
         }
-        
+
         navigate("/HomePage");
       } else {
-        // If the response is not OK, set error message
         setError("Invalid email or password. Please try again.");
       }
+
+    } catch (error) { // Double check if it works
+      setTimeout(()=>{
+        setError("An error occurred during login. Please try again later.");
+      },3000);
       
-    } catch (error) {
-      // In case of a network or other error
-      setError("An error occurred during login. Please try again later.");
     }
   }
 
@@ -78,8 +88,27 @@ const SignInPage = () => {
     navigate("/");
   }
 
-  const handleForgotPassword = () => {
-    console.log("In functionality forgot password");
+  const handleForgotPassword = async () => {
+    console.log("In functionality forgot password with email:", modalEmail);
+    try {
+      const response = await fetch("http://localhost:3000/auth/request-password-reset?email="+modalEmail,{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include", // Include credentials (cookies)
+      });
+
+      if (response.ok) {
+        console.log(`Password reset request sent for email: ${modalEmail}`);
+        setOpenModal(false); // Close modal after sending request
+      } else {
+        setError("Failed to send reset link. Please try again.");
+      }
+
+    } catch (error) {
+      setError("An error occurred during password reset. Please try again later.");
+    }
   }
 
   return (
@@ -89,14 +118,14 @@ const SignInPage = () => {
       </header>
 
       <div className="flex flex-col space-y-4 mt-5">
-        <input 
+        <input
           className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="text"
           placeholder="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input 
+        <input
           className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="password"
           placeholder="password"
@@ -105,13 +134,12 @@ const SignInPage = () => {
         />
 
         <FormGroup>
-          <FormControlLabel 
-            control={<Checkbox checked={isTicked} onChange={handleRememberMe} />} // sets is ticked to be true
+          <FormControlLabel
+            control={<Checkbox checked={isTicked} onChange={handleRememberMe} />}
             label="Remember Me"
           />
         </FormGroup>
 
-        {/* Conditionally render error message if it exists */}
         {error && (
           <div className="text-red-500 text-sm mt-2">
             {error}
@@ -126,9 +154,40 @@ const SignInPage = () => {
             Cancel
           </button>
         </nav>
-        <button className="text-black underline cursor-pointer hover:text-DarkestBlue transition" onClick={handleForgotPassword}>
-            Forgot password?
+        <button className="text-black underline cursor-pointer hover:text-DarkestBlue transition" onClick={handleOpen}>
+          Forgot password?
         </button>
+
+        <Modal className='bg-DarkBlue flex items-center justify-center'
+          open={openModal}
+          onClose={handleClose}
+        >
+          <Fade in={openModal}>
+            <div className="modal-content text-center">
+              <Typography variant="h6" component="h2">
+                Forgot Password
+              </Typography>
+              <Typography className="mt-2">
+                Please enter your email address to reset your password.
+              </Typography>
+              <input
+                type="text"
+                placeholder="Enter your email"
+                value={modalEmail}
+                onChange={(e) => setModalEmail(e.target.value)}
+                className="border border-DarkestBlue rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+              />
+              <div className="flex justify-end space-x-2 mt-3">
+                <Button onClick={handleForgotPassword} color="bacl">
+                  Submit
+                </Button>
+                <Button onClick={handleClose} color="black">
+                  Close
+                </Button>
+              </div>
+            </div>
+          </Fade>
+        </Modal>
       </div>
     </div>
   );
