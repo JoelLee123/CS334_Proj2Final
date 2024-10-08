@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "localbackend": "npm run backend:dev",
-    "backend:dev": "npm install && npm run prisma:generate && nodemon --watch backend/src --exec ts-node --project backend/tsconfig.json backend/src/index.ts",
+    "backend:dev": "npm run prisma:generate && nodemon --watch backend/src --exec ts-node --project backend/tsconfig.json backend/src/index.ts",
     "frontend:dev": "cd frontend && npm install && npm start",
-    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "dev": "npm install && concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
     
     "setup": "npm run setup:frontend && npm run setup:backend",
     "setup:frontend": "cd frontend && npm install",
@@ -26,6 +26,7 @@
     "postinstall": "npm run prisma:generate",
     
     "test": "echo \"Error: no test specified\" && exit 1"
+
   },
   "keywords": [],
   "author": "",
@@ -42,7 +43,9 @@
     "nodemon": "^3.1.7",
     "prisma": "^5.20.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "concurrently": "^8.2.2"
+
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.3",
@@ -55,6 +58,12 @@
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
     "react-router-dom": "^6.26.2",
-    "tough-cookie": "^5.0.0"
+    "tough-cookie": "^5.0.0",
+    "@prisma/client": "^5.20.0",
+    "prisma": "^5.20.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "@babel/plugin-proposal-private-property-in-object": "^7.18.6"
+
   }
 }

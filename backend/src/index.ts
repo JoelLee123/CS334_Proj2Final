@@ -11,6 +11,8 @@ import { WebSocketServer, WebSocket } from "ws";
 import axios from "axios"; // For making API requests
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
+import path from 'path';
+import dotenv from 'dotenv';
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar }));
@@ -19,9 +21,10 @@ const app: Application = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const PORT = process.env.PORT;
 const corsOP={
-  origin: 'http://localhost:3001', // Allow requests from your frontend
+  origin: 'http://localhost:3000', // Allow requests from your frontend
   credentials: true, // Allow cookies to be sent across different origins
 };
 
@@ -29,6 +32,7 @@ const corsOP={
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOP));
+app.use(express.static(path.join(__dirname, '../build')));
 
 // Authentication routes
 app.use("/auth", authRoutes);
@@ -267,6 +271,9 @@ wss.on("connection", (ws) => {
       console.log(`Removed ${userEmail} from connected clients`);
     }
   });
+});
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 // Start the server
