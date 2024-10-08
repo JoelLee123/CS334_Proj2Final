@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { marked } from "marked";
 import { useLocation } from "react-router-dom";
 
@@ -12,7 +12,6 @@ const NotesPage = () => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareError, setShareError] = useState("");
   const location = useLocation();
-  const socketRef = useRef(null);
 
   useEffect(() => {
     setTitle(location.state?.title || "");
@@ -21,47 +20,39 @@ const NotesPage = () => {
     fetchCategories();
   }, [location.state]);
 
-
   // WebSocket connection
   useEffect(() => {
-    // Initialize WebSocket connection
-    socketRef.current = new WebSocket("ws://localhost:3000");
+    const socket = new WebSocket("ws://localhost:3000");
 
-    // Handle WebSocket connection opening
-    socketRef.current.onopen = () => {
+    socket.onopen = () => {
       console.log("WebSocket connection established.");
     };
 
-    // Handle incoming messages
-    socketRef.current.onmessage = (event) => {
+    /* Listen to incoming messages */
+    socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === "UPDATE_NOTE" && data.id === location.state.id) {
         setMarkdown(data.content);
       }
     };
 
-    // Cleanup: Close WebSocket connection on component unmount
     return () => {
-      socketRef.current.close();
+      socket.close(); // Clean up on component unmount
     };
-  }, [location.state.id]); // Re-run if the note ID changes
+  }, [location.state.id]);
 
   // Send updates via WebSocket
   const handleMarkdownChange = (e) => {
     const newContent = e.target.value;
     setMarkdown(newContent);
 
-    // Prepare message to send
+    // Send updated content to WebSocket server
     const socketMessage = {
       type: "UPDATE_NOTE",
       id: location.state.id,
       content: newContent,
     };
-
-    // Send the updated content to the WebSocket server
-    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify(socketMessage));
-    }
+    socket.send(JSON.stringify(socketMessage)); // Ensure socket is in scope or handle sending separately
   };
 
   const handleShareNote = async () => {
