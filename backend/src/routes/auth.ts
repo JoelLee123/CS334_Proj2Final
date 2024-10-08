@@ -24,9 +24,10 @@ router.post("/register", async (req, res) => {
         password: hashedPassword,
       },
     });
-
+    console.log( "User registered", user );
     return res.status(201).json({ message: "User registered", user });
   } catch (error) {
+    console.log( "Error registering user", error );
     return res.status(400).json({ message: "Error registering user", error });
   }
 });
@@ -85,6 +86,7 @@ router.post("/request-password-reset", async (req, res) => {
   });
 
   if (!user) {
+    console.log("user not found")
     return res.status(404).json({ message: "User not found" });
   }
 

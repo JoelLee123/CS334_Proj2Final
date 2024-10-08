@@ -20,10 +20,15 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 const PORT = process.env.PORT;
+const corsOP={
+  origin: 'http://localhost:3001', // Allow requests from your frontend
+  credentials: true, // Allow cookies to be sent across different origins
+};
+
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOP));
 
 // Authentication routes
 app.use("/auth", authRoutes);

@@ -95,5 +95,6 @@ router.get("/:noteId", authenticateToken, async (req, res) => {
       .json({ message: "Error fetching collaborators", error });
   }
 });
+  
 
 export default router;

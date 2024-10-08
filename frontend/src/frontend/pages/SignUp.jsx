@@ -4,12 +4,18 @@ import { useNavigate } from "react-router-dom";
 const SignUpPage = () => {
   const[username, setName] = useState("");
   const[password, setPassword] = useState("");
+  const[confirmPassword, setConfirmPassword] = useState("");
   const[email, setEmail] = useState("");
-
   const navigate = useNavigate();
   const [error, setError] = useState(null); // Manage sign up error state
 
   const HandleRegistration = async (e) =>{
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return; // Stop execution if passwords do not match
+    }
+
     //Generate a get request from database
     try {
         const response = await fetch("http://localhost:3000/auth/register",{
@@ -17,6 +23,7 @@ const SignUpPage = () => {
         headers:{
           "Content-Type": "application/json"
         },
+        credentials: "include", // Include credentials (cookies)
         // username, email, password
         body:JSON.stringify({"username":username, "email":email, "password": password})
         });
@@ -24,13 +31,17 @@ const SignUpPage = () => {
         const data = await response.json();
         if (response.ok){
           console.log("Sign up successful!");
-          navigate("/HomePage") 
+          navigate("/Sign-in"); 
         }else{
-          console.log("Sign up unsuccessful!")
+          if (data.error['code'] === 'P2002'){     
+            setError("Email or name already exists");
+          }
+          console.log("Sign up unsuccessful: ", data.error['code']);
         }
             
    } catch (error) {
-     setError("User unsuccessfully signed up")
+     setError("User unsuccessfully signed up");
+     console.log(error);
    }
 
   }
@@ -60,20 +71,24 @@ const SignUpPage = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <input 
-          type="text"
+          type="password"
           placeholder="Password"
           className="border border-black bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
 
         />
-        <input 
-          type="text"
-          placeholder="Confirm Password"
+         <input 
+          type="password"
+          placeholder="Confirm password"
           className="border border-black bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-DarkestBlue"
+          value={confirmPassword}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value)}}
+
         />
       </div>
-      <nav className="mt-5">
+      <nav className="mt-5 space-x-4">
           <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
             Continue
           </button>
@@ -81,6 +96,13 @@ const SignUpPage = () => {
             Cancel
           </button>
       </nav>
+          {/* Conditionally render error message if it exists */}
+          {error && (
+          <div className="text-red-500 text-sm mt-2">
+            {error}
+          </div>
+        )}
+
     </div>
   );
 }
