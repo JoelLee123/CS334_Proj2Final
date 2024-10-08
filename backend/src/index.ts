@@ -74,8 +74,7 @@ wss.on("connection", (ws) => {
           `http://localhost:${PORT}/auth/login`,
           {
             email,
-            password,
-            rememberMe: rememberMe === "true",
+            password,            rememberMe: rememberMe === "true",
           },
           {
             withCredentials: true,
