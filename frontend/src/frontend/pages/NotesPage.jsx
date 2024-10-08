@@ -25,6 +25,7 @@ const NotesPage = () => {
     const socket = new WebSocket("ws://localhost:3000");
 
     socket.onopen = () => {
+      /* Log in here */
       console.log("WebSocket connection established.");
     };
 
@@ -47,12 +48,8 @@ const NotesPage = () => {
     setMarkdown(newContent);
 
     // Send updated content to WebSocket server
-    const socketMessage = {
-      type: "UPDATE_NOTE",
-      id: location.state.id,
-      content: newContent,
-    };
-    socket.send(JSON.stringify(socketMessage)); // Ensure socket is in scope or handle sending separately
+    const socketMessage = `editNote,${location.state.id}`
+    socket.send(JSON.stringify(socketMessage));
   };
 
   const handleShareNote = async () => {
