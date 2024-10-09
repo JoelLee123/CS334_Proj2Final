@@ -79,9 +79,14 @@ const NotesPage = () => {
       });
 
       if (response.status === 404) return setShareError("User not found");
-      if (!response.ok) throw new Error("Error sharing note");
+      //if (!response.ok) throw new Error("Error sharing note");
 
       const data = await response.json();
+      if (data.error && data.error.code === "P2002") {
+        return setShareError("Collaborator already exists for this note.");
+      }
+      if (!response.ok) throw new Error("Error sharing note");
+      
       setCollaborators([...collaborators, data.newCollaborator]);
       closeShareModal();
     } catch (error) {
