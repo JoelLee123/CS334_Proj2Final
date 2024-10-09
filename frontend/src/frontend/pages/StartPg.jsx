@@ -10,10 +10,10 @@ const FrontPage = () => {
 
     useEffect(() => {
         // Check the "rememberMe" flag in localStorage
-    const rememberMe = localStorage.getItem("rememberMe") === "true";
+    const rememberMe = localStorage.getItem("rememberMe");
 
     if (rememberMe) {
-      // If "rememberMe" is true, navigate to HomePage
+      // If "rememberMe" is true, navigate to HomePage and create a new session token
       navigate("/HomePage");
     } else {
       // Otherwise, navigate to SignInPage

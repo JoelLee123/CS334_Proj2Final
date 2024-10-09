@@ -73,7 +73,10 @@ const ProfilePage = () => {
   };
 
   const handleLogOut = async () => {
+    // remove the remember me token
     localStorage.setItem("rememberMe", false);
+    localStorage.removeItem("email");
+    localStorage.removeItem("password");
     navigate("/Sign-in")
   };
 

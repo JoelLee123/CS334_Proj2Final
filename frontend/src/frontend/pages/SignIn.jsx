@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FormGroup, FormControlLabel, Checkbox, Modal, Backdrop, Fade, Typography, Button } from '@mui/material';
+import { FormGroup, FormControlLabel, Checkbox, Modal, Fade, Typography, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
 const SignInPage = () => {
@@ -42,7 +42,7 @@ const SignInPage = () => {
     setIsTicked(rememberMe);
   }, []);
 
-  // Generate a post request to the database for login
+  // Generate a post request to the database for login 
   const CheckValidation = async () => {
     try {
       const response = await fetch("http://localhost:3000/auth/login", {
@@ -64,7 +64,7 @@ const SignInPage = () => {
           localStorage.setItem("email", email);
           localStorage.setItem("password", password);
           localStorage.setItem("rememberMe", true);
-        } else {
+        }else{
           // Clear stored credentials if not checked
           localStorage.removeItem("email");
           localStorage.removeItem("password");
