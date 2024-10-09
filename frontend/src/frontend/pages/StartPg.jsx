@@ -1,8 +1,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import image from '../images/adventuretime.png';
+import { useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+
 
 const FrontPage = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Check the "rememberMe" flag in localStorage
+    const rememberMe = localStorage.getItem("rememberMe") === "true";
+
+    if (rememberMe) {
+      // If "rememberMe" is true, navigate to HomePage
+      navigate("/HomePage");
+    } else {
+      // Otherwise, navigate to SignInPage
+      navigate("/Sign-in");
+    }
+        navigate("/HomePage");
+    }, [navigate]);
+
+
     return (
         <div className="serif bg-LighterBlue min-h-screen">
             <header className=" bg-DarkestBlue flex justify-between items-center mb-4 p-5">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ProfileCard from '../components/ProfileCard';
 
 const ProfilePage = () => {
@@ -70,6 +70,11 @@ const ProfilePage = () => {
         alert("Failed to delete account: " + error.message);
       }
     }
+  };
+
+  const handleLogOut = async () => {
+    localStorage.setItem("rememberMe", false);
+    navigate("/Sign-in")
   };
 
   const getMe = async () => {
@@ -170,11 +175,9 @@ const ProfilePage = () => {
         </div>
 
         <nav className="flex space-x-4 mt-4">
-          <Link to="/">
-            <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogOut}>
               Log out
             </button>
-          </Link>
           <button 
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             onClick={handleDeleteAccount}
