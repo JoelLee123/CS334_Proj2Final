@@ -114,44 +114,47 @@ const NoteCard = ({
 
   const handleConfirm = async (e) => {
     if (!selectedUser) return;  // Prevent empty selections
-
+    console.log("selected user: " + selectedUser);
+  
+    const endpoint = isAddingCollaborator
+      ? "http://localhost:3000/collaborators/add"
+      : `http://localhost:3000/collaborators/remove/${id}/${selectedUser}`; // Construct the URL with parameters
+  
+    const method = isAddingCollaborator ? "POST" : "DELETE";
+  
     try {
-      const endpoint = isAddingCollaborator
-        ? "http://localhost:3000/collaborators/add"
-        : "http://localhost:3000/collaborators/remove";
-
-      const method = isAddingCollaborator ? "POST" : "DELETE";
-
       const response = await fetch(endpoint, {
         method: method,
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({
-          noteId: id,
-          userEmail: selectedUser,
-        })
+        body: isAddingCollaborator
+          ? JSON.stringify({ noteId: id, userEmail: selectedUser })
+          : undefined, // No body for DELETE
       });
-
+  
       if (response.ok) {
         if (isAddingCollaborator) {
           const userToAdd = users.find(user => user.email === selectedUser);
           setCollaborators(prev => [...prev, userToAdd]);
         } else {
-          setCollaborators(prev => prev.filter(collab => collab.email !== selectedUser));
+          setCollaborators(prev => prev.filter(collab => collab.userEmail !== selectedUser));
         }
         handleCloseModal();
         fetchCollaborators(); // Refresh the collaborators list
       } else {
-        setErrorMessage("Error: User is already a collaborator or cannot be removed.");
-        console.error("Error updating collaborator");
+        const errorData = await response.json(); // Get detailed error message
+        setErrorMessage(errorData.message || "An error occurred.");
+        console.error("Error updating collaborator:", errorData.message);
       }
     } catch (error) {
-      setErrorMessage("Error: User is already a collaborator or cannot be removed.");
+      setErrorMessage("Error: Unable to update collaborator.");
       console.error(error);
     }
   };
+  
+  
 
   // Fetch collaborators for the note
   useEffect(() => {
@@ -238,7 +241,9 @@ const NoteCard = ({
             >
               <option value="" disabled>Select a user</option>
               {(isAddingCollaborator ? users : collaborators).map(user => (
-                <option key={user.email} value={user.email}>{user.username}</option>
+                 <option key={user.userEmail || user.email} value={user.userEmail || user.email}>
+                 {user.userEmail || user.email}
+               </option>
               ))}
             </select>
             {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
