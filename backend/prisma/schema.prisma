@@ -1,20 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  email              String         @id @unique
   username           String         @unique
+  email              String         @id @unique
   password           String
   avatar_url         String?
   reset_token        String?        @unique
   reset_token_expiry DateTime?
+  Category           Category[]
   collaborators      Collaborator[]
 }
 
@@ -23,26 +24,28 @@ model Note {
   title         String
   content       String
   categoryId    Int
-  category      Category       @relation(fields: [categoryId], references: [id])
-  collaborators Collaborator[]
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
-  status        String         @default("Idle") 
+  status        String?        @default("Idle")
+  collaborators Collaborator[]
+  category      Category       @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
   id         Int      @id @default(autoincrement())
   name       String   @unique
-  notes      Note[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  user_email String?
+  User       User?    @relation(fields: [user_email], references: [email], onDelete: Cascade)
+  notes      Note[]
 }
 
 model Collaborator {
-  note      Note   @relation(fields: [noteId], references: [id])
   noteId    Int
-  user      User   @relation(fields: [userEmail], references: [email])
   userEmail String
+  note      Note   @relation(fields: [noteId], references: [id])
+  user      User   @relation(fields: [userEmail], references: [email], onDelete: Cascade)
 
-  @@unique([noteId, userEmail]) // This ensures that each combination of noteId and userEmail is unique
+  @@unique([noteId, userEmail])
 }
