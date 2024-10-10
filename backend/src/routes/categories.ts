@@ -14,7 +14,7 @@ router.post("/add", authenticateToken, async (req, res) => {
     const category = await prisma.category.create({
       data: {
         name,
-        userEmail: user.email, // Associate the category with the user creating it
+        user_email: user.email, // Associate the category with the user creating it
       },
     });
 
@@ -38,7 +38,7 @@ router.get("/all", authenticateToken, async (req, res) => {
     // Fetch categories that belong to the authenticated user
     const categories = await prisma.category.findMany({
       where: {
-        userEmail: user.email, // Filter categories by the user's email
+        user_email: user.email, // Filter categories by the user's email
       },
     });
 
@@ -79,7 +79,7 @@ router.put("/update/:id", authenticateToken, async (req, res) => {
       where: { id: Number(id) },
     });
 
-    if (!category || category.userEmail !== user.email) {
+    if (!category || category.user_email !== user.email) {
       return res.status(403).json({ message: "Unauthorized to update this category" });
     }
 
@@ -109,7 +109,7 @@ router.delete("/delete/:id", authenticateToken, async (req, res) => {
       where: { id: Number(id) },
     });
 
-    if (!category || category.userEmail !== user.email) {
+    if (!category || category.user_email !== user.email) {
       return res.status(403).json({ message: "Unauthorized to delete this category" });
     }
 

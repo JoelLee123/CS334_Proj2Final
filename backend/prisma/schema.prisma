@@ -13,8 +13,9 @@ model User {
   email              String         @id @unique
   password           String
   avatar_url         String?
-  reset_token        String?
+  reset_token        String?        @unique
   reset_token_expiry DateTime?
+  Category           Category[]
   collaborators      Collaborator[]
 }
 
@@ -35,6 +36,8 @@ model Category {
   name       String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  user_email String?
+  User       User?    @relation(fields: [user_email], references: [email], onDelete: Cascade)
   notes      Note[]
 }
 
