@@ -28,6 +28,10 @@ const corsOP={
   credentials: true, // Allow cookies to be sent across different origins
 };
 
+const baseUrl = process.env.NODE_ENV === 'production'
+  ? window.location.origin // Use the current domain for production (Heroku)
+  : `http://localhost:${PORT}`; // Use localhost for development
+
 
 app.use(express.json());
 app.use(cookieParser());
@@ -80,7 +84,7 @@ wss.on("connection", (ws) => {
 
         // Make an API call to login and store cookies for the session
         const response = await client.post(
-          `http://localhost:${PORT}/auth/login`,
+          `${baseUrl}/auth/login`,
           {
             email,
             password,            rememberMe: rememberMe === "true",
@@ -100,7 +104,7 @@ wss.on("connection", (ws) => {
 
         // Make another request to get the user's info after login
         const userInfoResponse = await axios.get(
-          `http://localhost:${PORT}/users/${email}`,
+          `${baseUrl}/users/${email}`,
           {
             headers: { Cookie: sessionCookies }, // Send the session cookies along with the request
           }
@@ -120,7 +124,7 @@ wss.on("connection", (ws) => {
         try {
           // Fetch note details, including the current status
           const noteResponse = await axios.get(
-            `http://localhost:${PORT}/notes/${noteId}`,
+            `${baseUrl}/notes/${noteId}`,
             {
               withCredentials: true,
               headers: { Cookie: sessionCookies },
@@ -137,7 +141,7 @@ wss.on("connection", (ws) => {
           if (note.status === "Idle") {
             // If the note is idle, update the status to reflect the current user is editing
             const updatedNoteResponse = await axios.put(
-              `http://localhost:${PORT}/notes/update-status/${noteId}`,
+              `${baseUrl}/notes/update-status/${noteId}`,
               {
                 status: `${username} is editing this note`,
               },
@@ -182,7 +186,7 @@ wss.on("connection", (ws) => {
 
         // Fetch note details
         const noteResponse = await axios.get(
-          `http://localhost:${PORT}/notes/${noteId}`,
+          `${baseUrl}/notes/${noteId}`,
           {
             withCredentials: true,
             headers: { Cookie: sessionCookies },
@@ -196,7 +200,7 @@ wss.on("connection", (ws) => {
 
         //When a user is done editing, update the status to Idle
         const updatedNoteResponse = await axios.put(
-          `http://localhost:${PORT}/notes/update-status/${noteId}`,
+          `${baseUrl}/notes/update-status/${noteId}`,
           {
             status: `Idle`,
           },
