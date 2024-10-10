@@ -110,6 +110,8 @@ const ProfilePage = () => {
         console.log("User details:", data.user);
       } else {
         console.log("Error fetching user details:", data.message);
+        localStorage.setItem("rememberMe", "false");
+        navigate("/");
         setError(data.message);
       }
     } catch (error) {

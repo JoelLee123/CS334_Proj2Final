@@ -141,7 +141,6 @@ const HomePage = ({ setNoteId }) => {
 
     // Filter notes based on searchTitle and well as time
     const filter = notes.filter(note => { // changed
-      console.log("here with title: ", searchTitle);
       const matchTitle = searchTitle.trim()
       ? note.title.toLowerCase().includes(searchTitle.toLowerCase())
       :true;
@@ -149,13 +148,10 @@ const HomePage = ({ setNoteId }) => {
       const matchTime = selectTime
       ? new Date(note.updated_at).toISOString().split('T')[0] === selectTime
       : true;
-      console.log("selected time: ", matchTime);
-      console.log("updated at times: ", note.updated_at);
   
       const matchCategory = selectCategory
       ? note.categoryId === Number(selectCategory)
       : true;
-      console.log("selected category: ", matchCategory);
   
       return matchTime && matchTitle && matchCategory;
     });
@@ -261,23 +257,22 @@ return (
         </div>
 
         {/* Display Notes */}
-        {notesDisplayed.length > 0 ? (
+        {notesDisplayed.length > 0 ? ( // Applying filtering based on notes
           notesDisplayed.map((note, index) => (
             <NoteCard
               key={index}
               title={note.title}
-              date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed
+              date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed 
               id={note.id}
               categoryId={note.categoryId}
-              categoryName={note.category.name}
+              category={note.category?.name}
               content={note.content}
               getNotes={getNotes}
             />
           ))
         ) : (
-          <p className="text-DarkestBlue">
-            {notes.length > 0 ? "Loading your notes..." : ""}
-          </p>
+          <p className='text-Black'
+          >You have no notes </p>
         )}
       </div>
 

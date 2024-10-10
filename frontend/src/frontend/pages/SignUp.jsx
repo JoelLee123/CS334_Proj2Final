@@ -96,11 +96,11 @@ const SignUpPage = () => {
         />
       </div>
       <nav className="mt-5 space-x-4">
-          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
-            Continue
-          </button>
           <button className="bg-red-600 text-Ivory px-4 py-2 rounded hover:bg-red-700 transition mb-2" onClick={handleCancel}>
             Cancel
+          </button>
+          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
+            Continue
           </button>
       </nav>
           {/* Conditionally render error message if it exists */}

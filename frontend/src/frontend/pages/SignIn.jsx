@@ -154,11 +154,11 @@ const SignInPage = () => {
         )}
 
         <nav className='space-x-4'>
-          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={CheckValidation}>
-            Login
-          </button>
           <button className="bg-red-600 text-Ivory px-4 py-2 rounded hover:bg-red-700 transition mb-2" onClick={handleCancel}>
             Cancel
+          </button>
+          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={CheckValidation}>
+            Login
           </button>
         </nav>
         <button className="text-black underline cursor-pointer hover:text-DarkestBlue transition" onClick={handleOpen}>
