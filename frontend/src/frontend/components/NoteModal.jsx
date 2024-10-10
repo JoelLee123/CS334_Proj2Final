@@ -36,10 +36,10 @@ const NoteModal = ({ isOpen, onClose, onCreate, categories }) => {
           ))}
         </select>
         <div className="flex justify-between">
-          <button onClick={handleSubmit} className="bg-blue-500 text-white py-2 px-4 rounded">
+          <button onClick={handleSubmit} className="bg-green-500 text-white py-2 px-4 rounded">
             Create Note
           </button>
-          <button onClick={onClose} className="bg-gray-300 text-black py-2 px-4 rounded">
+          <button onClick={onClose} className="bg-red-500 text-white py-2 px-4 rounded">
             Cancel
           </button>
         </div>

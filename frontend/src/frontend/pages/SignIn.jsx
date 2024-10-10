@@ -140,7 +140,7 @@ const SignInPage = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <FormGroup>
+        <FormGroup className='font-bold'>
           <FormControlLabel
             control={<Checkbox checked={isTicked} onChange={handleRememberMe} />}
             label="Remember Me"
@@ -148,7 +148,7 @@ const SignInPage = () => {
         </FormGroup>
 
         {error && (
-          <div className="text-red-500 text-sm mt-2">
+          <div className="text-l text-red-700 text-sm mt-2 font-bold">
             {error}
           </div>
         )}
@@ -165,12 +165,12 @@ const SignInPage = () => {
           Forgot password?
         </button>
 
-        <Modal className='bg-DarkBlue flex items-center justify-center'
+        <Modal className='bg-green-800 flex items-center justify-center'
           open={openModal}
           onClose={handleClose}
         >
           <Fade in={openModal}>
-            <div className="modal-content text-center">
+            <div className="modal-content text-center bg-green-500">
               <Typography variant="h6" component="h2">
                 Forgot Password
               </Typography>

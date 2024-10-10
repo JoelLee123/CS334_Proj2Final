@@ -53,7 +53,7 @@ const FrontPage = () => {
                 backgroundPosition: "center",
               }}
             >
-            <header className=" bg-DarkestBlue flex justify-between items-center mb-4 p-5">
+            <header className=" bg-TeaGreen flex justify-between items-center mb-4 p-5">
                 <h1 className="serif text-3xl font-bold text-black">Welcome to ScribeMark</h1>
             </header>
             <nav className="flex flex-col items-center my-5">

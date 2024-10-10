@@ -145,7 +145,7 @@ return (
     }}
   >
     <div className="w-full max-w-4xl flex flex-col items-center space-y-6 mt-4 px-4 md:px-8">
-      <h1 className="text-2xl md:text-4xl font-bold text-center text-DarkestBlue mb-0">
+      <h1 className="text-2xl md:text-4xl font-bold text-center text-black mb-0">
         Edit Note
       </h1>
       <div className="flex flex-col sm:flex-row sm:space-x-4 items-center w-full">
@@ -176,7 +176,7 @@ return (
         {!isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mt-2 sm:mt-0"
+            className="bg-green-500 hover:bg-blue-700  text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mt-2 sm:mt-0"
           >
             <FiEdit className="inline-block mr-2" />
             Edit
@@ -187,13 +187,13 @@ return (
       <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full">
         <button
           onClick={handleDownload}
-          className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
+          className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
         >
           Download
         </button>
         <button
           onClick={openShareModal}
-          className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
+          className="bg-green-500 hover:bg-blue-700  text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
         >
           Share
         </button>
@@ -252,7 +252,7 @@ return (
       ) : (
         <button
           onClick={handleSave}
-          className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
+          className="bg-green-500 hover:bg-blue-700  text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
         >
           Save
         </button>

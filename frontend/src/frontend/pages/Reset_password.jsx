@@ -86,7 +86,7 @@ const ResetPass = () => {
           </button>
 
         {error && (
-          <div className="text-red-500 text-sm mt-2">
+          <div className="text-l text-red-700 text-sm mt-2 font-bold">
             {error}
           </div>
         )}

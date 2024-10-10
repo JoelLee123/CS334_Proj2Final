@@ -184,7 +184,7 @@ return (
         </div>
       )}
 
-      <h1 className="text-3xl font-bold text-DarkestBlue text-center mb-8">
+      <h1 className="text-3xl font-bold text-black text-center mb-8">
         Your Notes
       </h1>
 
@@ -192,13 +192,13 @@ return (
       <div className="flex justify-center mb-4 space-x-4">
         <button
           onClick={() => setIsNoteModalOpen(true)} // Open note modal
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
         >
           Create Note
         </button>
         <button
           onClick={() => setIsCategoryModalOpen(true)} // Open category modal
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
         >
           Manage Categories
         </button>
@@ -272,7 +272,7 @@ return (
           ))
         ) : (
           <p className='text-Black'
-          >You have no notes </p>
+          > </p>
         )}
       </div>
 

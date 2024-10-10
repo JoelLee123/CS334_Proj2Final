@@ -196,8 +196,8 @@ const NoteCard = ({
       <div className="flex flex-col mb-2">
         {/* Display the note title with a label and distinct styling */}
         <div className="mb-2">
-          <span className="text-sm font-semibold text-gray-600">Title:</span>
-          <h2 className="text-2xl font-bold text-DarkestBlue mt-1">{title}</h2>
+          <span className="text-sm font-semibold text-black">Title:</span>
+          <h2 className="text-2xl font-bold text-black mt-1">{title}</h2>
           <div className="absolute top-2 right-2 flex space-x-2">
             <button className="text-black hover:text-DarkestBlue" onClick={handlePlusButtonClick}>
               <PlusCircle size={24} />
@@ -205,18 +205,18 @@ const NoteCard = ({
             <button className="text-black hover:text-DarkestBlue" onClick={handleMinusButtonClick}>
               <MinusCircle size={24} />
             </button>
-            <button className="text-DarkBlue hover:text-DarkestBlue" onClick={(e) => { e.stopPropagation(); handleDeleteNote(e); }}>
+            <button className="text-red-500 hover:text-DarkestBlue" onClick={(e) => { e.stopPropagation(); handleDeleteNote(e); }}>
               <XCircle size={24} />
             </button>
         </div>
         </div>
       </div>
 
-      <h2 className="text-lg font-semibold text-DarkestBlue mb-2">Category: {category}</h2>
-      <p className="text-DarkBlue mb-2">{content}</p>
-      <p className="text-DarkBlue text-sm">{date}</p>
+      <h2 className="text-lg font-semibold text-black mb-2">Category: {category}</h2>
+      <p className="text-black mb-2">{content}</p>
+      <p className="text-black text-sm">{date}</p>
   
-      <h3 className="text-lg font-bold text-DarkestBlue mb-2">
+      <h3 className="text-lg font-bold text-black mb-2">
         Collaborators: {collaborators.length > 0 ? collaborators.map(c => {
           if (c && c.userEmail && c.userEmail.includes('@')) {  
             const username = c.userEmail.match(/^(.*)@/)[1];

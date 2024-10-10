@@ -138,13 +138,13 @@ const ProfilePage = () => {
         }}
       >
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-DarkestBlue text-center mb-8">Your Profile</h1>
+        <h1 className="text-3xl font-bold text-black text-center mb-8">Your Profile</h1>
       </header>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center text-black">
         <img 
           src={userDetails?.avatar_url || "https://via.placeholder.com/150"} 
           alt="User Avatar" 
-          className="mb-4 rounded-full"
+          className="mb-4 rounded-full text-black"
           style={{ maxWidth: '150px', maxHeight: '150px' }}
         />
         {userDetails ? (
@@ -204,11 +204,11 @@ const ProfilePage = () => {
         </div>
 
         <nav className="flex space-x-4 mt-4">
-            <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogOut}>
+            <button className="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogOut}>
               Log out
             </button>
           <button 
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             onClick={handleDeleteAccount}
           >
             Delete Account

@@ -50,13 +50,13 @@ const CategoryModal = ({ isOpen, onClose, onManageCategories, categories }) => {
         <div className="flex justify-between">
           <button
             onClick={handleAddCategory}
-            className="bg-blue-500 text-white py-2 px-4 rounded"
+            className="bg-green-500 text-white py-2 px-4 rounded"
           >
             Add Category
           </button>
           <button
             onClick={onClose}
-            className="bg-gray-300 text-black py-2 px-4 rounded"
+            className="bg-red-500 text-white py-2 px-4 rounded"
           >
             Cancel
           </button>
