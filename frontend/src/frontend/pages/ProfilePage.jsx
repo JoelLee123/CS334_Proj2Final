@@ -73,14 +73,28 @@ const ProfilePage = () => {
   };
 
   const handleLogOut = async () => {
-    // remove the remember me token
-    localStorage.setItem("rememberMe", "false");
-    localStorage.removeItem("email");
-    localStorage.removeItem("password");
+    try {
+      const response = await fetch("http://localhost:3000/auth/logout", {
+        method: "POST",
+        credentials: "include", // Include cookies
+      });
+  
+      if (response.ok) {
+        // remove the remember me token
+        localStorage.setItem("rememberMe", "false");
+        localStorage.removeItem("email");
+        localStorage.removeItem("password");
 
-    const rem = localStorage.getItem("rememberMe");
-    console.log("remember me: ", rem);
-    navigate("/")
+        const rem = localStorage.getItem("rememberMe");
+        console.log("remember me: ", rem);
+        navigate("/");
+        // navigate("/Sign-in");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+
+   
   };
 
   const getMe = async () => {

@@ -124,6 +124,13 @@ router.get("/check-auth", authenticateToken, (req, res) => {
   return res.status(200).json({ message: "Token is valid", user: user });
 });
 
+router.post("/logout", (req, res) => {
+  const user = (req as any).user;
+  res.cookie("token", "", { maxAge: 0 });
+  return res.status(200).json({ message: "User Logged out, cookies cleared", user:user });
+});
+
+
 /* Password reset route */
 router.post("/reset-password", async (req, res) => {
   const { password, reset_token } = req.body;

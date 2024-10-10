@@ -10,17 +10,38 @@ const FrontPage = () => {
 
     useEffect(() => {
         // Check the "rememberMe" flag in localStorage
-    const rememberMe = localStorage.getItem("rememberMe");
-
-    if (rememberMe === "true") {
-      // If "rememberMe" is true, navigate to HomePage and create a new session token
-      console.log("herre");
-      navigate("/HomePage");
-    } else {
-      // Otherwise, navigate to SignInPage
-      navigate("/Sign-in");
-    }
-    }, [navigate]);
+        const rememberMe = localStorage.getItem("rememberMe");
+      
+        // If "rememberMe" is true, check for an active session via cookies
+        if (rememberMe === "true") {
+          const checkAuth = async () => {
+            try {
+              const response = await fetch("http://localhost:3000/auth/check-auth", {
+                method: "GET",
+                credentials: "include",
+              });
+      
+              if (response.ok) {
+                console.log("here4");
+                navigate("/HomePage");
+              } else {
+                console.log("here3");
+                navigate("/");
+              }
+            } catch (error) {
+                console.log("here2");
+                navigate("/");
+            }
+          };
+      
+          // Call the checkAuth function to validate the session
+          checkAuth();
+        } else {
+          console.log("here1");
+          navigate("/");
+        }
+      }, [navigate]);
+      
 
 
     return (

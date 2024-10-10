@@ -9,6 +9,7 @@ const HomePage = ({ setNoteId }) => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState("");
   const [searchTitle, setSearch] = useState("");
   const [selectCategory, setSelectedCategory] = useState("");
   const [selectTime, setSelectedTime] = useState("");
@@ -138,34 +139,39 @@ const HomePage = ({ setNoteId }) => {
     getCategories();
   }, []);
 
-  // Apply filtering based on search title, time, and category
-  const filter = notes.filter((note) => {
-    const matchTitle = searchTitle.trim()
+    // Filter notes based on searchTitle and well as time
+    const filter = notes.filter(note => { // changed
+      console.log("here with title: ", searchTitle);
+      const matchTitle = searchTitle.trim()
       ? note.title.toLowerCase().includes(searchTitle.toLowerCase())
+      :true;
+  
+      const matchTime = selectTime
+      ? new Date(note.updated_at).toISOString().split('T')[0] === selectTime
       : true;
-
-    const matchTime = selectTime
-      ? new Date(note.updated_at).toISOString().split("T")[0] === selectTime
-      : true;
-
-    const matchCategory = selectCategory
+      console.log("selected time: ", matchTime);
+      console.log("updated at times: ", note.updated_at);
+  
+      const matchCategory = selectCategory
       ? note.categoryId === Number(selectCategory)
       : true;
+      console.log("selected category: ", matchCategory);
+  
+      return matchTime && matchTitle && matchCategory;
+    });
+  
+  
 
-    return matchTime && matchTitle && matchCategory;
-  });
+    // sorts data ascending or descending based on last updated
+    const sortAD = filter.sort((dateOne,dateTwo) => {
+      const FirstDate = new Date(dateOne.updated_at);
+      const SecondDate = new Date(dateTwo.updated_at);
+      return order === "ascending" ? FirstDate - SecondDate : SecondDate - FirstDate;
+    });
 
-  // Sorting (ascending/descending based on last updated)
-  const sortAD = filter.sort((dateOne, dateTwo) => {
-    const FirstDate = new Date(dateOne.updated_at);
-    const SecondDate = new Date(dateTwo.updated_at);
-    return order === "ascending"
-      ? FirstDate - SecondDate
-      : SecondDate - FirstDate;
-  });
+    // choose between the four states of the notes
+    const notesDisplayed = selectCategory || searchTitle || sortAD || selectTime ? filter : notes; 
 
-  const notesDisplayed =
-    selectCategory || searchTitle || sortAD || selectTime ? filter : notes;
 
 return (
     <div
@@ -212,16 +218,16 @@ return (
             value={searchTitle}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <select
+          <select 
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             value={selectCategory}
             onClick={getCategories}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
+            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
+              <option key={category} value={category}>
+                {category}
               </option>
             ))}
           </select>
@@ -270,7 +276,7 @@ return (
           ))
         ) : (
           <p className="text-DarkestBlue">
-            {notes.length > 0 ? "Loading your notes..." : "No notes available"}
+            {notes.length > 0 ? "Loading your notes..." : ""}
           </p>
         )}
       </div>
