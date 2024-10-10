@@ -112,7 +112,14 @@ const SignInPage = () => {
   }
 
   return (
-    <div className="bg-LighterBlue min-h-screen p-5 text-center">
+    <div
+      className="min-h-screen p-5 text-center"
+      style={{
+        backgroundImage: "url(/NotesPage.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+      > 
       <header>
         <h1 className="text-3xl font-bold text-black">Sign In</h1>
       </header>

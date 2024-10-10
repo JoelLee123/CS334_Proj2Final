@@ -4,7 +4,14 @@ import image from '../images/adventuretime.png';
 
 const FrontPage = () => {
     return (
-        <div className="serif bg-LighterBlue min-h-screen">
+            <div
+              className="serif min-h-screen"
+              style={{
+                backgroundImage: "url(/NotesPage.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
             <header className=" bg-DarkestBlue flex justify-between items-center mb-4 p-5">
                 <h1 className="serif text-3xl font-bold text-black">Welcome to ScribeMark</h1>
             </header>

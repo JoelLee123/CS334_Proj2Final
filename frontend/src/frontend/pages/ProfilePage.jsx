@@ -102,7 +102,14 @@ const ProfilePage = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="bg-LighterBlue min-h-screen p-5">
+      <div
+        className="min-h-screen p-5"
+        style={{
+          backgroundImage: "url(/NotesPage.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
       <header className="mb-6">
         <h1 className="text-3xl font-bold text-DarkestBlue text-center mb-8">Your Profile</h1>
       </header>
