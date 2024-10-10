@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import NoteCard from "../components/NoteCard"; // Adjust the import path as necessary
+import NoteCard from "../components/NoteCard";
 import NoteModal from "../components/NoteModal";
 import CategoryModal from "../components/CategoryModal";
 
@@ -13,10 +13,12 @@ const HomePage = ({ setNoteId }) => {
   const [selectCategory, setSelectedCategory] = useState("");
   const [selectTime, setSelectedTime] = useState("");
   const [order, setOrder] = useState("ascending");
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   // Fetch all notes
   const getNotes = async () => {
+    setIsLoading(true); // Start loading
     try {
       const response = await fetch("http://localhost:3000/notes/all", {
         method: "GET",
@@ -31,6 +33,8 @@ const HomePage = ({ setNoteId }) => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false); // Stop loading once notes are fetched
     }
   };
 
@@ -163,15 +167,21 @@ const HomePage = ({ setNoteId }) => {
   const notesDisplayed =
     selectCategory || searchTitle || sortAD || selectTime ? filter : notes;
 
-  return (
-      <div
-        className="min-h-screen p-5"
-        style={{
-          backgroundImage: "url(/NotesPage.png)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+return (
+    <div
+      className="min-h-screen p-5 relative" // Add relative positioning for centering the loader
+      style={{
+        backgroundImage: "url(/NotesPage.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <img src="/loading.gif" alt="Loading..." className="w-48 h-48" />
+        </div>
+      )}
+
       <h1 className="text-3xl font-bold text-DarkestBlue text-center mb-8">
         Your Notes
       </h1>
