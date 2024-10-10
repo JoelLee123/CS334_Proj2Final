@@ -12,14 +12,14 @@ const FrontPage = () => {
         // Check the "rememberMe" flag in localStorage
     const rememberMe = localStorage.getItem("rememberMe");
 
-    if (rememberMe) {
+    if (rememberMe === "true") {
       // If "rememberMe" is true, navigate to HomePage and create a new session token
+      console.log("herre");
       navigate("/HomePage");
     } else {
       // Otherwise, navigate to SignInPage
       navigate("/Sign-in");
     }
-        navigate("/HomePage");
     }, [navigate]);
 
 

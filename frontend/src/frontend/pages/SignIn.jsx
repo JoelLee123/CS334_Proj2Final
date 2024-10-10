@@ -63,12 +63,12 @@ const SignInPage = () => {
         if (isTicked) {
           localStorage.setItem("email", email);
           localStorage.setItem("password", password);
-          localStorage.setItem("rememberMe", true);
+          localStorage.setItem("rememberMe", "true");
         }else{
           // Clear stored credentials if not checked
           localStorage.removeItem("email");
           localStorage.removeItem("password");
-          localStorage.setItem("rememberMe", false);
+          localStorage.setItem("rememberMe", "false");
         }
 
         navigate("/HomePage");
