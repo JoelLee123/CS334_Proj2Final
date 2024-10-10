@@ -45,7 +45,7 @@ const SignInPage = () => {
   // Generate a post request to the database for login
   const CheckValidation = async () => {
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
+      const response = await fetch("/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -91,7 +91,7 @@ const SignInPage = () => {
   const handleForgotPassword = async () => {
     console.log("In functionality forgot password with email:", modalEmail);
     try {
-      const response = await fetch("http://localhost:3000/auth/request-password-reset?email="+modalEmail,{
+      const response = await fetch("/auth/request-password-reset?email="+modalEmail,{
         method: "POST",
         headers: {
           "Content-Type": "application/json"

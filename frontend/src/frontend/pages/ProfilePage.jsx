@@ -21,7 +21,7 @@ const ProfilePage = () => {
 
   const handleProfileUpdate = async () => {
     try {
-      const response = await fetch('http://localhost:3000/users/me', {
+      const response = await fetch('/users/me', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const ProfilePage = () => {
   const handleDeleteAccount = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
       try {
-        const response = await fetch('http://localhost:3000/users/me', {
+        const response = await fetch('/users/me', {
           method: 'DELETE',
           credentials: 'include',
         });
@@ -74,7 +74,7 @@ const ProfilePage = () => {
 
   const getMe = async () => {
     try {
-      const response = await fetch('http://localhost:3000/users/me', {
+      const response = await fetch('/users/me', {
         method: 'GET',
         credentials: 'include',
       });

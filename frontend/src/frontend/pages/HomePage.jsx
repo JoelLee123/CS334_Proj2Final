@@ -18,7 +18,7 @@ const HomePage = ({ setNoteId }) => {
   // Fetch all notes
   const getNotes = async () => {
     try {
-      const response = await fetch("http://localhost:3000/notes/all", {
+      const response = await fetch("/notes/all", {
         method: "GET",
         credentials: "include",
       });
@@ -37,7 +37,7 @@ const HomePage = ({ setNoteId }) => {
   // Fetch all categories (for filtering)
   const getCategories = async () => {
     try {
-      const response = await fetch("http://localhost:3000/categories/all", {
+      const response = await fetch("/categories/all", {
         method: "GET",
         credentials: "include",
       });
@@ -56,7 +56,7 @@ const HomePage = ({ setNoteId }) => {
   // Handle note creation through modal
   const handleCreateNote = async (noteData) => {
     try {
-      const response = await fetch("http://localhost:3000/notes/add", {
+      const response = await fetch("/notes/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ const HomePage = ({ setNoteId }) => {
     try {
       let response;
       if (action === "add") {
-        response = await fetch("http://localhost:3000/categories/add", {
+        response = await fetch("/categories/add", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -101,7 +101,7 @@ const HomePage = ({ setNoteId }) => {
           body: JSON.stringify({ name }),
         });
       } else if (action === "edit") {
-        response = await fetch(`http://localhost:3000/categories/update/${id}`, {
+        response = await fetch(`/categories/update/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -111,7 +111,7 @@ const HomePage = ({ setNoteId }) => {
         });
       } else if (action === "delete") {
         response = await fetch(
-          `http://localhost:3000/categories/delete/${id}`,
+          `/categories/delete/${id}`,
           {
             method: "DELETE",
             credentials: "include",

@@ -68,7 +68,7 @@ const NotesPage = () => {
     if (!collaboratorEmail) return setShareError("Please enter an email.");
 
     try {
-      const response = await fetch("http://localhost:3000/collaborators/add", {
+      const response = await fetch("/collaborators/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -100,7 +100,7 @@ const NotesPage = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `http://localhost:3000/notes/update/${location.state.id}`,
+        `/notes/update/${location.state.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -121,7 +121,7 @@ const NotesPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("http://localhost:3000/categories/all", {
+      const response = await fetch("/categories/all", {
         method: "GET",
         credentials: "include",
       });
