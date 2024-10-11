@@ -1,49 +1,75 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import image from '../images/adventuretime.png';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-
+import { useWebSocket } from './WebSocketContext';
+import image from '../images/adventuretime.png';
+import { Link } from 'react-router-dom';
 
 const FrontPage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const socket = useWebSocket();  // Access the WebSocket connection
 
-    useEffect(() => {
-        // Check the "rememberMe" flag in localStorage
-        const rememberMe = localStorage.getItem("rememberMe");
-      
-        // If "rememberMe" is true, check for an active session via cookies
-        if (rememberMe === "true") {
-          const checkAuth = async () => {
-            try {
-              const response = await fetch("http://localhost:3000/auth/check-auth", {
-                method: "GET",
-                credentials: "include",
-              });
-      
-              if (response.ok) {
-                console.log("here4");
-                navigate("/HomePage");
+  useEffect(() => {
+    const rememberMe = localStorage.getItem("rememberMe");
+
+    if (rememberMe === "true") {
+      const checkAuth = async () => {
+        try {
+          const response = await fetch("http://localhost:3000/auth/check-auth", {
+            method: "GET",
+            credentials: "include",
+          });
+
+          if (response.ok) {
+            const storedEmail = localStorage.getItem("email");
+            const storedPassword = localStorage.getItem("password");
+
+            if (storedEmail && storedPassword) {
+              
+              // Check if WebSocket is open or wait for it to open
+              if (socket && socket.readyState === WebSocket.OPEN) {
+                // If WebSocket is already open, send login command immediately
+                sendLoginMessage(storedEmail, storedPassword);
+              } else if (socket) {
+                // Wait for the WebSocket to open, then send the login message
+                socket.onopen = () => {
+                  sendLoginMessage(storedEmail, storedPassword);
+                };
+
+                socket.onerror = (error) => {
+                  console.log("WebSocket error:", error);
+                };
               } else {
-                console.log("here3");
-                navigate("/");
+                console.log("WebSocket is not initialized.");
               }
-            } catch (error) {
-                console.log("here2");
-                navigate("/");
+
+              navigate("/homepage");  // Redirect after successful WebSocket login
+            } else {
+              console.log("No stored credentials found.");
+              navigate("/");  // Redirect if credentials are missing
             }
-          };
-      
-          // Call the checkAuth function to validate the session
-          checkAuth();
-        } else {
-          console.log("here1");
-          navigate("/");
+          } else {
+            console.log("Session check failed");
+            navigate("/");  // Redirect if session is not valid
+          }
+        } catch (error) {
+          console.log("Error in authentication check", error);
+          navigate("/");  // Redirect in case of error
         }
-      }, [navigate]);
-      
+      };
 
+      checkAuth();  // Validate session
+    } else {
+      console.log("No active session, redirecting...");
+      navigate("/");  // Redirect if no session
+    }
+  }, [navigate, socket]);  // Added socket to the dependency array
 
+  // Function to send login message via WebSocket
+  const sendLoginMessage = (email, password) => {
+    const loginMessage = `login,${email},${password}`;
+    socket.send(loginMessage);
+    console.log(`Sent WebSocket login command: ${loginMessage}`);
+  };
     return (
             <div
               className="serif min-h-screen"

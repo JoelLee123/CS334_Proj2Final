@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { marked } from "marked";
 import { useLocation } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
+import { useWebSocket } from "./WebSocketContext"; // Import the WebSocket context hook
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const NotesPage = () => {
   const [markdown, setMarkdown] = useState("");
@@ -14,7 +17,70 @@ const NotesPage = () => {
   const [shareError, setShareError] = useState("");
   const [isEditing, setIsEditing] = useState(false); // Track the editing state
   const [isSaving, setIsSaving] = useState(false); // Track the saving state
+  const [noteStatus, setNoteStatus] = useState("Idle"); // Track the note's status
+  const [isCurrentUserEditing, setIsCurrentUserEditing] = useState(false);
+
   const location = useLocation();
+
+  // Use WebSocket from context
+  const socket = useWebSocket();
+
+  // Function to request note status
+  const requestNoteStatus = () => {
+    if (socket) {
+      const noteId = location.state.id;
+      socket.send(`getStatus,${noteId}`);
+    }
+  };
+  
+  // Request the note's status only once when the page loads
+  useEffect(() => {
+    requestNoteStatus();
+  }, []); // Run only once when the component mounts
+  
+useEffect(() => {
+  if (socket) {
+    console.log("WebSocket connection established");
+
+    socket.onmessage = (event) => {
+      const message = event.data;
+      console.log("WebSocket message received:", message);
+
+      // Check if the message contains 'editing' or 'stopped'
+      if (message.includes("started") || message.includes("stopped")) {
+        // Re-request the note status to update the UI
+        requestNoteStatus();
+      }
+
+      if (message.startsWith("status:")) {
+          const status = message.replace("status:", "");
+          setNoteStatus(status); // Update the note status in the UI
+          return;
+        }
+
+      toast.info(`${message}`, {
+        position: "top-right",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      toast.error("WebSocket error occurred!");
+    };
+  }
+
+  return () => {
+    if (socket) {
+      socket.onmessage = null; // Clean up listener on unmount
+    }
+  };
+}, [socket]);
 
   useEffect(() => {
     setTitle(location.state?.title || "");
@@ -52,6 +118,9 @@ const NotesPage = () => {
       if (!response.ok) throw new Error("Error sharing note");
       
       setCollaborators([...collaborators, data.newCollaborator]);
+      if (socket) {
+        socket.send(`notifyNewCollaborator,${location.state.id},${collaboratorEmail}`);
+      }
       closeShareModal();
 
     } catch (error) {
@@ -65,6 +134,41 @@ const NotesPage = () => {
     setCollaboratorEmail("");
     setShareError("");
   };
+
+const handleEditNote = () => {
+  setNoteStatus("You are editing this note");
+  setIsCurrentUserEditing(true); // Set to true when the current user is editing
+  // Check if WebSocket is available and note is idle
+  if (socket && noteStatus === "Idle") {
+    const noteId = location.state.id;
+
+    // Send the editNote command through WebSocket
+    socket.send(`editNote,${noteId}`);
+
+    // Set the editing state to true
+    setIsEditing(true);
+  } else if (isCurrentUserEditing) {
+    toast.warn("You are editing this note.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  } else {
+    toast.warn("The note is currently being edited by someone else.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+};
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -94,7 +198,24 @@ const NotesPage = () => {
     } finally {
       setIsSaving(false); // Stop loading
     }
+     setIsCurrentUserEditing(false); // Set to false when the current user is done editing
   };
+
+  const handleSaveAndStopEditing = async (e) => {
+    e.preventDefault();
+
+    // Trigger the existing save logic
+    await handleSave(e);
+    setIsCurrentUserEditing(false);// Set to false when the current user stops editing
+    setNoteStatus("Idle");
+
+    // Send the WebSocket command to stop editing
+    if (socket) {
+      const noteId = location.state.id; // Get the note ID
+      socket.send(`stopEditing,${noteId}`);
+    }
+  };
+
 
   const fetchCategories = async () => {
     try {
@@ -135,6 +256,17 @@ const NotesPage = () => {
     document.body.removeChild(anchor);
     URL.revokeObjectURL(url);
   };
+
+    useEffect(() => {
+    return () => {
+      if (socket && isCurrentUserEditing) {
+        const noteId = location.state.id;
+        socket.send(`stopEditing,${noteId}`);
+        console.log(`Sent stopEditing for note ${noteId}`);
+      }
+    };
+  }, [socket, isCurrentUserEditing, location.state.id]);
+  
 return (
   <div
     className="min-h-screen p-3 flex flex-col justify-center items-center"
@@ -145,7 +277,7 @@ return (
     }}
   >
     <div className="w-full max-w-4xl flex flex-col items-center space-y-6 mt-4 px-4 md:px-8">
-      <h1 className="text-2xl md:text-4xl font-bold text-center text-black mb-0">
+      <h1 className="text-2xl md:text-4xl font-bold text-center text-DarkestBlue mb-0">
         Edit Note
       </h1>
       <div className="flex flex-col sm:flex-row sm:space-x-4 items-center w-full">
@@ -173,15 +305,14 @@ return (
           ))}
         </select>
 
-        {!isEditing && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="bg-green-500 hover:bg-blue-700  text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mt-2 sm:mt-0"
-          >
-            <FiEdit className="inline-block mr-2" />
-            Edit
-          </button>
-        )}
+        <button
+          onClick={handleEditNote}
+           className={`bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mt-2 sm:mt-0 ${noteStatus !== "Idle" ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={noteStatus !== "Idle" && noteStatus !== "You are editing this note"} // Disable if noteStatus is not "Idle"
+        >
+          <FiEdit className="inline-block mr-2" />
+          Edit
+        </button>
       </div>
 
       <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full">
@@ -193,7 +324,7 @@ return (
         </button>
         <button
           onClick={openShareModal}
-          className="bg-green-500 hover:bg-blue-700  text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
+          className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
         >
           Share
         </button>
@@ -235,6 +366,22 @@ return (
         </div>
       )}
 
+      {/* Display the note's status */}
+      <div className="note-status relative flex items-center">
+        {/* Display the note's status */}
+        <strong>Status:</strong> {noteStatus}
+
+        {/* Show the GIF if the note is being edited (status is not "Idle") */}
+        {noteStatus !== "Idle" && (
+          <img 
+            src="/editing.gif" 
+            alt="Editing..." 
+            className="w-24 h-24 animate-pulse absolute left-[-110px]"
+            style={{ top: "50%", transform: "translateY(-50%)" }}
+          />
+        )}
+      </div>
+
       <textarea
         className="border border-DarkestBlue rounded p-4 bg-Ivory w-full"
         rows="12"
@@ -251,8 +398,9 @@ return (
         </div>
       ) : (
         <button
-          onClick={handleSave}
-          className="bg-green-500 hover:bg-blue-700  text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out w-full sm:w-auto"
+          onClick={handleSaveAndStopEditing}
+            className={`bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mt-2 sm:mt-0 ${!isCurrentUserEditing && noteStatus && noteStatus !== "Idle" ? 'opacity-50 cursor-not-allowed' : ''}`}
+             disabled={!isCurrentUserEditing && noteStatus !== "Idle"} // Disable if not editing and status is not Idle
         >
           Save
         </button>
@@ -262,6 +410,10 @@ return (
         className="markdown-preview bg-white border border-DarkestBlue rounded p-4 w-full mt-6"
         dangerouslySetInnerHTML={renderMarkdown()}
       ></div>
+
+      {/* Toast notifications */}
+      <ToastContainer />
+
     </div>
   </div>
 );

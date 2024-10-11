@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FormGroup, FormControlLabel, Checkbox, Modal, Fade, Typography, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import { useWebSocket } from "./WebSocketContext";  // Use WebSocket context
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
@@ -9,8 +10,11 @@ const SignInPage = () => {
   const [error, setError] = useState(null); // Manage login error state
   const [openModal, setOpenModal] = useState(false);
   const [modalEmail, setModalEmail] = useState(""); // Email for the modal
+  const [isConnected, setIsConnected] = useState(false);
 
   const navigate = useNavigate();
+
+  const socket = useWebSocket();  // Access the WebSocket connection
 
   const handleRememberMe = () => {
     setIsTicked(!isTicked); // Toggle the checkbox
@@ -42,6 +46,16 @@ const SignInPage = () => {
     setIsTicked(rememberMe);
   }, []);
 
+    // Function to handle WebSocket connection after successful login
+  const connectWebSocket = (email, password) => {
+      // After successful login, send WebSocket login command
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        const loginMessage = `login,${email},${password}`;
+        socket.send(loginMessage);
+        console.log(`Sent login command: ${loginMessage}`);
+      }
+  }
+
   // Generate a post request to the database for login 
   const CheckValidation = async () => {
     try {
@@ -70,6 +84,9 @@ const SignInPage = () => {
           localStorage.removeItem("password");
           localStorage.setItem("rememberMe", "false");
         }
+        
+        // Connect WebSocket after successful login
+        connectWebSocket(email, password);
 
         navigate("/HomePage");
       } else {
