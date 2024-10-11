@@ -42,7 +42,7 @@ const NoteCard = ({
     console.log("id: ", { id });
 
     try {
-      const response = await fetch("http://localhost:3000/notes/delete/" + id, {
+      const response = await fetch("/notes/delete/" + id, {
         method: "DELETE",
         credentials: "include",
       });
@@ -96,7 +96,7 @@ const NoteCard = ({
    const fetchCollaborators = async () => {
     console.log("noteID: "+id);
     try {
-      const response = await fetch(`http://localhost:3000/collaborators/${id}`, {
+      const response = await fetch(`/collaborators/${id}`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -117,8 +117,8 @@ const NoteCard = ({
     console.log("selected user: " + selectedUser);
   
     const endpoint = isAddingCollaborator
-      ? "http://localhost:3000/collaborators/add"
-      : `http://localhost:3000/collaborators/remove/${id}/${selectedUser}`; // Construct the URL with parameters
+      ? "/collaborators/add"
+      : `/collaborators/remove/${id}/${selectedUser}`; // Construct the URL with parameters
   
     const method = isAddingCollaborator ? "POST" : "DELETE";
   
@@ -166,7 +166,7 @@ const NoteCard = ({
    // Fetch list of users for the dropdown when the modal is opened
    const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:3000/users/", {
+      const response = await fetch("/users/", {
         method: "GET",
         credentials: 'include'
       });
