@@ -28,7 +28,7 @@ router.post("/add", authenticateToken, async (req, res) => {
     }
     return res.status(400).json({ message: "Error creating category", error });
   }
-});
+}); 
 
 // Get all categories
 router.get("/all", authenticateToken, async (req, res) => {
