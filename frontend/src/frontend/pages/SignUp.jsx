@@ -18,7 +18,7 @@ const SignUpPage = () => {
 
     //Generate a get request from database
     try {
-        const response = await fetch("http://localhost:3000/auth/register",{
+        const response = await fetch("/auth/register",{
         method:"POST",
         headers:{
           "Content-Type": "application/json"
@@ -51,7 +51,14 @@ const SignUpPage = () => {
   }
 
   return (
-    <div className="font-sans bg-LighterBlue min-h-screen p-5 text-center"> 
+      <div
+        className="font-sans min-h-screen p-5 text-center"
+        style={{
+          backgroundImage: "url(/NotesPage.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      > 
       <header>
         <h1 className="text-3xl font-bold text-black">Sign Up</h1>
       </header>
@@ -89,16 +96,16 @@ const SignUpPage = () => {
         />
       </div>
       <nav className="mt-5 space-x-4">
-          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
-            Continue
-          </button>
           <button className="bg-red-600 text-Ivory px-4 py-2 rounded hover:bg-red-700 transition mb-2" onClick={handleCancel}>
             Cancel
+          </button>
+          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={HandleRegistration}>
+            Continue
           </button>
       </nav>
           {/* Conditionally render error message if it exists */}
           {error && (
-          <div className="text-red-500 text-sm mt-2">
+          <div className="text-l text-red-700 text-sm mt-2 font-bold">
             {error}
           </div>
         )}

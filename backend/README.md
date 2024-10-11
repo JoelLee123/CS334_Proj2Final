@@ -301,7 +301,7 @@ wscat -c ws://localhost:3000
 This needs to be sent to the websocket server.This is done to link the session with the user and authenticate the websocket session. If the session is not authenticated, it cannot make API requests.
 Upon successful login, the WebSocket server will map the user's email to their WebSocket connection.
 ```bash
-login,<user_email>,<password_>,true
+login,<user_email>,<password_>
 ```
 
 * Start Editing a Note:

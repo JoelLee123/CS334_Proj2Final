@@ -29,6 +29,11 @@ model User {
 }
 * I modified the above code to model our database to what it is in schema.prisma.
 #******************************************************************************************
+* The background image for the NotesPage:
+- https://loading.io/background/m-swell-waves/
+
+* The loading GIF:
+- https://loading.io/spinner/spinner/
 
 
 #******************************************************************************************

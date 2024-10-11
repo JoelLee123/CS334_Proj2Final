@@ -21,7 +21,7 @@ const sendEmail = async (toEmail: string) => {
 
 /* Send a password reset email */
 const sendPasswordResetEmail = async (toEmail: string, resetToken: string) => {
-  const resetURL = `https://localhost:3000/reset-password?token=${resetToken}`;
+  const resetURL = `/reset-password?token=${resetToken}`;
 
   const msg = {
     to: toEmail,

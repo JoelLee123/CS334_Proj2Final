@@ -9,9 +9,11 @@ import ProfilePage from './ProfilePage';
 import NotesPage from './NotesPage';
 import Navbar from "../components/NavBar";
 import ResetPass from './Reset_password';  // Correct component name
+import { WebSocketProvider } from "./WebSocketContext";  // Import WebSocketProvider
 
 function App() {
   return (
+    <WebSocketProvider>
     <Router>
       <div>
         <ConditionalNavbar />
@@ -26,8 +28,10 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </WebSocketProvider>
   );
 }
+
 
 function ConditionalNavbar() {
   const location = useLocation();
