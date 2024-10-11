@@ -28,7 +28,7 @@ const ResetPass = () => {
           },3000);
     }else{
         try {
-            const response = await fetch("http://localhost:3000/auth/reset-password",{
+            const response = await fetch("/auth/reset-password",{
               method: "POST",
               headers: {
                 "Content-Type": "application/json"
@@ -54,7 +54,14 @@ const ResetPass = () => {
   };
 
   return (
-    <div className="bg-LighterBlue min-h-screen p-5 text-center">
+    <div
+      className="min-h-screen p-5 text-center"
+      style={{
+        backgroundImage: "url(/NotesPage.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+      > 
       <header>
         <h1 className="text-3xl font-bold text-black">Reset password</h1>
       </header>
@@ -79,7 +86,7 @@ const ResetPass = () => {
           </button>
 
         {error && (
-          <div className="text-red-500 text-sm mt-2">
+          <div className="text-l text-red-700 text-sm mt-2 font-bold">
             {error}
           </div>
         )}

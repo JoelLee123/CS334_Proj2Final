@@ -21,7 +21,7 @@ const ProfilePage = () => {
 
   const handleProfileUpdate = async () => {
     try {
-      const response = await fetch('http://localhost:3000/users/me', {
+      const response = await fetch('/users/me', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const ProfilePage = () => {
   const handleDeleteAccount = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
       try {
-        const response = await fetch('http://localhost:3000/users/me', {
+        const response = await fetch('/users/me', {
           method: 'DELETE',
           credentials: 'include',
         });
@@ -73,13 +73,33 @@ const ProfilePage = () => {
   };
 
   const handleLogOut = async () => {
-    localStorage.setItem("rememberMe", false);
-    navigate("/Sign-in")
+    try {
+      const response = await fetch("/auth/logout", {
+        method: "POST",
+        credentials: "include", // Include cookies
+      });
+  
+      if (response.ok) {
+        // remove the remember me token
+        localStorage.setItem("rememberMe", "false");
+        localStorage.removeItem("email");
+        localStorage.removeItem("password");
+
+        const rem = localStorage.getItem("rememberMe");
+        console.log("remember me: ", rem);
+        navigate("/");
+        // navigate("/Sign-in");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+
+   
   };
 
   const getMe = async () => {
     try {
-      const response = await fetch('http://localhost:3000/users/me', {
+      const response = await fetch('/users/me', {
         method: 'GET',
         credentials: 'include',
       });
@@ -90,6 +110,8 @@ const ProfilePage = () => {
         console.log("User details:", data.user);
       } else {
         console.log("Error fetching user details:", data.message);
+        localStorage.setItem("rememberMe", "false");
+        navigate("/");
         setError(data.message);
       }
     } catch (error) {
@@ -107,15 +129,22 @@ const ProfilePage = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="bg-LighterBlue min-h-screen p-5">
+      <div
+        className="min-h-screen p-5"
+        style={{
+          backgroundImage: "url(/NotesPage.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-DarkestBlue text-center mb-8">Your Profile</h1>
+        <h1 className="text-3xl font-bold text-black text-center mb-8">Your Profile</h1>
       </header>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center text-black">
         <img 
           src={userDetails?.avatar_url || "https://via.placeholder.com/150"} 
           alt="User Avatar" 
-          className="mb-4 rounded-full"
+          className="mb-4 rounded-full text-black"
           style={{ maxWidth: '150px', maxHeight: '150px' }}
         />
         {userDetails ? (
@@ -175,11 +204,11 @@ const ProfilePage = () => {
         </div>
 
         <nav className="flex space-x-4 mt-4">
-            <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogOut}>
+            <button className="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogOut}>
               Log out
             </button>
           <button 
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             onClick={handleDeleteAccount}
           >
             Delete Account

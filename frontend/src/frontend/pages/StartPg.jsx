@@ -1,31 +1,85 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import image from '../images/adventuretime.png';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-
+import { useWebSocket } from './WebSocketContext';
+import image from '../images/adventuretime.png';
+import { Link } from 'react-router-dom';
 
 const FrontPage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const socket = useWebSocket();  // Access the WebSocket connection
 
-    useEffect(() => {
-        // Check the "rememberMe" flag in localStorage
-    const rememberMe = localStorage.getItem("rememberMe") === "true";
+  useEffect(() => {
+    const rememberMe = localStorage.getItem("rememberMe");
 
-    if (rememberMe) {
-      // If "rememberMe" is true, navigate to HomePage
-      navigate("/HomePage");
+    if (rememberMe === "true") {
+      const checkAuth = async () => {
+        try {
+          const response = await fetch("/auth/check-auth", {
+            method: "GET",
+            credentials: "include",
+          });
+
+          if (response.ok) {
+            const storedEmail = localStorage.getItem("email");
+            const storedPassword = localStorage.getItem("password");
+
+            if (storedEmail && storedPassword) {
+              
+              // Check if WebSocket is open or wait for it to open
+              if (socket && socket.readyState === WebSocket.OPEN) {
+                // If WebSocket is already open, send login command immediately
+                sendLoginMessage(storedEmail, storedPassword);
+              } else if (socket) {
+                // Wait for the WebSocket to open, then send the login message
+                socket.onopen = () => {
+                  sendLoginMessage(storedEmail, storedPassword);
+                };
+
+                socket.onerror = (error) => {
+                  console.log("WebSocket error:", error);
+                };
+              } else {
+                console.log("WebSocket is not initialized.");
+              }
+
+              navigate("/homepage");  // Redirect after successful WebSocket login
+            } else {
+              console.log("No stored credentials found.");
+              navigate("/");  // Redirect if credentials are missing
+            }
+          } else {
+            console.log("Session check failed");
+            navigate("/");  // Redirect if session is not valid
+          }
+        } catch (error) {
+          console.log("Error in authentication check", error);
+          navigate("/");  // Redirect in case of error
+        }
+      };
+
+      checkAuth();  // Validate session
     } else {
-      // Otherwise, navigate to SignInPage
-      navigate("/Sign-in");
+      console.log("No active session, redirecting...");
+      navigate("/");  // Redirect if no session
     }
-        navigate("/HomePage");
-    }, [navigate]);
+  }, [navigate, socket]);  // Added socket to the dependency array
 
-
+  // Function to send login message via WebSocket
+  const sendLoginMessage = (email, password) => {
+    const loginMessage = `login,${email},${password}`;
+    socket.send(loginMessage);
+    console.log(`Sent WebSocket login command: ${loginMessage}`);
+  };
     return (
-        <div className="serif bg-LighterBlue min-h-screen">
-            <header className=" bg-DarkestBlue flex justify-between items-center mb-4 p-5">
+            <div
+              className="serif min-h-screen"
+              style={{
+                backgroundImage: "url(/NotesPage.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+            <header className=" bg-TeaGreen flex justify-between items-center mb-4 p-5">
                 <h1 className="serif text-3xl font-bold text-black">Welcome to ScribeMark</h1>
             </header>
             <nav className="flex flex-col items-center my-5">
