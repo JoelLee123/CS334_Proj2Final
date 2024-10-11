@@ -14,7 +14,7 @@ const FrontPage = () => {
     if (rememberMe === "true") {
       const checkAuth = async () => {
         try {
-          const response = await fetch("http://localhost:3000/auth/check-auth", {
+          const response = await fetch("/auth/check-auth", {
             method: "GET",
             credentials: "include",
           });
