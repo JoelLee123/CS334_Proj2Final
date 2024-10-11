@@ -32,9 +32,15 @@ router.post("/add", authenticateToken, async (req, res) => {
 
 // Get all categories from the database
 router.get("/all", authenticateToken, async (req, res) => {
+  const user = (req as any).user; // Authenticated user
+
   try {
     // Fetch categories that belong to the authenticated user
-    const categories = await prisma.category.findMany();
+    const categories = await prisma.category.findMany({
+      where: {
+        user_email: user.email, // Filter categories by the user's email
+      },
+    });
 
     console.log("Categories fetched: ", categories);
     return res.status(200).json({ categories });

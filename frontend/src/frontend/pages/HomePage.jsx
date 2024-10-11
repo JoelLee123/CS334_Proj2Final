@@ -222,13 +222,12 @@ return (
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {categories
-            .filter(category => notes.some (note => note.categoryId === category.id))
-            .map((category)=>
-            <option key={category.id} value={category.id} >
-              {category.name}
-            </option>)
-            }
+            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+
           </select>
           <select
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
