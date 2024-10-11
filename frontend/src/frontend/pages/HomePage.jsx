@@ -50,6 +50,7 @@ const HomePage = ({ setNoteId }) => {
       const data = await response.json();
       if (response.ok) {
         setCategories(data.categories);
+        console.log("categories: ", data);
       } else {
         console.log("Categories not fetched", data.message);
       }
