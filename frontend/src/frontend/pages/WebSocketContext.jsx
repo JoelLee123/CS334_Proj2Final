@@ -5,13 +5,14 @@ const WebSocketContext = createContext(null);
 
 // Custom hook to access WebSocket
 export const useWebSocket = () => useContext(WebSocketContext);
+const wsUrl = process.env.NODE_ENV === 'production' ? 'wss://scribe-mark-fe6416f9cd72.herokuapp.com':'ws://localhost:3001';
 
 export const WebSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     // Initialize WebSocket connection
-    const ws = new WebSocket("ws://localhost:3001");
+    const ws = new WebSocket(wsUrl);
     setSocket(ws);
 
     ws.onopen = () => {
