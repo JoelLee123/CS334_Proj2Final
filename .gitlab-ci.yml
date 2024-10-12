@@ -14,12 +14,16 @@ before_script:
 
 setup:
   stage: setup
+  tags:
+    - shared-runner
   script:
     # Install backend and frontend dependencies
     - npm run setup
 
 build:
   stage: build
+  tags:
+    - shared-runner
   script:
     # Build both backend and frontend
     - npm run build
@@ -30,6 +34,8 @@ build:
 
 deploy:
   stage: deploy
+  tags:
+    - shared-runner
   script:
     - echo "Deploying to Heroku"
     # Install Heroku CLI
