@@ -138,7 +138,7 @@ const SignInPage = () => {
       }}
       > 
       <header>
-        <h1 className="text-3xl font-bold text-black">Sign In</h1>
+        <h1 className="text-3xl font-bold text-black">Sign into ScribeMark</h1>
       </header>
 
       <div className="flex flex-col space-y-4 mt-5">
