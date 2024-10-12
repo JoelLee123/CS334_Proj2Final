@@ -9,6 +9,7 @@ const HomePage = ({ setNoteId }) => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
   const [searchTitle, setSearch] = useState("");
   const [selectCategory, setSelectedCategory] = useState("");
@@ -42,7 +43,7 @@ const HomePage = ({ setNoteId }) => {
   // Fetch all categories (for filtering)
   const getCategories = async () => {
     try {
-      const response = await fetch("http://localhost:3000/categories/allcategories", {
+      const response = await fetch("http://localhost:3000/categories/all", {
         method: "GET",
         credentials: "include",
       });
@@ -53,6 +54,26 @@ const HomePage = ({ setNoteId }) => {
         console.log("categories fetched", data.categories);
       } else {
         console.log("Categories not fetched", data.message);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Fetch all categories (for filtering)
+  const getAllCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/categories/allcategories", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setAllCategories(data.allCategories);
+        console.log("All categories fetched", data.allCategories);
+      } else {
+        console.log("All Categories not fetched", data.message);
       }
     } catch (error) {
       console.error(error);
@@ -138,6 +159,7 @@ const HomePage = ({ setNoteId }) => {
   useEffect(() => {
     getNotes();
     getCategories();
+    getAllCategories();
   }, []);
 
     // Filter notes based on searchTitle and well as time
@@ -222,7 +244,7 @@ return (
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {categories
+            {allCategories
             .filter(category => notes.some (note => note.categoryId === category.id))
             .map((category)=>
             <option key={category.id} value={category.id} >
