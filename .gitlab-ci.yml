@@ -1,8 +1,8 @@
 image: node:18
 
 stages:
-  - setup
-  - build
+  # - setup
+  # - build
   - deploy
 
 cache:
@@ -12,25 +12,25 @@ cache:
 before_script:
   - npm install
 
-setup:
-  stage: setup
-  tags:
-    - shared-runner
-  script:
-    # Install backend and frontend dependencies
-    - npm run setup
+# setup:
+#   stage: setup
+#   tags:
+#     - shared-runner
+#   script:
+#     # Install backend and frontend dependencies
+#     - npm run setup
 
-build:
-  stage: build
-  tags:
-    - shared-runner
-  script:
-    # Build both backend and frontend
-    - CI='' npm run build
-  artifacts:
-    paths:
-      - backend/dist/  # Backend build files
-      - backend/build/  # Frontend build files moved to backend
+# build:
+#   stage: build
+#   tags:
+#     - shared-runner
+#   script:
+#     # Build both backend and frontend
+#     - CI='' npm run build
+#   artifacts:
+#     paths:
+#       - backend/dist/  # Backend build files
+#       - backend/build/  # Frontend build files moved to backend
 
 deploy:
   stage: deploy
