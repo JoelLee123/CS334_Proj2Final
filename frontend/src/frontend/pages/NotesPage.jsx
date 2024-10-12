@@ -20,6 +20,7 @@ const NotesPage = () => {
   const [isSaving, setIsSaving] = useState(false); // Track the saving state
   const [noteStatus, setNoteStatus] = useState("Idle"); // Track the note's status
   const [isCurrentUserEditing, setIsCurrentUserEditing] = useState(false);
+  const [isFlashing, setIsFlashing] = useState(false); // Track flashing state
 
   const location = useLocation();
 
@@ -56,6 +57,12 @@ useEffect(() => {
       if (message.startsWith("status:")) {
           const status = message.replace("status:", "");
           setNoteStatus(status); // Update the note status in the UI
+          // Start flashing if the note is being edited by someone else
+          if (status !== "Idle" && !isCurrentUserEditing) {
+            setIsFlashing(true);
+          } else {
+            setIsFlashing(false);
+          }
           return;
         }
 
@@ -135,6 +142,26 @@ useEffect(() => {
     setCollaboratorEmail("");
     setShareError("");
   };
+
+// Add the flashing effect when another user is editing
+  useEffect(() => {
+    let flashInterval;
+    if (isFlashing) {
+      flashInterval = setInterval(() => {
+        const textarea = document.getElementById("note-textarea");
+        if (textarea) {
+          textarea.style.borderColor =
+            textarea.style.borderColor === "purple" ? "transparent" : "purple";
+            textarea.style.borderWidth = "4px";
+        }
+      }, 500); // Flash every 500ms
+    }
+
+    return () => {
+      if (flashInterval) clearInterval(flashInterval);
+    };
+  }, [isFlashing]);
+  
 
 const handleEditNote = () => {
   setNoteStatus("You are editing this note");
@@ -383,14 +410,16 @@ return (
         )}
       </div>
 
-      <textarea
-        className="border border-DarkestBlue rounded p-4 bg-Ivory w-full"
-        rows="12"
-        placeholder="Start typing..."
-        value={markdown}
-        onChange={handleMarkdownChange}
-        disabled={!isEditing}
-      />
+          <textarea
+            id="note-textarea"
+            className="border border-DarkestBlue rounded p-2 w-full h-96 bg-Ivory focus:ring-2 focus:ring-blue-500"
+            value={markdown}
+            onChange={(e) => setMarkdown(e.target.value)}
+            disabled={!isEditing}
+            style={{
+              transition: "border-color 0.5s ease",
+            }}
+          />
 
       {isSaving ? (
         <div className="fixed inset-0 flex justify-center items-center z-50">

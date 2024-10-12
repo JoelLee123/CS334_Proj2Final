@@ -70,38 +70,47 @@ const FrontPage = () => {
     socket.send(loginMessage);
     console.log(`Sent WebSocket login command: ${loginMessage}`);
   };
-    return (
-            <div
-              className="serif min-h-screen"
-              style={{
-                backgroundImage: "url(/NotesPage.png)",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-            <header className=" bg-TeaGreen flex justify-between items-center mb-4 p-5">
-                <h1 className="serif text-3xl font-bold text-black">Welcome to ScribeMark</h1>
-            </header>
-            <nav className="flex flex-col items-center my-5">
-                <img src={image} alt="An illustration of adventure" style={{ width: '300px', height: 'auto' }} className="mb-4" />
-                <header>
-                    <h2 className="serif text-2xl font-bold text-black text-center mb-10">
-                        Capture Your Thoughts, Organize Your Ideas, and Enhance Your Productivity!
-                    </h2>
-                </header>
-                <Link to='/Sign-up'>
-                    <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
-                        Sign up
-                    </button>
-                </Link>
-                <Link to='/Sign-in'>
-                    <span className="text-black underline cursor-pointer hover:text-DarkestBlue transition">
-                        Already have an account? Log in
-                    </span>
-                </Link>
-            </nav>
-        </div>
-    );
+
+  return (
+    <div className="relative min-h-screen">
+      <video
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        src="/small3.mp4"
+        autoPlay
+        muted
+        loop
+      />
+
+      {/* Dark overlay for better contrast */}
+      <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50"></div>
+
+      {/* Main content */}
+      <div className="relative z-10 text-white text-center p-5">
+        <header className=" bg-TeaGreen flex justify-between items-center mb-4 p-5 bg-opacity-70">
+          <h1 className="serif text-3xl font-bold text-white">Welcome to ScribeMark</h1>
+        </header>
+
+        <nav className="flex flex-col items-center my-5">
+          <img src={image} alt="An illustration of adventure" style={{ width: '300px', height: 'auto' }} className="mb-4" />
+          <header>
+            <h2 className="serif text-2xl font-bold text-white text-center mb-10">
+              Capture Your Thoughts, Organize Your Ideas, and Enhance Your Productivity!
+            </h2>
+          </header>
+          <Link to='/Sign-up'>
+            <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2">
+              Sign up
+            </button>
+          </Link>
+          <Link to='/Sign-in'>
+            <span className="text-white underline cursor-pointer hover:text-DarkestBlue transition">
+              Already have an account? Log in
+            </span>
+          </Link>
+        </nav>
+      </div>
+    </div>
+  );
 }
 
 export default FrontPage;

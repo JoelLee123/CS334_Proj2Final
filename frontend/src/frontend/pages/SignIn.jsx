@@ -10,22 +10,17 @@ const SignInPage = () => {
   const [error, setError] = useState(null); // Manage login error state
   const [openModal, setOpenModal] = useState(false);
   const [modalEmail, setModalEmail] = useState(""); // Email for the modal
-  // const [isConnected, setIsConnected] = useState(false);
+  const [isLoginDisabled, setIsLoginDisabled] = useState(true); // State to disable login button
 
   const navigate = useNavigate();
-
   const socket = useWebSocket();  // Access the WebSocket connection
 
   const handleRememberMe = () => {
     setIsTicked(!isTicked); // Toggle the checkbox
   }
 
-  // Function to open the modal
-  const handleOpen = () => {
-    setOpenModal(true);
-  };
-
-  // Function to close the modal
+  // Function to open and close the modal
+  const handleOpen = () => setOpenModal(true);
   const handleClose = () => {
     setOpenModal(false);
     setModalEmail(""); // Clear email when closing modal
@@ -36,176 +31,152 @@ const SignInPage = () => {
     const storedPassword = localStorage.getItem("password");
     const rememberMe = localStorage.getItem("rememberMe") === "true";
 
-    if (storedEmail) {
-      setEmail(storedEmail);
-    }
-    if (storedPassword) {
-      setPassword(storedPassword);
-    }
-
+    if (storedEmail) setEmail(storedEmail);
+    if (storedPassword) setPassword(storedPassword);
     setIsTicked(rememberMe);
   }, []);
 
-    // Function to handle WebSocket connection after successful login
+  useEffect(() => {
+    // Enable login button only if both email and password are filled
+    setIsLoginDisabled(!(email && password));
+  }, [email, password]);
+
+  // Function to handle WebSocket connection after successful login
   const connectWebSocket = (email, password) => {
-      // After successful login, send WebSocket login command
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        const loginMessage = `login,${email},${password}`;
-        socket.send(loginMessage);
-        console.log(`Sent login command: ${loginMessage}`);
-      }
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      const loginMessage = `login,${email},${password}`;
+      socket.send(loginMessage);
+      console.log(`Sent login command: ${loginMessage}`);
+    }
   }
 
-  // Generate a post request to the database for login 
   const CheckValidation = async () => {
     try {
       const response = await fetch("/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include", // Include credentials (cookies)
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password, isTicked })
       });
 
-      console.log("Remember me functionality: ", isTicked);
-
       if (response.ok) {
-        console.log(`Login successful! Remember me functionality: ${isTicked}`);
-
-        // Adds remember me functionality and sets to true
         if (isTicked) {
           localStorage.setItem("email", email);
           localStorage.setItem("password", password);
           localStorage.setItem("rememberMe", "true");
-        }else{
-          // Clear stored credentials if not checked
+        } else {
           localStorage.removeItem("email");
           localStorage.removeItem("password");
           localStorage.setItem("rememberMe", "false");
         }
-        
-        // Connect WebSocket after successful login
         connectWebSocket(email, password);
-
         navigate("/HomePage");
       } else {
         setError("Invalid email or password. Please try again.");
       }
-
-    } catch (error) { // Double check if it works
-      setTimeout(()=>{
-        setError("An error occurred during login. Please try again later.");
-      },3000);
-      
+    } catch (error) {
+      setError("An error occurred during login. Please try again later.");
     }
   }
 
-  const handleCancel = () => {
-    navigate("/");
-  }
+  const handleCancel = () => navigate("/");
 
   const handleForgotPassword = async () => {
-    console.log("In functionality forgot password with email:", modalEmail);
     try {
-      const response = await fetch("/auth/request-password-reset?email="+modalEmail,{
+      const response = await fetch(`/auth/request-password-reset?email=${modalEmail}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include", // Include credentials (cookies)
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
       if (response.ok) {
-        console.log(`Password reset request sent for email: ${modalEmail}`);
-        setOpenModal(false); // Close modal after sending request
+        setOpenModal(false);
       } else {
         setError("Failed to send reset link. Please try again.");
       }
-
     } catch (error) {
       setError("An error occurred during password reset. Please try again later.");
     }
   }
 
   return (
-    <div
-      className="min-h-screen p-5 text-center"
-      style={{
-        backgroundImage: "url(/NotesPage.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-      > 
-      <header>
-        <h1 className="text-3xl font-bold text-black">Sign into ScribeMark</h1>
-      </header>
+    <div className="relative min-h-screen">
+      <video
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        src="/small3.mp4"
+        autoPlay
+        muted
+        loop
+      />
+      <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50"></div>
 
-      <div className="flex flex-col space-y-4 mt-5">
-        <input
-          className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="text"
-          placeholder="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="password"
-          placeholder="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <FormGroup className='font-bold'>
-          <FormControlLabel
-            control={<Checkbox checked={isTicked} onChange={handleRememberMe} />}
-            label="Remember Me"
-          />
-        </FormGroup>
-
-        {error && (
-          <div className="text-l text-red-700 text-sm mt-2 font-bold">
-            {error}
+      <div className="relative z-10 text-white text-center p-5 flex flex-col items-center justify-center min-h-screen">
+        <div className="bg-black bg-opacity-60 p-8 rounded-lg max-w-md w-full">
+          <h2 className="serif text-3xl font-bold mb-6">Sign In to ScribeMark</h2>
+          <div className="flex flex-col space-y-4">
+            <input
+              className="border border-gray-400 bg-gray-800 bg-opacity-50 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className="border border-gray-400 bg-gray-800 bg-opacity-50 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <FormGroup>
+              <FormControlLabel
+                control={<Checkbox checked={isTicked} onChange={handleRememberMe} />}
+                label="Remember Me"
+              />
+            </FormGroup>
+            {error && (
+              <div className="text-red-600 text-sm mt-2">{error}</div>
+            )}
+            <div className="flex justify-between">
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+              <button
+                className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 ${isLoginDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={CheckValidation}
+                disabled={isLoginDisabled}
+              >
+                Login
+              </button>
+            </div>
+            <button className="text-blue-300 underline mt-2" onClick={handleOpen}>
+              Forgot password?
+            </button>
           </div>
-        )}
+        </div>
 
-        <nav className='space-x-4'>
-          <button className="bg-red-600 text-Ivory px-4 py-2 rounded hover:bg-red-700 transition mb-2" onClick={handleCancel}>
-            Cancel
-          </button>
-          <button className="bg-black text-Ivory px-4 py-2 rounded hover:bg-DarkestBlue transition mb-2" onClick={CheckValidation}>
-            Login
-          </button>
-        </nav>
-        <button className="text-black underline cursor-pointer hover:text-DarkestBlue transition" onClick={handleOpen}>
-          Forgot password?
-        </button>
-
-        <Modal className='bg-green-800 flex items-center justify-center'
-          open={openModal}
-          onClose={handleClose}
-        >
+        <Modal open={openModal} onClose={handleClose}>
           <Fade in={openModal}>
-            <div className="modal-content text-center bg-green-500">
-              <Typography variant="h6" component="h2">
-                Forgot Password
-              </Typography>
+            <div className="bg-white p-6 rounded shadow-lg text-center">
+              <Typography variant="h6">Forgot Password</Typography>
               <Typography className="mt-2">
-                Please enter your email address to reset your password.
+                Please enter your email to reset your password.
               </Typography>
               <input
-                type="text"
+                className="border mt-3 p-2 rounded w-full"
+                type="email"
                 placeholder="Enter your email"
                 value={modalEmail}
                 onChange={(e) => setModalEmail(e.target.value)}
-                className="border border-DarkestBlue rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
               />
-              <div className="flex justify-end space-x-2 mt-3">
-                <Button onClick={handleForgotPassword} color="bacl">
+              <div className="flex justify-end mt-3 space-x-2">
+                <Button onClick={handleForgotPassword} color="primary">
                   Submit
                 </Button>
-                <Button onClick={handleClose} color="black">
+                <Button onClick={handleClose} color="secondary">
                   Close
                 </Button>
               </div>
