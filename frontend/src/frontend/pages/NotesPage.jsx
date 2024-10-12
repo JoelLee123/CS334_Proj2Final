@@ -21,6 +21,7 @@ const NotesPage = () => {
   const [noteStatus, setNoteStatus] = useState("Idle"); // Track the note's status
   const [isCurrentUserEditing, setIsCurrentUserEditing] = useState(false);
   const [isFlashing, setIsFlashing] = useState(false); // Track flashing state
+  const [renderedMarkdown, setRenderedMarkdown] = useState("");
 
   const location = useLocation();
 
@@ -274,6 +275,10 @@ const handleEditNote = () => {
     
     // Log the sanitized HTML output to the console whenever markdown changes
     console.log(sanitizedMarkdown);
+    console.log("Markdown:", markdown);
+    console.log("Rendered Markdown:", renderedMarkdown);
+    console.log("Note Status:", noteStatus);
+    setRenderedMarkdown(sanitizedMarkdown);
   }, [markdown]);
 
   const handleDownload = () => {
@@ -441,7 +446,7 @@ return (
 
       <div
         className="markdown-preview bg-white border border-DarkestBlue rounded p-4 w-full mt-6"
-        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(markdown)) }}
+        dangerouslySetInnerHTML={{ __html:  renderedMarkdown }}
       ></div>
 
       {/* Toast notifications */}
