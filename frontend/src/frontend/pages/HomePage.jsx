@@ -42,7 +42,7 @@ const HomePage = ({ setNoteId }) => {
   // Fetch all categories (for filtering)
   const getCategories = async () => {
     try {
-      const response = await fetch("http://localhost:3000/categories/allcategories", {
+      const response = await fetch("/categories/allcategories", {
         method: "GET",
         credentials: "include",
       });
