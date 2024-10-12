@@ -58,6 +58,8 @@ const HomePage = ({ setNoteId }) => {
       console.error(error);
     }
   };
+
+
   const getAllCategories = async () => {
     try {
       const response = await fetch("/categories/allcategories", {
@@ -68,8 +70,9 @@ const HomePage = ({ setNoteId }) => {
       const data = await response.json();
       if (response.ok) {
         setAllCategories(data.Allcategories);
+        console.log("All Categories  fetched", data.Allcategories);
       } else {
-        console.log("Categories not fetched", data.message);
+        console.log("All Categories not fetched", data.message);
       }
     } catch (error) {
       console.error(error);
@@ -240,11 +243,17 @@ return (
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
+            {Array.from(new Set(notes.map(note => note.categoryId))) // Get unique categoryIds from notes
+              .map((categoryId) => {
+                const category = Allcategories.find(cat => cat.id === categoryId); // Find the corresponding category
+                return (
+                  category && (
+                    <option key={categoryId} value={category.id}>
+                      {category.name} {/* Display the category name */}
+                    </option>
+                  )
+                );
+              })}
           </select>
           <select
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"

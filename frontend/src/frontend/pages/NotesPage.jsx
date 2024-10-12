@@ -269,9 +269,12 @@ const handleEditNote = () => {
     }
   };
 
-  const renderMarkdown = () => {
-    return { __html: DOMPurify.sanitize(marked(markdown))};
-  };
+  useEffect(() => {
+    const sanitizedMarkdown = DOMPurify.sanitize(marked(markdown));
+    
+    // Log the sanitized HTML output to the console whenever markdown changes
+    console.log(sanitizedMarkdown);
+  }, [markdown]);
 
   const handleDownload = () => {
     const blob = new Blob([markdown], { type: "text/markdown" });
@@ -438,7 +441,7 @@ return (
 
       <div
         className="markdown-preview bg-white border border-DarkestBlue rounded p-4 w-full mt-6"
-        dangerouslySetInnerHTML={renderMarkdown()}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(markdown)) }}
       ></div>
 
       {/* Toast notifications */}
