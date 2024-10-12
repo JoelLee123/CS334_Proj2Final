@@ -80,7 +80,7 @@ const FrontPage = () => {
               }}
             >
             <header className=" bg-TeaGreen flex justify-between items-center mb-4 p-5">
-                <h1 className="serif text-3xl font-bold text-black">Welcome to ScribeMark</h1>
+                <h1 className="serif text-3xl font-bold text-black">Welcome to ScribeMark Testing</h1>
             </header>
             <nav className="flex flex-col items-center my-5">
                 <img src={image} alt="An illustration of adventure" style={{ width: '300px', height: 'auto' }} className="mb-4" />
