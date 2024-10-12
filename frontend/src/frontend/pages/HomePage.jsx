@@ -9,8 +9,8 @@ const HomePage = ({ setNoteId }) => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [Allcategories, setAllCategories] = useState([]);
-  const [categoryId] = useState("");
+  const [allCategories, setAllCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState("");
   const [searchTitle, setSearch] = useState("");
   const [selectCategory, setSelectedCategory] = useState("");
   const [selectTime, setSelectedTime] = useState("");
@@ -59,7 +59,6 @@ const HomePage = ({ setNoteId }) => {
     }
   };
 
-
   const getAllCategories = async () => {
     try {
       const response = await fetch("/categories/allcategories", {
@@ -69,8 +68,8 @@ const HomePage = ({ setNoteId }) => {
 
       const data = await response.json();
       if (response.ok) {
-        setAllCategories(data.Allcategories);
-        console.log("All Categories  fetched", data.Allcategories);
+        setAllCategories(data.allCategories);
+        console.log("All categories fetched", data.allCategories);
       } else {
         console.log("All Categories not fetched", data.message);
       }
@@ -159,7 +158,8 @@ const HomePage = ({ setNoteId }) => {
     getNotes();
     getCategories();
     getAllCategories();
-  }, [categoryId]);
+  // }, [categoryId]);
+  }, []);
 
     // Filter notes based on searchTitle and well as time
     const filter = notes.filter(note => { // changed
@@ -243,11 +243,13 @@ return (
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
+            {allCategories
+            .filter(category => notes.some (note => note.categoryId === category.id))
+            .map((category)=>
+            <option key={category.id} value={category.id} >
+              {category.name}
+            </option>)
+            }
           </select>
           <select
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
