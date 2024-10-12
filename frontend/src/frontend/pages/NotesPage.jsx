@@ -48,6 +48,9 @@ useEffect(() => {
     socket.onmessage = (event) => {
       const message = event.data;
       console.log("WebSocket message received:", message);
+      if (message.includes("pong")) {
+        return;
+      }
 
       // Check if the message contains 'editing' or 'stopped'
       if (message.includes("started") || message.includes("stopped")) {

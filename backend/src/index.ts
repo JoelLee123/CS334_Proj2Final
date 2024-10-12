@@ -77,7 +77,9 @@ wss.on("connection", (ws) => {
         const [command, ...params] = messageString.split(",");
 
         try {
-            if (command === "login") {
+            if (command === "ping") {
+                 ws.send("pong");
+            } else if  (command === "login") {
                 const [email, password, rememberMe] = params;
                 userEmail = email;
 
