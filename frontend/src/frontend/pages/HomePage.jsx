@@ -42,7 +42,7 @@ const HomePage = ({ setNoteId }) => {
   // Fetch all categories (for filtering)
   const getCategories = async () => {
     try {
-      const response = await fetch("/categories/all", {
+      const response = await fetch("http://localhost:3000/categories/allcategories", {
         method: "GET",
         credentials: "include",
       });
@@ -50,6 +50,7 @@ const HomePage = ({ setNoteId }) => {
       const data = await response.json();
       if (response.ok) {
         setCategories(data.categories);
+        console.log("categories fetched", data.categories);
       } else {
         console.log("Categories not fetched", data.message);
       }
@@ -221,11 +222,14 @@ return (
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
+            {categories
+            .filter(category => notes.some (note => note.categoryId === category.id))
+            .map((category)=>
+            <option key={category.id} value={category.id} >
+              {category.name}
+            </option>)
+            }
+
           </select>
           <select
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"

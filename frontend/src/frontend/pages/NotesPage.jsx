@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
 import { useWebSocket } from "./WebSocketContext"; // Import the WebSocket context hook
 import { toast, ToastContainer } from "react-toastify";
+import DOMPuriry from 'dompurify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const NotesPage = () => {
@@ -242,7 +243,7 @@ const handleEditNote = () => {
   };
 
   const renderMarkdown = () => {
-    return { __html: marked(markdown) };
+    return { __html: DOMPuriry.sanitize(marked(markdown))};
   };
 
   const handleDownload = () => {

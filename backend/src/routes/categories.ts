@@ -28,9 +28,9 @@ router.post("/add", authenticateToken, async (req, res) => {
     }
     return res.status(400).json({ message: "Error creating category", error });
   }
-});
+}); 
 
-// Get all categories
+// Get all categories from the database that user created
 router.get("/all", authenticateToken, async (req, res) => {
   const user = (req as any).user; // Authenticated user
 
@@ -42,6 +42,20 @@ router.get("/all", authenticateToken, async (req, res) => {
       },
     });
 
+    console.log("Categories fetched: ", categories);
+    return res.status(200).json({ categories });
+  } catch (error) {
+    return res.status(400).json({ message: "Error fetching categories", error });
+  }
+});
+
+// Get all categories from the database
+router.get("/allcategories", authenticateToken, async (req, res) => {
+  try {
+    // Fetch categories that belong to the authenticated user
+    const categories = await prisma.category.findMany();
+
+    console.log("Categories fetched: ", categories);
     return res.status(200).json({ categories });
   } catch (error) {
     return res.status(400).json({ message: "Error fetching categories", error });
