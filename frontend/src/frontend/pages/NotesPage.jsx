@@ -444,10 +444,14 @@ return (
         </button>
       )}
 
-      <div
-        className="markdown-preview bg-white border border-DarkestBlue rounded p-4 w-full mt-6"
-        dangerouslySetInnerHTML={{ __html:  renderedMarkdown }}
-      ></div>
+        {/* className="markdown-preview bg-white border border-DarkestBlue rounded p-4 w-full mt-6" */}
+      <div className="w-full border border-LighterBlue bg-Ivory rounded-lg p-3 markdown-preview min-h-[150px] overflow-auto">
+          <div
+            className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none"
+            dangerouslySetInnerHTML={{ __html:  renderedMarkdown }}
+          />
+        </div>
+
 
       {/* Toast notifications */}
       <ToastContainer />
