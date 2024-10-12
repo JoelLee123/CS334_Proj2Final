@@ -9,7 +9,7 @@ const HomePage = ({ setNoteId }) => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId] = useState("");
   const [searchTitle, setSearch] = useState("");
   const [selectCategory, setSelectedCategory] = useState("");
   const [selectTime, setSelectedTime] = useState("");
@@ -137,7 +137,7 @@ const HomePage = ({ setNoteId }) => {
   useEffect(() => {
     getNotes();
     getCategories();
-  }, []);
+  }, [categoryId]);
 
     // Filter notes based on searchTitle and well as time
     const filter = notes.filter(note => { // changed

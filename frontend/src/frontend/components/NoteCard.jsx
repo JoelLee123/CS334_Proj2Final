@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import { XCircle, PlusCircle, MinusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../css/NotesHover.css";
@@ -34,7 +34,7 @@ const NoteCard = ({
     return () => {
       document.body.classList.remove('body-modal-open');
     };
-  }, [isModalOpen]);
+  }, [isModalOpen, categoryId]);
 
   const handleDeleteNote = async (e) => {
     e.stopPropagation(); //Prevent the event from bubbling to the parent div
@@ -164,7 +164,7 @@ const NoteCard = ({
 
 
    // Fetch list of users for the dropdown when the modal is opened
-   const fetchUsers = async () => {
+   const fetchUsers = useCallback(async () => {
     try {
       const response = await fetch("/users/", {
         method: "GET",
@@ -186,7 +186,7 @@ const NoteCard = ({
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [collaborators]);
 
   return (
     <div

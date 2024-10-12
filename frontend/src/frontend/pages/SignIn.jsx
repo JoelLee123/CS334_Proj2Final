@@ -10,7 +10,7 @@ const SignInPage = () => {
   const [error, setError] = useState(null); // Manage login error state
   const [openModal, setOpenModal] = useState(false);
   const [modalEmail, setModalEmail] = useState(""); // Email for the modal
-  const [isConnected, setIsConnected] = useState(false);
+  // const [isConnected, setIsConnected] = useState(false);
 
   const navigate = useNavigate();
 
