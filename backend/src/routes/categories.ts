@@ -30,7 +30,7 @@ router.post("/add", authenticateToken, async (req, res) => {
   }
 }); 
 
-// Get all categories from the database
+// Get all categories from the database that user created
 router.get("/all", authenticateToken, async (req, res) => {
   const user = (req as any).user; // Authenticated user
 
@@ -41,6 +41,19 @@ router.get("/all", authenticateToken, async (req, res) => {
         user_email: user.email, // Filter categories by the user's email
       },
     });
+
+    console.log("Categories fetched: ", categories);
+    return res.status(200).json({ categories });
+  } catch (error) {
+    return res.status(400).json({ message: "Error fetching categories", error });
+  }
+});
+
+// Get all categories from the database
+router.get("/allcategories", authenticateToken, async (req, res) => {
+  try {
+    // Fetch categories that belong to the authenticated user
+    const categories = await prisma.category.findMany();
 
     console.log("Categories fetched: ", categories);
     return res.status(200).json({ categories });
