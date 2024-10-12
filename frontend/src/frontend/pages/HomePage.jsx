@@ -9,6 +9,7 @@ const HomePage = ({ setNoteId }) => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [Allcategories, setAllCategories] = useState([]);
   const [categoryId] = useState("");
   const [searchTitle, setSearch] = useState("");
   const [selectCategory, setSelectedCategory] = useState("");
@@ -42,7 +43,7 @@ const HomePage = ({ setNoteId }) => {
   // Fetch all categories (for filtering)
   const getCategories = async () => {
     try {
-      const response = await fetch("/categories/allcategories", {
+      const response = await fetch("/categories/all", {
         method: "GET",
         credentials: "include",
       });
@@ -50,7 +51,23 @@ const HomePage = ({ setNoteId }) => {
       const data = await response.json();
       if (response.ok) {
         setCategories(data.categories);
-        console.log("categories fetched", data.categories);
+      } else {
+        console.log("Categories not fetched", data.message);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const getAllCategories = async () => {
+    try {
+      const response = await fetch("/categories/allcategories", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setAllCategories(data.Allcategories);
       } else {
         console.log("Categories not fetched", data.message);
       }
@@ -138,6 +155,7 @@ const HomePage = ({ setNoteId }) => {
   useEffect(() => {
     getNotes();
     getCategories();
+    getAllCategories();
   }, [categoryId]);
 
     // Filter notes based on searchTitle and well as time
@@ -218,11 +236,11 @@ return (
           <select 
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             value={selectCategory}
-            onClick={getCategories}
+            onClick={getAllCategories}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {categories
+            {Allcategories
             .filter(category => notes.some (note => note.categoryId === category.id))
             .map((category)=>
             <option key={category.id} value={category.id} >
