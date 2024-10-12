@@ -155,6 +155,11 @@ const HomePage = ({ setNoteId }) => {
     }
   };
 
+  const getCategoryNameById = (id) => {
+    const category = Allcategories.find(category => category.id === id);
+    return category ? category.name : "Unknown"; // Default to "Unknown" if not found
+  };
+
   useEffect(() => {
     getNotes();
     getCategories();
@@ -243,17 +248,11 @@ return (
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {Array.from(new Set(notes.map(note => note.categoryId))) // Get unique categoryIds from notes
-              .map((categoryId) => {
-                const category = Allcategories.find(cat => cat.id === categoryId); // Find the corresponding category
-                return (
-                  category && (
-                    <option key={categoryId} value={category.id}>
-                      {category.name} {/* Display the category name */}
-                    </option>
-                  )
-                );
-              })}
+            {Allcategories.map((category) => ( // Use Allcategories for dropdown
+              <option key={category.id} value={category.id}>
+                {category.name} {/* Display category name */}
+              </option>
+            ))}
           </select>
           <select
             className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
