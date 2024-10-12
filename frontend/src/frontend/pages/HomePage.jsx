@@ -155,11 +155,6 @@ const HomePage = ({ setNoteId }) => {
     }
   };
 
-  const getCategoryNameById = (id) => {
-    const category = Allcategories.find(category => category.id === id);
-    return category ? category.name : "Unknown"; // Default to "Unknown" if not found
-  };
-
   useEffect(() => {
     getNotes();
     getCategories();
@@ -248,9 +243,9 @@ return (
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">Select category</option>
-            {Allcategories.map((category) => ( // Use Allcategories for dropdown
-              <option key={category.id} value={category.id}>
-                {category.name} {/* Display category name */}
+            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
+              <option key={category} value={category}>
+                {category}
               </option>
             ))}
           </select>
