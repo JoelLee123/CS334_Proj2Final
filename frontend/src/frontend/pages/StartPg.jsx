@@ -24,7 +24,6 @@ const FrontPage = () => {
             const storedPassword = localStorage.getItem("password");
 
             if (storedEmail && storedPassword) {
-              
               // Check if WebSocket is open or wait for it to open
               if (socket && socket.readyState === WebSocket.OPEN) {
                 // If WebSocket is already open, send login command immediately
@@ -73,12 +72,10 @@ const FrontPage = () => {
 
   return (
     <div className="relative min-h-screen">
-      <video
+      <img
         className="absolute top-0 left-0 w-full h-full object-cover"
-        src="/small3.mp4"
-        autoPlay
-        muted
-        loop
+        src="/small3.gif"
+        alt="Background animation"
       />
 
       {/* Dark overlay for better contrast */}

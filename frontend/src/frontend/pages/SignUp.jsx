@@ -61,24 +61,20 @@ const SignUpPage = () => {
 
   const handleCancel = () => navigate("/");
 
-  // Function to validate the form
   const validateForm = () => {
     setIsFormValid(username !== "" && email !== "" && password !== "" && confirmPassword !== "");
   };
 
-  // useEffect to validate form whenever input changes
   useEffect(() => {
     validateForm();
   }, [username, email, password, confirmPassword]);
 
   return (
     <div className="relative min-h-screen">
-      <video
+      <img
         className="absolute top-0 left-0 w-full h-full object-cover"
-        src="/small3.mp4"
-        autoPlay
-        muted
-        loop
+        src="/small3.gif"
+        alt="Background animation"
       />
       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50"></div>
 
@@ -132,7 +128,7 @@ const SignUpPage = () => {
                   isFormValid ? 'bg-blue-600' : 'bg-blue-400 cursor-not-allowed'
                 } text-white px-4 py-2 rounded hover:bg-blue-700`}
                 onClick={isFormValid ? handleRegistration : undefined}
-                disabled={!isFormValid} // Disable the button if the form is not valid
+                disabled={!isFormValid}
               >
                 Sign Up
               </button>

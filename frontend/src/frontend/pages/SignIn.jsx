@@ -17,7 +17,7 @@ const SignInPage = () => {
 
   const handleRememberMe = () => {
     setIsTicked(!isTicked); // Toggle the checkbox
-  }
+  };
 
   // Function to open and close the modal
   const handleOpen = () => setOpenModal(true);
@@ -48,7 +48,7 @@ const SignInPage = () => {
       socket.send(loginMessage);
       console.log(`Sent login command: ${loginMessage}`);
     }
-  }
+  };
 
   const CheckValidation = async () => {
     try {
@@ -77,7 +77,7 @@ const SignInPage = () => {
     } catch (error) {
       setError("An error occurred during login. Please try again later.");
     }
-  }
+  };
 
   const handleCancel = () => navigate("/");
 
@@ -97,16 +97,14 @@ const SignInPage = () => {
     } catch (error) {
       setError("An error occurred during password reset. Please try again later.");
     }
-  }
+  };
 
   return (
     <div className="relative min-h-screen">
-      <video
+      <img
         className="absolute top-0 left-0 w-full h-full object-cover"
-        src="/small3.mp4"
-        autoPlay
-        muted
-        loop
+        src="/small3.gif"
+        alt="Background animation"
       />
       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50"></div>
 
@@ -186,6 +184,6 @@ const SignInPage = () => {
       </div>
     </div>
   );
-}
+};
 
 export default SignInPage;
