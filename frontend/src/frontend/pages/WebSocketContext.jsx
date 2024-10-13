@@ -25,7 +25,7 @@ export const WebSocketProvider = ({ children }) => {
           ws.send("ping");
           console.log("Ping message sent to the server");
         }
-      }, 6000); // Ping every 15 seconds
+      }, 6000); // Ping every 6 seconds
       setPingInterval(interval);
     };
 
