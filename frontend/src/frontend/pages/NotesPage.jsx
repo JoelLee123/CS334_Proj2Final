@@ -31,17 +31,24 @@ const NotesPage = () => {
 
   const [isSocketReady, setIsSocketReady] = useState(false); 
 
-  // Function to request note status
-  const requestNoteStatus = () => {
-    if (socket && isSocketReady) {
+  let isRetryNeeded = false; // Track whether a retry is needed
+
+// Function to request note status
+const requestNoteStatus = () => {
+  if (socket) {
+    // Check the WebSocket's ready state
+    if (socket.readyState === WebSocket.OPEN) {
       const noteId = location.state.id;
       socket.send(`getStatus,${noteId}`);
+      isRetryNeeded = false; // Reset retry flag after successful send
+    } else {
+      console.error('WebSocket is not open. Current state:', socket.readyState);
+      isRetryNeeded = true; // Set retry flag
     }
-  };
-
-  useEffect(() => {
-    requestNoteStatus();
-  }); 
+  } else {
+    console.error('WebSocket instance is not available.');
+  }
+};
   
 useEffect(() => {
   if (socket) {
@@ -49,7 +56,10 @@ useEffect(() => {
 
     socket.onopen = () => {
         setIsSocketReady(true); // Set socket ready state
-        requestNoteStatus(); // Request status once connected
+          if (isRetryNeeded) {
+            console.log('Retrying requestNoteStatus...');
+            requestNoteStatus(); // Call the function to retry
+          }
     };
 
     socket.onmessage = (event) => {
@@ -329,6 +339,10 @@ const handleEditNote = () => {
       socket.send(loginString); // Send the login string once connected
     }
   }, [isSocketReady, socket]);
+
+    useEffect(() => {
+    requestNoteStatus();
+  }); 
   
 return (
   <div

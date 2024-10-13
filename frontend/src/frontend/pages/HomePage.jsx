@@ -211,111 +211,117 @@ const HomePage = ({ setNoteId }) => {
     }
   }, [isSocketReady, socket]);
   
-return (
+  return (
     <div
-      className="min-h-screen p-5 relative" // Add relative positioning for centering the loader
+      className="relative min-h-screen p-5"
       style={{
         backgroundImage: "url(/NotesPage.png)",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
+      {/* Loader Overlay */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <img src="/loading.gif" alt="Loading..." className="w-48 h-48" />
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+          <img src="/loading.gif" alt="Loading..." className="w-48 h-48 animate-spin" />
         </div>
       )}
 
-      <h1 className="text-3xl font-bold text-black text-center mb-8">
-        Your Notes
-      </h1>
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-80"></div>
 
-      {/* Create Note and Manage Categories Buttons */}
-      <div className="flex justify-center mb-4 space-x-4">
-        <button
-          onClick={() => setIsNoteModalOpen(true)} // Open note modal
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Create Note
-        </button>
-        <button
-          onClick={() => setIsCategoryModalOpen(true)} // Open category modal
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Manage Categories
-        </button>
-      </div>
+      {/* Main Content */}
+      <div className="relative z-10 text-center text-black">
+        <h1 className="text-4xl font-extrabold drop-shadow-lg mb-10 mt-8">
+          Your <span className="text-DarkestBlue">Notes</span>
+        </h1>
 
-      {/* Filters and Search */}
-      <div className="flex flex-col items-center">
-        <div className="mb-4 flex items-center space-x-4">
-          <input
-            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            type="text"
-            placeholder="Enter title"
-            value={searchTitle}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <select 
-            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            value={selectCategory}
-            onClick={getAllCategories}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+        {/* Buttons for Creating Notes and Managing Categories */}
+        <div className="flex justify-center mb-10 space-x-4">
+          <button
+            onClick={() => setIsNoteModalOpen(true)}
+            className="bg-DarkestBlue text-white font-semibold px-6 py-3 rounded-full shadow-md hover:bg-Ivory hover:text-black transition transform hover:scale-105"
           >
-            <option value="">Select category</option>
-            {[...new Set(notes.map(note => note.categoryId))].map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <select
-            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            value={selectTime}
-            onChange={(e) => setSelectedTime(e.target.value)}
+            Create Note
+          </button>
+          <button
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="bg-DarkestBlue text-white font-semibold px-6 py-3 rounded-full shadow-md hover:bg-Ivory hover:text-black transition transform hover:scale-105"
           >
-            <option value="">Time created</option>
-            {[
-              ...new Set(
+            Manage Categories
+          </button>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="mb-6 flex flex-wrap justify-center gap-4">
+            <input
+              className="border border-DarkestBlue bg-Ivory rounded-full p-3 w-60 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              type="text"
+              placeholder="Enter title"
+              value={searchTitle}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <select
+              className="border border-DarkestBlue bg-Ivory rounded-full p-3 shadow-sm w-60 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              value={selectCategory}
+              onClick={getAllCategories}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">Select category</option>
+              {[...new Set(notes.map(note => note.categoryId))].map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+            <select
+              className="border border-DarkestBlue bg-Ivory rounded-full p-3 shadow-sm w-60 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              value={selectTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+            >
+              <option value="">Time created</option>
+              {[...new Set(
                 notes.map(
                   (note) =>
                     new Date(note.updated_at).toISOString().split("T")[0]
                 )
-              ),
-            ].map((date) => (
-              <option key={date} value={date}>
-                {new Date(date).toLocaleDateString()}
-              </option>
-            ))}
-          </select>
-          <select
-            className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            value={order}
-            onChange={(e) => setOrder(e.target.value)}
-          >
-            <option value="ascending">Time Asc</option>
-            <option value="descending">Time Desc</option>
-          </select>
+              )].map((date) => (
+                <option key={date} value={date}>
+                  {new Date(date).toLocaleDateString()}
+                </option>
+              ))}
+            </select>
+            <select
+              className="border border-DarkestBlue bg-Ivory rounded-full p-3 shadow-sm w-60 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              value={order}
+              onChange={(e) => setOrder(e.target.value)}
+            >
+              <option value="ascending">Time Asc</option>
+              <option value="descending">Time Desc</option>
+            </select>
+          </div>
         </div>
 
-        {/* Display Notes */}
-        {notesDisplayed.length > 0 ? ( // Applying filtering based on notes
-          notesDisplayed.map((note, index) => (
-            <NoteCard
-              key={index}
-              title={note.title}
-              date={new Date(note.updated_at).toLocaleString()} // Needs to be fixed 
-              id={note.id}
-              categoryId={note.categoryId}
-              category={note.category?.name}
-              content={note.content}
-              getNotes={getNotes}
-            />
-          ))
-        ) : (
-          <p className='text-Black'
-          > </p>
-        )}
+        {/* Notes Display */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {notesDisplayed.length > 0 ? (
+            notesDisplayed.map((note, index) => (
+              <NoteCard
+                key={index}
+                title={note.title}
+                date={new Date(note.updated_at).toLocaleString()}
+                id={note.id}
+                categoryId={note.categoryId}
+                category={note.category?.name}
+                content={note.content}
+                getNotes={getNotes}
+              />
+            ))
+          ) : (
+            <p className="text-lg font-medium text-white">No notes found.</p>
+          )}
+        </div>
       </div>
 
       {/* Note Creation Modal */}
