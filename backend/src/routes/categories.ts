@@ -53,14 +53,15 @@ router.get("/all", authenticateToken, async (req, res) => {
 router.get("/allcategories", authenticateToken, async (req, res) => {
   try {
     // Fetch categories that belong to the authenticated user
-    const categories = await prisma.category.findMany();
+    const allCategories = await prisma.category.findMany();
 
-    console.log("Categories fetched: ", categories);
-    return res.status(200).json({ categories });
+    console.log("All Categories fetched: ", allCategories);
+    return res.status(200).json({ allCategories });
   } catch (error) {
     return res.status(400).json({ message: "Error fetching categories", error });
   }
 });
+
 
 // Get a specific category by ID
 router.get("/:id", authenticateToken, async (req, res) => {
