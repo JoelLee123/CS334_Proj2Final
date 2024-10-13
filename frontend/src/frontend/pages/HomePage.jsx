@@ -10,7 +10,7 @@ const HomePage = ({ setNoteId }) => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [allCategories, setAllCategories] = useState([]);
+  const [Allcategories, setAllCategories] = useState([]);
   const [categoryId] = useState("");
   const [searchTitle, setSearch] = useState("");
   const [selectCategory, setSelectedCategory] = useState("");
@@ -82,8 +82,8 @@ const HomePage = ({ setNoteId }) => {
 
       const data = await response.json();
       if (response.ok) {
-        setAllCategories(data.allCategories);
-        console.log("All categories fetched", data.allCategories);
+        setAllCategories(data.Allcategories);
+        console.log("All Categories  fetched", data.Allcategories);
       } else {
         console.log("All Categories not fetched", data.message);
       }
@@ -91,7 +91,6 @@ const HomePage = ({ setNoteId }) => {
       console.error(error);
     }
   };
-
 
   // Handle note creation through modal
   const handleCreateNote = async (noteData) => {
@@ -173,7 +172,7 @@ const HomePage = ({ setNoteId }) => {
     getNotes();
     getCategories();
     getAllCategories();
-  }, []);
+  }, [categoryId]);
 
     // Filter notes based on searchTitle and well as time
     const filter = notes.filter(note => { // changed
@@ -270,13 +269,11 @@ const HomePage = ({ setNoteId }) => {
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
               <option value="">Select category</option>
-              {allCategories
-                .filter(category => notes.some (note => note.categoryId === category.id))
-                .map((category)=>
-                <option key={category.id} value={category.id} >
-                  {category.name}
-                </option>)
-                }
+              {[...new Set(notes.map(note => note.categoryId))].map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
             <select
               className="border border-DarkestBlue bg-Ivory rounded-full p-3 shadow-sm w-60 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
