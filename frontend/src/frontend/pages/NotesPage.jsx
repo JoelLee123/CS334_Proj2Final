@@ -33,16 +33,15 @@ const NotesPage = () => {
 
   // Function to request note status
   const requestNoteStatus = () => {
-    if (socket) {
+    if (socket && isSocketReady) {
       const noteId = location.state.id;
       socket.send(`getStatus,${noteId}`);
     }
   };
 
-  // Request the note's status only once when the page loads
   useEffect(() => {
     requestNoteStatus();
-  }, []); // Run only once when the component mounts
+  }); 
   
 useEffect(() => {
   if (socket) {
@@ -67,10 +66,17 @@ useEffect(() => {
       }
 
       if (message.startsWith("status:")) {
-          const status = message.replace("status:", "");
-          setNoteStatus(status); // Update the note status in the UI
+          let status = message.replace("status:", "");
+          const status_email = status.split('#').pop(); // Get the part after the '#'
+           let pureStatus = status.split('#')[0]; // Get the part before the '#'
+          const loginString = localStorage.getItem("loginMessage");
+          const user_email = loginString.split(',')[1];
+          if (status_email === user_email) {
+            pureStatus = "You are editing this note";
+          } 
+          setNoteStatus(pureStatus); // Update the note status in the UI
           // Start flashing if the note is being edited by someone else
-          if (status !== "Idle" && !isCurrentUserEditing) {
+          if (pureStatus !== "Idle" && !isCurrentUserEditing && !(status_email === user_email)) {
             setIsFlashing(true);
           } else {
             setIsFlashing(false);
@@ -307,6 +313,8 @@ const handleEditNote = () => {
     return () => {
       if (socket && isCurrentUserEditing) {
         const noteId = location.state.id;
+        setIsCurrentUserEditing(false);// Set to false when the current user stops editing
+        setNoteStatus("Idle");
         socket.send(`stopEditing,${noteId}`);
         console.log(`Sent stopEditing for note ${noteId}`);
       }
@@ -456,8 +464,8 @@ return (
       ) : (
         <button
           onClick={handleSaveAndStopEditing}
-            className={`bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mt-2 sm:mt-0 ${!isCurrentUserEditing && noteStatus && noteStatus !== "Idle" ? 'opacity-50 cursor-not-allowed' : ''}`}
-             disabled={!isCurrentUserEditing && noteStatus !== "Idle"} // Disable if not editing and status is not Idle
+            className={`bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mt-2 sm:mt-0 ${noteStatus !=="You are editing this note" && noteStatus !== "Idle" ? 'opacity-50 cursor-not-allowed' : ''}`}
+             disabled={(noteStatus !=="You are editing this note") && noteStatus !== "Idle"} // Disable if not editing and status is not Idle
         >
           Save
         </button>

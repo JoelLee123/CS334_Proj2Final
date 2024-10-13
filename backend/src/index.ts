@@ -137,7 +137,7 @@ wss.on("connection", (ws) => {
                         await prisma.note.update({
                             where: { id: parseInt(noteId) },
                             data: {
-                                status: `${username} is editing this note`,
+                                status: `${username} is editing this note#${userEmail}`,
                             },
                         });
 
