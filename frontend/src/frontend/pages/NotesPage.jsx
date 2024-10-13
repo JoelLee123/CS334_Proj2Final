@@ -33,7 +33,7 @@ const NotesPage = () => {
 
   // Function to request note status
   const requestNoteStatus = () => {
-    if (isSocketReady && socket) {
+    if (socket) {
       const noteId = location.state.id;
       socket.send(`getStatus,${noteId}`);
     }
