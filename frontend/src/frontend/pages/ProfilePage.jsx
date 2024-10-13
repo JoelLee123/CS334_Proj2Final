@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileCard from '../components/ProfileCard';
+import { useWebSocket } from "./WebSocketContext"; // Import the WebSocket context hook
 
 const ProfilePage = () => {
   const [userDetails, setUserDetails] = useState(null);
@@ -10,6 +11,18 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const [updateMessage, setUpdateMessage] = useState("");
   const navigate = useNavigate();
+  // Use WebSocket from context
+  const socket = useWebSocket();
+  const [isSocketReady, setIsSocketReady] = useState(false); 
+
+  useEffect(() => {
+      if (socket) {
+        console.log("WebSocket connection established");
+        socket.onopen = () => {
+          setIsSocketReady(true); // Set socket ready state
+        };
+      }
+  });
 
   const profilePictureUrls = {
     Brad: "https://media-cpt1-1.cdn.whatsapp.net/v/t61.24694-24/56517264_1685498741593588_4695015079823802368_n.jpg?ccb=11-4&oh=01_Q5AaIE4nOugA7bPL6jxL0Nv1KPzJ8FHrCANqETYymxXRknPK&oe=670DF5A6&_nc_sid=5e03e0&_nc_cat=105",
@@ -125,6 +138,18 @@ const ProfilePage = () => {
   }, []);
 
   const isFormValid = username && password && selectedUser;
+
+  // UseEffect to send login string if socket is ready
+useEffect(() => {
+  const sendLoginString = () => {
+    const loginString = localStorage.getItem("loginMessage");
+    if (isSocketReady && loginString) {
+      socket.send(loginString); // Send the login string once connected
+    }
+  };
+
+  sendLoginString();
+}, [isSocketReady, socket]);
 
   if (error) return <p>Error: {error}</p>;
 

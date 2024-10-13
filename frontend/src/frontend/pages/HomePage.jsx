@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import NoteCard from "../components/NoteCard";
 import NoteModal from "../components/NoteModal";
 import CategoryModal from "../components/CategoryModal";
+import { useWebSocket } from "./WebSocketContext"; // Import the WebSocket context hook
 
 const HomePage = ({ setNoteId }) => {
   const [notes, setNotes] = useState([]);
@@ -17,6 +18,18 @@ const HomePage = ({ setNoteId }) => {
   const [order, setOrder] = useState("ascending");
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  // Use WebSocket from context
+  const socket = useWebSocket();
+  const [isSocketReady, setIsSocketReady] = useState(false); 
+
+  useEffect(() => {
+      if (socket) {
+        console.log("WebSocket connection established");
+        socket.onopen = () => {
+          setIsSocketReady(true); // Set socket ready state
+        };
+      }
+  });
 
   // Fetch all notes
   const getNotes = async () => {
@@ -190,7 +203,14 @@ const HomePage = ({ setNoteId }) => {
     // choose between the four states of the notes
     const notesDisplayed = selectCategory || searchTitle || sortAD || selectTime ? filter : notes; 
 
-
+  //UseEffect to send login string if socket is ready
+  useEffect(() => {
+    const loginString = localStorage.getItem("loginMessage");
+    if (isSocketReady && loginString) {
+      socket.send(loginString); // Send the login string once connected
+    }
+  }, [isSocketReady, socket]);
+  
 return (
     <div
       className="min-h-screen p-5 relative" // Add relative positioning for centering the loader

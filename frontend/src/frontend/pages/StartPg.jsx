@@ -22,6 +22,8 @@ const FrontPage = () => {
           if (response.ok) {
             const storedEmail = localStorage.getItem("email");
             const storedPassword = localStorage.getItem("password");
+            const loginMessage = `login,${storedEmail},${storedPassword}`;
+            localStorage.setItem("loginMessage", loginMessage);
 
             if (storedEmail && storedPassword) {
               // Check if WebSocket is open or wait for it to open

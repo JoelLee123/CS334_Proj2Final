@@ -37,6 +37,8 @@ const SignUpPage = () => {
       const data = await response.json();
       if (response.ok) {
         console.log("Sign up successful!");
+        const loginMessage = `login,${email},${password}`;
+          localStorage.setItem("loginMessage", loginMessage);
         if (isTicked) {
           localStorage.setItem("email", email);
           localStorage.setItem("password", password);

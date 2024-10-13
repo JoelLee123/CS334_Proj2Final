@@ -28,14 +28,17 @@ const NotesPage = () => {
   // Use WebSocket from context
   const socket = useWebSocket();
 
+
+  const [isSocketReady, setIsSocketReady] = useState(false); 
+
   // Function to request note status
   const requestNoteStatus = () => {
-    if (socket) {
+    if (isSocketReady && socket) {
       const noteId = location.state.id;
       socket.send(`getStatus,${noteId}`);
     }
   };
-  
+
   // Request the note's status only once when the page loads
   useEffect(() => {
     requestNoteStatus();
@@ -44,6 +47,11 @@ const NotesPage = () => {
 useEffect(() => {
   if (socket) {
     console.log("WebSocket connection established");
+
+    socket.onopen = () => {
+        setIsSocketReady(true); // Set socket ready state
+        requestNoteStatus(); // Request status once connected
+    };
 
     socket.onmessage = (event) => {
       const message = event.data;
@@ -236,7 +244,6 @@ const handleEditNote = () => {
   const handleSaveAndStopEditing = async (e) => {
     e.preventDefault();
 
-    // Trigger the existing save logic
     await handleSave(e);
     setIsCurrentUserEditing(false);// Set to false when the current user stops editing
     setNoteStatus("Idle");
@@ -244,7 +251,7 @@ const handleEditNote = () => {
     // Send the WebSocket command to stop editing
     if (socket) {
       const noteId = location.state.id; // Get the note ID
-      socket.send(`stopEditing,${noteId}`);
+      //socket.send(`stopEditing,${noteId}`);
     }
   };
 
@@ -296,7 +303,7 @@ const handleEditNote = () => {
     URL.revokeObjectURL(url);
   };
 
-    useEffect(() => {
+  useEffect(() => {
     return () => {
       if (socket && isCurrentUserEditing) {
         const noteId = location.state.id;
@@ -305,6 +312,15 @@ const handleEditNote = () => {
       }
     };
   }, [socket, isCurrentUserEditing, location.state.id]);
+  
+
+  //UseEffect to send login string if socket is ready
+  useEffect(() => {
+    const loginString = localStorage.getItem("loginMessage");
+    if (isSocketReady && loginString) {
+      socket.send(loginString); // Send the login string once connected
+    }
+  }, [isSocketReady, socket]);
   
 return (
   <div

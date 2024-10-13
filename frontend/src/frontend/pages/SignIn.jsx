@@ -60,6 +60,8 @@ const SignInPage = () => {
       });
 
       if (response.ok) {
+          const loginMessage = `login,${email},${password}`;
+          localStorage.setItem("loginMessage", loginMessage);
         if (isTicked) {
           localStorage.setItem("email", email);
           localStorage.setItem("password", password);
