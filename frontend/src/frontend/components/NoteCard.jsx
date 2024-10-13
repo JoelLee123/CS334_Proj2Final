@@ -229,8 +229,8 @@ const NoteCard = ({
 
 
       {isModalOpen && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-full" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-bold mb-4">
               {isAddingCollaborator ? "Select a Collaborator to Add" : "Select a Collaborator to Remove"}
             </h2>
@@ -241,9 +241,9 @@ const NoteCard = ({
             >
               <option value="" disabled>Select a user</option>
               {(isAddingCollaborator ? users : collaborators).map(user => (
-                 <option key={user.userEmail || user.email} value={user.userEmail || user.email}>
-                 {user.userEmail || user.email}
-               </option>
+                <option key={user.userEmail || user.email} value={user.userEmail || user.email}>
+                  {user.userEmail || user.email}
+                </option>
               ))}
             </select>
             {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}

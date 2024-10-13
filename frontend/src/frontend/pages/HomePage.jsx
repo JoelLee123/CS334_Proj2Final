@@ -269,9 +269,9 @@ const HomePage = ({ setNoteId }) => {
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
               <option value="">Select category</option>
-              {[...new Set(notes.map(note => note.categoryId))].map((category) => (
-                <option key={category} value={category}>
-                  {category}
+                  {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
                 </option>
               ))}
             </select>
@@ -304,42 +304,54 @@ const HomePage = ({ setNoteId }) => {
         </div>
 
         {/* Notes Display */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {notesDisplayed.length > 0 ? (
-            notesDisplayed.map((note, index) => (
-              <NoteCard
-                key={index}
-                title={note.title}
-                date={new Date(note.updated_at).toLocaleString()}
-                id={note.id}
-                categoryId={note.categoryId}
-                category={note.category?.name}
-                content={note.content}
-                getNotes={getNotes}
-              />
-            ))
-          ) : (
-            <p className="text-lg font-medium text-white">No notes found.</p>
-          )}
-        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ml-6">
+        {notesDisplayed.length > 0 ? (
+          notesDisplayed.map((note, index) => (
+            <NoteCard
+              key={index}
+              title={note.title}
+              date={new Date(note.updated_at).toLocaleString()}
+              id={note.id}
+              categoryId={note.categoryId}
+              category={note.category?.name}
+              content={note.content}
+              getNotes={getNotes}
+            />
+          ))
+        ) : (
+          <p className="text-lg font-medium text-white">No notes found.</p>
+        )}
+      </div>
       </div>
 
       {/* Note Creation Modal */}
-      <NoteModal
-        isOpen={isNoteModalOpen}
-        onClose={() => setIsNoteModalOpen(false)}
-        onCreate={handleCreateNote}
-        categories={categories}
-      />
+      {isNoteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-full">
+            <NoteModal
+              isOpen={isNoteModalOpen}
+              onClose={() => setIsNoteModalOpen(false)}
+              onCreate={handleCreateNote}
+              categories={categories}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Category Management Modal */}
-      <CategoryModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        onManageCategories={handleManageCategories}
-        categories={categories}
-      />
-    </div>
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-full">
+            <CategoryModal
+              isOpen={isCategoryModalOpen}
+              onClose={() => setIsCategoryModalOpen(false)}
+              onManageCategories={handleManageCategories}
+              categories={categories}
+            />
+          </div>
+        </div>
+      )}
+      </div>
   );
 };
 

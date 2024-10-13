@@ -343,6 +343,8 @@ const handleEditNote = () => {
     useEffect(() => {
     requestNoteStatus();
   }); 
+
+  
   
 return (
   <div
@@ -366,15 +368,11 @@ return (
           onChange={(e) => setTitle(e.target.value)}
           disabled={!isEditing}
         />
-        <select
-          className="border border-DarkestBlue rounded p-2 w-full sm:w-auto flex-1 bg-Ivory focus:ring-2 focus:ring-blue-500 mt-2 sm:mt-0"
+        <select 
+          className="border border-DarkestBlue bg-Ivory rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
-          disabled={!isEditing}
         >
-          <option value="" disabled>
-            Select a category
-          </option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
