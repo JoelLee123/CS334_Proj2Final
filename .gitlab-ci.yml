@@ -7,20 +7,20 @@ image: node:18
 # Define cache to speed up subsequent jobs by caching the node_modules folder.
 cache:
   paths:
-    - node_modules/
+    - frontend/node_modules/
 
 before_script:
-  # Install dependencies before running tests.
+  # Navigate to the frontend directory and install dependencies.
+  - cd frontend
   - npm install
 
 test:
   stage: test
   script:
-    # Run tests with Jest
+    # Run the frontend tests.
     - npm run test -- --ci --reporters=default --reporters=jest-junit
   tags:
-    - shared-runner
-
+    - shared-runner  # Use the appropriate runner tag
   artifacts:
     # Save the test results as artifacts.
     when: always
