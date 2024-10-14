@@ -197,6 +197,7 @@ useEffect(() => {
 const handleEditNote = () => {
   setNoteStatus("You are editing this note");
   setIsCurrentUserEditing(true); // Set to true when the current user is editing
+  setIsEditing(true);
   // Check if WebSocket is available and note is idle
   if (socket && noteStatus === "Idle") {
     const noteId = location.state.id;
@@ -345,7 +346,7 @@ const handleEditNote = () => {
 
     useEffect(() => {
     requestNoteStatus();
-  }); 
+  }, [socket, location.state.id]); 
 
   
   
@@ -465,7 +466,7 @@ return (
             className="border border-DarkestBlue rounded p-2 w-full h-96 bg-Ivory focus:ring-2 focus:ring-blue-500"
             value={markdown}
             onChange={(e) => setMarkdown(e.target.value)}
-            disabled={!isEditing}
+            disabled={!isEditing && noteStatus !=="You are editing this note"}
             style={{
               transition: "border-color 0.5s ease",
             }}
