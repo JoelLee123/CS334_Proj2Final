@@ -44,7 +44,7 @@ deploy:
     - heroku git:remote -a scribe-mark
     # Set Git to use the HEROKU_API_KEY environment variable for authentication
     - git remote set-url heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/scribe-mark.git
-    - git fetch --all  # Fetch all branches
+    - git pull
     - git checkout dev-heroku-deploy  # Checkout the correct branch
     # Push from 'dev-heroku-deploy' branch to Heroku's 'main' branch
     - git push heroku dev-heroku-deploy:main --force
