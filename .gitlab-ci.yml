@@ -47,6 +47,6 @@ deploy:
     - git fetch --all  # Fetch all branches
     - git checkout dev-heroku-deploy  # Checkout the correct branch
     # Push from 'dev-heroku-deploy' branch to Heroku's 'main' branch
-    - git push heroku dev-heroku-deploy:main
+    - git push heroku dev-heroku-deploy:main --force
   only:
     - dev-heroku-deploy  # Make sure the pipeline only runs when 'dev-heroku-deploy' is updated
