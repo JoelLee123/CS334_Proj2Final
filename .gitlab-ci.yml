@@ -1,0 +1,26 @@
+stages:
+  - test
+
+# Use the official Node.js image from Docker Hub.
+image: node:18
+
+# Define cache to speed up subsequent jobs by caching the node_modules folder.
+cache:
+  paths:
+    - node_modules/
+
+before_script:
+  # Install dependencies before running tests.
+  - npm install
+
+test:
+  stage: test
+  script:
+    # Run tests with Jest
+    - npm run test -- --ci --reporters=default --reporters=jest-junit
+
+  artifacts:
+    # Save the test results as artifacts.
+    when: always
+    reports:
+      junit: junit.xml
