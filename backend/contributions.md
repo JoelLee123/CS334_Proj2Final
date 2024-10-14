@@ -39,6 +39,32 @@ model User {
 - https://pixabay.com
 
 #******************************************************************************************
+
+.body-modal-open {
+  overflow: hidden;
+}
+
+.body-modal-open .modal-overlay {
+  pointer-events: none;
+}
+
+Frontend modal css assited by github copilot
+
+Other references for modal styling:
+http://reactcommunity.org/react-modal/styles/
+From React community
+
+Learning react hooks and components from:
+https://react.dev/learn
+
+
+Mapping notes to be rendered, idea from a react tutorial:
+https://react.dev/learn/rendering-lists
+
+notesDisplayed.map((note, index) => (
+  
+)
+
 #******************************************************************************************
 #******************************************************************************************
 #******************************************************************************************
