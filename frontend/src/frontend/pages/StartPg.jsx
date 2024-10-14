@@ -81,7 +81,7 @@ const FrontPage = () => {
       <div className="relative z-10 text-white text-center p-5 space-y-12">
         <header className="flex justify-center items-center mt-12 mb-6">
           <h1 className="serif text-6xl font-bold drop-shadow-lg tracking-wider transform transition duration-500 hover:scale-105">
-            Welcome to <span className="text-Ivory">ScribeMark</span>
+            Welcome to <span className="text-Ivory">ScribeMark testing</span>
           </h1>
         </header>
 
