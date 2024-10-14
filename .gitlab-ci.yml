@@ -21,8 +21,3 @@ test:
     - npm run test -- --ci --reporters=default --reporters=jest-junit
   tags:
     - shared-runner  # Use the appropriate runner tag
-  artifacts:
-    # Save the test results as artifacts.
-    when: always
-    reports:
-      junit: junit.xml
