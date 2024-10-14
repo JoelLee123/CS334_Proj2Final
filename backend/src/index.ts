@@ -151,7 +151,13 @@ wss.on("connection", (ws) => {
                     } else {
                         // 6. If the note is not idle, notify the user trying to edit
                         const statusMessage = note.status ? note.status.replace(" is editing this note", "") : "Unknown editor";
-                        ws.send(`Cannot edit. Note ${noteId} is currently being edited by ${statusMessage}.`);
+                        let pureStatus = statusMessage.split('#')[0];
+                        if (statusMessage.includes(String(userEmail))) {
+                            pureStatus = "You are editing this note";
+                            ws.send(pureStatus);
+                        } else {
+                            ws.send(`Note ${noteId} is currently being edited by ${pureStatus}.`);
+                        }
                     }
                 } catch (error) {
                     ws.send("Error retrieving or updating the note status.");

@@ -68,6 +68,9 @@ useEffect(() => {
       if (message.includes("pong")) {
         return;
       }
+      if (message.includes("Error")) {
+        return;
+      }
 
       // Check if the message contains 'editing' or 'stopped'
       if (message.includes("started") || message.includes("stopped")) {
