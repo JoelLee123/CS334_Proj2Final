@@ -18,6 +18,8 @@ test:
   script:
     # Run tests with Jest
     - npm run test -- --ci --reporters=default --reporters=jest-junit
+    tags:
+    - shared-runner
 
   artifacts:
     # Save the test results as artifacts.
