@@ -21,7 +21,7 @@ const sendEmail = async (toEmail: string) => {
 
 /* Send a password reset email */
 const sendPasswordResetEmail = async (toEmail: string, resetToken: string) => {
-  const resetURL = `/reset-password?token=${resetToken}`;
+  const resetURL = `https://scribe-mark-fe6416f9cd72.herokuapp.com/reset-password?token=${resetToken}`;
 
   const msg = {
     to: toEmail,

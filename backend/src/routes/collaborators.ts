@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { authenticateToken } from "../middleware/auth";
 import prisma from "../service/prisma"; // Prisma client instance
+const sendgridEmail = require("../service/sendgrid");
 
 const router = Router();
 
 // Add a collaborator to a note
 router.post("/add", authenticateToken, async (req, res) => {
   const { noteId, userEmail } = req.body;
+  const sharingUser = (req as any).user;
 
   try {
     // Verify that the user owns the note
@@ -31,6 +33,9 @@ router.post("/add", authenticateToken, async (req, res) => {
         userEmail: String(userEmail),
       },
     });
+
+    /* Send the collaborator an email detailing the fact that a note has been shared with them */
+    sendgridEmail.sendNoteSharedEmail(userEmail, note.title, sharingUser.email);
 
     return res
       .status(201)
