@@ -228,8 +228,6 @@ wss.on("connection", (ws) => {
                     const newCollaboratorWs = clients.get(newCollaboratorEmail);
                     if (newCollaboratorWs) {
                         newCollaboratorWs.send(`You have been added as a collaborator to note ${note.title}`);
-                    } else {
-                        ws.send(`User ${newCollaboratorEmail} is not connected.`);
                     }
                     // Notify the user who issued the notify command that the notification was successful
                     ws.send(`${newCollaboratorEmail} has been notified.`);

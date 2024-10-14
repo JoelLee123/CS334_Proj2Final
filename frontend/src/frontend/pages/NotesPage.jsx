@@ -49,6 +49,26 @@ const requestNoteStatus = () => {
     console.error('WebSocket instance is not available.');
   }
 };
+
+// Function to fetch the latest note content
+const fetchLatestNoteContent = async (noteId) => {
+  try {
+    const response = await fetch(`/notes/${noteId}`, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch note content");
+    
+    const data = await response.json();
+    if (data.note) {
+      setTitle(data.note.title);
+      setMarkdown(data.note.content);
+      setCategoryId(data.note.categoryId || "");
+    }
+  } catch (error) {
+    console.error("Error fetching latest note content:", error);
+  }
+};
   
 useEffect(() => {
   if (socket) {
@@ -76,6 +96,14 @@ useEffect(() => {
       if (message.includes("started") || message.includes("stopped")) {
         // Re-request the note status to update the UI
         requestNoteStatus();
+      }
+
+      // If the message indicates that someone stopped editing,
+      // fetch the latest note content
+      if (message.includes("stopped")) {
+        // Re-request the latest content of the note when someone stops editing
+        const noteId = location.state.id;
+        fetchLatestNoteContent(noteId);
       }
 
       if (message.startsWith("status:")) {
@@ -128,6 +156,12 @@ useEffect(() => {
     fetchCategories();
   }, [location.state]);
 
+    useEffect(() => {
+        // Re-request the latest content of the note when someone stops editing
+        const noteId = location.state.id;
+        fetchLatestNoteContent(noteId);
+  }, [location.state]);
+  
 
   const handleMarkdownChange = (e) => {
     setMarkdown(e.target.value);
