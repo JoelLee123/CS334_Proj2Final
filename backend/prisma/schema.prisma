@@ -1,51 +1,57 @@
+// Define the generator for the Prisma client
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client-js" // Use the Prisma Client JS as the client generator
 }
 
+// Define the datasource for the PostgreSQL database
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider  = "postgresql" // Specify the database provider
+  url       = env("DATABASE_URL") // Get the database connection URL from the environment variable
+  directUrl = env("DIRECT_URL") // Get the direct connection URL from the environment variable
 }
 
+// Define the User model for user accounts
 model User {
-  username           String         @unique
-  email              String         @id @unique
-  password           String
-  avatar_url         String?
-  reset_token        String?        @unique
-  reset_token_expiry DateTime?
-  Category           Category[]
-  collaborators      Collaborator[]
+  username           String         @unique // Unique username for the user
+  email              String         @id @unique // Unique email that acts as the primary key
+  password           String // Password for user authentication
+  avatar_url         String? // Optional URL for the user's avatar
+  reset_token        String?        @unique // Optional unique reset token for password reset
+  reset_token_expiry DateTime? // Optional expiry date for the reset token
+  Category           Category[] // Relationship to categories created by the user
+  collaborators      Collaborator[] // Relationship to collaborators on notes
 }
 
+// Define the Note model for user-created notes
 model Note {
-  id            Int            @id @default(autoincrement())
-  title         String
-  content       String
-  categoryId    Int
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
-  status        String?        @default("Idle")
-  collaborators Collaborator[]
-  category      Category       @relation(fields: [categoryId], references: [id])
+  id            Int            @id @default(autoincrement()) // Primary key with auto-incrementing integer
+  title         String // Title of the note
+  content       String // Content of the note
+  categoryId    Int // Foreign key linking to the category
+  created_at    DateTime       @default(now()) // Timestamp for when the note was created
+  updated_at    DateTime       @updatedAt // Timestamp for when the note was last updated
+  status        String?        @default("Idle") // Optional status of the note, defaults to "Idle"
+  collaborators Collaborator[] // Relationship to collaborators on this note
+  category      Category       @relation(fields: [categoryId], references: [id]) // Relation to the Category model
 }
 
+// Define the Category model for organizing notes
 model Category {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  user_email String?
-  User       User?    @relation(fields: [user_email], references: [email], onDelete: Cascade)
-  notes      Note[]
+  id         Int      @id @default(autoincrement()) // Primary key with auto-incrementing integer
+  name       String   @unique // Unique name for the category
+  created_at DateTime @default(now()) // Timestamp for when the category was created
+  updated_at DateTime @updatedAt // Timestamp for when the category was last updated
+  user_email String? // Optional email of the user who created the category
+  User       User?    @relation(fields: [user_email], references: [email], onDelete: Cascade) // Relation to the User model
+  notes      Note[] // Relationship to notes in this category
 }
 
+// Define the Collaborator model for managing note collaborators
 model Collaborator {
-  noteId    Int
-  userEmail String
-  note      Note   @relation(fields: [noteId], references: [id])
-  user      User   @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+  noteId    Int // Foreign key linking to the note
+  userEmail String // Foreign key linking to the user
+  note      Note   @relation(fields: [noteId], references: [id]) // Relation to the Note model
+  user      User   @relation(fields: [userEmail], references: [email], onDelete: Cascade) // Relation to the User model
 
-  @@unique([noteId, userEmail])
+  @@unique([noteId, userEmail]) // Composite unique constraint for noteId and userEmail
 }
