@@ -1,10 +1,21 @@
 import { Router } from "express";
 import { authenticateToken } from "../middleware/auth";
-import prisma from "../service/prisma"; // Prisma client instance
+import prisma from "../service/prisma";
 
 const router = Router();
 
-// Add a new note
+/**
+ * Route to add a new note for the authenticated user.
+ * 
+ * @route POST /add
+ * 
+ * @param {string} req.body.title - The title of the note.
+ * @param {string} req.body.content - The content of the note.
+ * @param {number} req.body.categoryId - The ID of the category for the note.
+ * 
+ * @returns {Object} 201 - JSON object with the created note.
+ * @returns {Object} 400 - JSON object if there is an error creating the note.
+ */
 router.post("/add", authenticateToken, async (req, res) => {
   const { title, content, categoryId } = req.body;
   const user = (req as any).user;
@@ -40,7 +51,17 @@ router.post("/add", authenticateToken, async (req, res) => {
   }
 });
 
-// Get all notes for the authenticated user
+/**
+ * Route to get all notes for the authenticated user.
+ * 
+ * @route GET /all
+ * 
+ * @param {number} req.query.categoryID - The ID of the category to filter notes (optional).
+ * @param {string} req.query.sortBy - The sorting criteria for notes (optional).
+ * 
+ * @returns {Object} 200 - JSON object with the list of notes.
+ * @returns {Object} 400 - JSON object if there is an error fetching notes.
+ */
 router.get("/all", authenticateToken, async (req, res) => {
   const user = (req as any).user;
   const categoryId = parseInt(req.query.categoryID as string, 10);
@@ -83,7 +104,17 @@ router.get("/all", authenticateToken, async (req, res) => {
   }
 });
 
-// Fetching a specific note by ID
+/**
+ * Route to fetch a specific note by its ID.
+ * 
+ * @route GET /:id
+ * 
+ * @param {number} req.params.id - The ID of the note to be fetched.
+ * 
+ * @returns {Object} 200 - JSON object with the note details.
+ * @returns {Object} 404 - JSON object if the note is not found or access is denied.
+ * @returns {Object} 500 - JSON object if there is an error fetching the note.
+ */
 router.get("/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const user = (req as any).user;
@@ -98,8 +129,8 @@ router.get("/:id", authenticateToken, async (req, res) => {
         },
       },
       include: {
-        collaborators: true, // Include collaborators if needed
-        category: true, // Include category information
+        collaborators: true,
+        category: true,
       },
     });
 
@@ -115,9 +146,23 @@ router.get("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// Update a note
+
+/**
+ * Route to update a note.
+ * 
+ * @route PUT /update/:id
+ * 
+ * @param {number} req.params.id - The ID of the note to be updated.
+ * @param {string} req.body.title - The updated title of the note.
+ * @param {string} req.body.content - The updated content of the note.
+ * @param {number} req.body.categoryId - The updated category ID of the note.
+ * 
+ * @returns {Object} 200 - JSON object with the updated note.
+ * @returns {Object} 404 - JSON object if the note is not found.
+ * @returns {Object} 403 - JSON object if the user is unauthorized to update the note.
+ * @returns {Object} 400 - JSON object if there is an error updating the note.
+ */
 router.put("/update/:id", authenticateToken, async (req, res) => {
-  console.log("Hello");
   const { id } = req.params;
   const { title, content, categoryId } = req.body;
   const user = (req as any).user;
@@ -172,10 +217,22 @@ router.put("/update/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// Update the status of a note
+/**
+ * Route to update the status of a note.
+ * 
+ * @route PUT /update-status/:id
+ * 
+ * @param {number} req.params.id - The ID of the note whose status is to be updated.
+ * @param {string} req.body.status - The new status of the note.
+ * 
+ * @returns {Object} 200 - JSON object with the updated note status.
+ * @returns {Object} 403 - JSON object if the user is unauthorized to update the note status.
+ * @returns {Object} 404 - JSON object if the note is not found.
+ * @returns {Object} 400 - JSON object if there is an error updating the note status.
+ */
 router.put("/update-status/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body; // Get the new status from the request body
+  const { status } = req.body;
   const user = (req as any).user;
 
   try {
@@ -198,7 +255,7 @@ router.put("/update-status/:id", authenticateToken, async (req, res) => {
     // Update the note status in the database
     const updatedNote = await prisma.note.update({
       where: { id: Number(id) },
-      data: { status }, // Update the status field
+      data: { status },
     });
 
     return res
@@ -211,7 +268,18 @@ router.put("/update-status/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// Delete a note
+/**
+ * Route to delete a note.
+ * 
+ * @route DELETE /delete/:id
+ * 
+ * @param {number} req.params.id - The ID of the note to be deleted.
+ * 
+ * @returns {Object} 200 - JSON object with success message when the note is deleted.
+ * @returns {Object} 404 - JSON object if the note is not found.
+ * @returns {Object} 403 - JSON object if the user is unauthorized to delete the note.
+ * @returns {Object} 400 - JSON object if there is an error deleting the note.
+ */
 router.delete("/delete/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const user = (req as any).user;

@@ -50,7 +50,7 @@ app.use(express.static(path.join(__dirname, "../build"))); // Serve static files
 app.use("/auth", authRoutes);
 
 // Notes routes
-app.use("/notes", notesRoutes); // Mount the notes routes under /notes
+app.use("/notes", notesRoutes);
 
 // Categories routes
 app.use("/categories", categoryRoutes);
@@ -80,7 +80,7 @@ wss.on("connection", (ws) => {
   ws.on("message", async (message: Object) => {
     console.log(`Received message: ${message}`);
 
-    // Convert the message to a string, if necessary
+    // Convert the message to a string
     const messageString = typeof message === "string" ? message : message.toString();
 
     // Split the message into command and parameters
@@ -241,11 +241,9 @@ wss.on("connection", (ws) => {
           console.error("Error handling getStatus command:", error);
         }
       } else {
-        // Handle unrecognized commands
         ws.send(`Command not recognized: ${command}`);
       }
     } catch (error) {
-      // Error handling with a message
       if (error instanceof Error) {
         ws.send(`Error handling command ${command}: ${error.message}`);
       } else {

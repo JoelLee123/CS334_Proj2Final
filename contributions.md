@@ -32,6 +32,10 @@
    - **Description**: Used various npm packages to handle WebSocket communications, authentication, and other utilities.
    - **Modifications**: Adjusted the configurations for real-time collaboration and user interactions within the app.
 
+6. **SendGrid implementation**
+   - **Source**: Sendgrid documentation
+   - **Description**: Copied and pasted the freely provided basic email logic on their website.
+   - **Modifications**: Changed the basic email to cater for our needs, i.e, sending emails for password resets which require tokens, and note sharing notifications. Both of these require logic which is implemented in their respective calling functions which was not provided by sendgrid.
 ---
 
 ## Code Written by Our Group
@@ -51,6 +55,18 @@
   - **Specific Contribution**: Generated boilerplate code for setting an initial connection and built the code from that 
   point.
   - **Modifications**: Initial boilerplate provided a single starting point and everything else was a modification.
+
+- **Generative AI Assistance**: We used OpenAI's ChatGPT to generate help generate the authentication system.
+  - **Specific Contribution**: Generated boilerplate code for auth.ts in the middleware directory, but we added logic to incorporate the use of cookies in this middleware (as opposed to only jwtTokens)
+  - **Modifications**: Initial boilerplate provided a single starting point and everything else was a modification.
+
+- **Generative AI Assistance**: We used OpenAI's ChatGPT to generate help generate the register and login endpoints system.
+  - **Specific Contribution**: Generated boilerplate code for auth.ts in the routes/ directory.
+  - **Modifications**: Initial boilerplate provided a single starting point, but we coded the logic for cookies, rememberMe functionality, and the prisma query.
+
+- **Generative AI Assistance**: We used OpenAI's ChatGPT to generate generate the html for our reset password email.
+  - **Specific Contribution**: Generated the layout of said html.
+  - **Modifications**: Wording and actual content of the email.
 
 ```   
     try {

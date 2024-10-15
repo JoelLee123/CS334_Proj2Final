@@ -5,12 +5,19 @@ import { authenticateToken } from "../middleware/auth";
 const prisma = new PrismaClient();
 const router = Router();
 
-/* Get all users */
+/**
+ * Route to get all users in the database.
+ * 
+ * @route GET /
+ * 
+ * @returns {Object} 200 - JSON object with the list of users.
+ * @returns {Object} 500 - JSON object if there is an error fetching users.
+ */
 router.get("/", async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       include: {
-        collaborators: true, // Include related collaborator data
+        collaborators: true,
       },
     });
     res.status(200).json({ users });
@@ -19,9 +26,16 @@ router.get("/", async (req, res) => {
   }
 });
 
-/* Get the current user's information (using token email) */
+/**
+ * Route to get the current user's information using the email in the token.
+ * 
+ * @route GET /me
+ * 
+ * @returns {Object} 200 - JSON object with the current user's information.
+ * @returns {Object} 404 - JSON object if the user is not found.
+ */
 router.get("/me", authenticateToken, async (req, res) => {
-  const { email } = (req as any).user; /* Extract email from token */
+  const { email } = (req as any).user;
 
   try {
     const user = await prisma.user.findUniqueOrThrow({
@@ -35,9 +49,19 @@ router.get("/me", authenticateToken, async (req, res) => {
   }
 });
 
-/* Update the current user's information (using token email) */
+/**
+ * Route to update the current user's information using the email in the token.
+ * 
+ * @route PUT /me
+ * 
+ * @param {string} req.body.username - The new username for the user.
+ * @param {string} req.body.avatar_url - The new avatar URL for the user.
+ * 
+ * @returns {Object} 200 - JSON object with the updated user information.
+ * @returns {Object} 400 - JSON object if there is an error updating the user.
+ */
 router.put("/me", authenticateToken, async (req, res) => {
-  const { email } = (req as any).user; /* Extract email from token */
+  const { email } = (req as any).user;
   const { username, avatar_url } = req.body;
 
   try {
@@ -55,7 +79,14 @@ router.put("/me", authenticateToken, async (req, res) => {
   }
 });
 
-/* Delete the current user (using token email) */
+/**
+ * Route to delete the current user using the email in the token.
+ * 
+ * @route DELETE /me
+ * 
+ * @returns {Object} 200 - JSON object with success message after the user is deleted.
+ * @returns {Object} 400 - JSON object if there is an error deleting the user.
+ */
 router.delete("/me", authenticateToken, async (req, res) => {
   const { email } = (req as any).user; /* Extract email from token */
 
@@ -70,7 +101,14 @@ router.delete("/me", authenticateToken, async (req, res) => {
   }
 });
 
-/* Get all notes the current user is collaborating on (using token email) */
+/**
+ * Route to get all notes the current user is collaborating on using the email in the token.
+ * 
+ * @route GET /me/notes
+ * 
+ * @returns {Object} 200 - JSON object with the list of notes the user is collaborating on.
+ * @returns {Object} 500 - JSON object if there is an error fetching notes for the user.
+ */
 router.get("/me/notes", authenticateToken, async (req, res) => {
   const { email } = (req as any).user; /* Extract email from token */
 
@@ -99,7 +137,17 @@ router.get("/me/notes", authenticateToken, async (req, res) => {
   }
 });
 
-/* Get user by email */
+/**
+ * Route to get a specific user by their email.
+ * 
+ * @route GET /:email
+ * 
+ * @param {string} req.params.email - The email of the user to be fetched.
+ * 
+ * @returns {Object} 200 - JSON object with the user details.
+ * @returns {Object} 404 - JSON object if the user is not found.
+ * @returns {Object} 500 - JSON object if there is an error fetching the user.
+ */
 router.get("/:email", async (req, res) => {
   const { email } = req.params;
 
@@ -109,7 +157,7 @@ router.get("/:email", async (req, res) => {
       include: {
         collaborators: {
           include: {
-            note: true, // Include notes the user collaborates on
+            note: true,
           },
         },
       },

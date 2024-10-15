@@ -1,12 +1,24 @@
 import { Router } from "express";
 import { authenticateToken } from "../middleware/auth";
-import prisma from "../service/prisma"; // Prisma client instance
+import prisma from "../service/prisma";
 import { Prisma } from '@prisma/client';
 
 const router = Router();
 
+/**
+ * Route to add a new category for the authenticated user.
+ * 
+ * @route POST /add
+ * 
+ * @param {string} req.body.name - The name of the new category to be created.
+ * 
+ * @returns {Object} 201 - JSON object with success message and created category.
+ * @returns {Object} 400 - JSON object if the category name already exists or other error occurs.
+ * 
+ * @throws Will return a 400 status code if category creation fails.
+ */
 router.post("/add", authenticateToken, async (req, res) => {
-  const user = (req as any).user; // This is where the authenticated user is obtained
+  const user = (req as any).user; 
   const { name } = req.body;
 
   try {
@@ -30,7 +42,16 @@ router.post("/add", authenticateToken, async (req, res) => {
   }
 }); 
 
-// Get all categories from the database that user created
+/**
+ * Route to get all categories created by the authenticated user.
+ * 
+ * @route GET /all
+ * 
+ * @returns {Object} 200 - JSON object with list of categories created by the user.
+ * @returns {Object} 400 - JSON object if there is an error fetching the categories.
+ * 
+ * @throws Will return a 400 status code if there is an error fetching categories.
+ */
 router.get("/all", authenticateToken, async (req, res) => {
   const user = (req as any).user; // Authenticated user
 
@@ -38,7 +59,7 @@ router.get("/all", authenticateToken, async (req, res) => {
     // Fetch categories that belong to the authenticated user
     const categories = await prisma.category.findMany({
       where: {
-        user_email: user.email, // Filter categories by the user's email
+        user_email: user.email,
       },
     });
 
@@ -49,10 +70,19 @@ router.get("/all", authenticateToken, async (req, res) => {
   }
 });
 
-// Get all categories from the database
+/**
+ * Route to get all categories from the database.
+ * 
+ * @route GET /allcategories
+ * 
+ * @returns {Object} 200 - JSON object with list of all categories in the database.
+ * @returns {Object} 400 - JSON object if there is an error fetching the categories.
+ * 
+ * @throws Will return a 400 status code if there is an error fetching categories.
+ */
 router.get("/allcategories", authenticateToken, async (req, res) => {
   try {
-    // Fetch categories that belong to the authenticated user
+    /* Fetch categories that belong to the authenticated user */
     const categories = await prisma.category.findMany();
 
     console.log("Categories fetched: ", categories);
@@ -62,7 +92,19 @@ router.get("/allcategories", authenticateToken, async (req, res) => {
   }
 });
 
-// Get a specific category by ID
+/**
+ * Route to get a specific category by its ID.
+ * 
+ * @route GET /:id
+ * 
+ * @param {number} req.params.id - The ID of the category to be fetched.
+ * 
+ * @returns {Object} 200 - JSON object with the category details if found.
+ * @returns {Object} 404 - JSON object if the category is not found.
+ * @returns {Object} 400 - JSON object if there is an error fetching the category.
+ * 
+ * @throws Will return a 404 status code if the category is not found.
+ */
 router.get("/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
 
@@ -82,13 +124,27 @@ router.get("/:id", authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * Route to update a specific category by its ID.
+ * 
+ * @route PUT /update/:id
+ * 
+ * @param {number} req.params.id - The ID of the category to be updated.
+ * @param {string} req.body.name - The new name of the category.
+ * 
+ * @returns {Object} 200 - JSON object with success message and updated category details.
+ * @returns {Object} 403 - JSON object if the user is unauthorized to update the category.
+ * @returns {Object} 400 - JSON object if there is an error updating the category.
+ * 
+ * @throws Will return a 403 status code if the user is unauthorized to update the category.
+ */
 router.put("/update/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
   const user = (req as any).user; // Authenticated user
 
   try {
-    // Ensure the category belongs to the user
+    /* Ensure the category belongs to the user */
     const category = await prisma.category.findUnique({
       where: { id: Number(id) },
     });
@@ -112,10 +168,22 @@ router.put("/update/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// Delete a category
+/**
+ * Route to delete a category by its ID.
+ * 
+ * @route DELETE /delete/:id
+ * 
+ * @param {number} req.params.id - The ID of the category to be deleted.
+ * 
+ * @returns {Object} 200 - JSON object with success message if the category is successfully deleted.
+ * @returns {Object} 403 - JSON object if the user is unauthorized to delete the category.
+ * @returns {Object} 400 - JSON object if there is an error deleting the category.
+ * 
+ * @throws Will return a 403 status code if the user is unauthorized to delete the category.
+ */
 router.delete("/delete/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const user = (req as any).user; // Authenticated user
+  const user = (req as any).user;
 
   try {
     // Ensure the category belongs to the user
