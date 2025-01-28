@@ -38,4 +38,11 @@ This project involved developing a **collaborative note-taking web application**
 
 ## Website  URL
 
+Significant contributors:
+Liam Abbott
+Brad Slingers
+Joel Lee
+Lara Jacobs
+Seisa Likotsi
+
 **Link:** https://scribe-mark-fe6416f9cd72.herokuapp.com/ 
